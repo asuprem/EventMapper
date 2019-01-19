@@ -32,11 +32,12 @@
 		"db_port": 3306,
 		"db_passwd": "Lr1eUDc(f4Hi",
 		"db_user": "grait-dm",
-		"db_db": "LITMUS",
+		"db_db": "LITMUS"
 	},
 
-	"data_sources":{
-		"News":"news_download.py",
+	"data_sources":["News","Twitter","Facebook","USGS","TRMM"],
+	"worker_downloaders":{
+		"News":"news_download.sh",
 		"Twitter":"twitter_download.py",
 		"Facebook":"facebook_download.py",
 		"USGS":"usgs_download.py",
