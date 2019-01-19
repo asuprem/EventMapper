@@ -14,7 +14,7 @@ def load_config(config='config.js'):
 if __name__ == '__main__':
 
     start_time = time.time()
-    config = load_config('config.js')
+    config = load_config('../config.json')
 
     #begin disaster loop:
     for keyword in config['keyws']:
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         source_data = {}
         source_list = config['keyws'][keyword]['news_source']
         #extract sources from source list
-        with open (source_list, 'r') as sources:
+        with open ('../'+source_list, 'r') as sources:
             for line in sources:
                 lines_json = json.loads(line)
                 source_data[lines_json['name']] = lines_json
