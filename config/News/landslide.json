@@ -1,0 +1,10 @@
+{"url": "https://www.google.com/alerts/feeds/13709283215298617211/15930392799737386359", "parameters": ["", "landslidesGoogle", "landslide", "en"], "name": "landslidesGoogle", "library": "google"}
+{"url": "https://www.google.com/alerts/feeds/13709283215298617211/824258948536887095", "parameters": ["", "mudslidesGoogle", "landslide","en"], "name": "mudslidesGoogle", "library": "google"}
+{"url": "https://www.google.com/alerts/feeds/13709283215298617211/2593983944088531697", "parameters": ["", "rockslideGoogle", "landslide","en"], "name": "rockslideGoogle", "library": "google"}
+{"url": "http://feeds.bbci.co.uk/news/world/rss.xml", "parameters": ["", "worldBBC", "landslide","en"], "name": "worldBBC", "library": "bbc"}
+{"url": "http://feeds.bbci.co.uk/news/uk/rss.xml", "parameters": ["", "ukBBC", "landslide","en"], "name": "ukBBC", "library": "bbc"}
+{"url": "https://www.nbclosangeles.com/news/local/?rss=y", "parameters": ["", "losAngelesLocalNBC", "landslide","en"], "name": "losAngelesNBC", "library": "nbc"}
+{"url": "https://www.nbcnewyork.com/news/local/?rss=y", "parameters": ["", "newYorkLocalNBC", "landslide","en"], "name": "newYorkLocalNBC", "library": "nbc"}
+{"url": "https://www.nbclosangeles.com/news/top-stories/?rss=y", "parameters": ["", "losAngelesTopNBC", "landslide","en"], "name": "losAngelesTopNBC", "library": "nbc"}
+{"url": "https://www.nbcnewyork.com/news/top-stories/?rss=y", "parameters": ["", "newYorkTopNBC", "landslide","en"], "name": "newYorkTopNBC", "library": "nbc"}
+{"url": "https://www.bing.com/search?q=landslide+relief&format=rss", "parameters": ["","bingLandslide", "landslide","en"], "name": "bingLandslide", "library": "bing"}

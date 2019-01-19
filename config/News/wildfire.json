@@ -1,0 +1,2 @@
+{"url": "https://www.bing.com/search?q=wildfires+relief&format=rss", "parameters": ["","bingWildfire", "wildfire","en"], "name": "bingWildfire", "library": "bing"}
+{"url": "https://www.google.com/alerts/feeds/01793141521694384912/8574477636079901666", "parameters": ["","wildfireGoogle","wildfire","en"], "name": "wildfireGoogle", "library": "google"}
