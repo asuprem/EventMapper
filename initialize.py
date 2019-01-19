@@ -6,12 +6,17 @@ import utils
 
 parser = argparse.ArgumentParser(description="Initialize sets up various parts of LITMUS")
 parser.add_argument("--env",
-                    choices=["mysql"],
+                    choices=["mysql", "dirs"],
                     help="Environment to setup")
 
 argums = vars(parser.parse_args())
 config = utils.load_config()
 
+if argums['env'] == 'dirs':
+    import os
+    directory = 'downloads'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
 if argums['env'] == 'mysql':
     #set up mysql stuff (news and everything)

@@ -1,7 +1,9 @@
 # LITMUS
 This directory contains scripts for LITMUS (updated).
 
-Details will be added over time.
+Details will be added over time. Please read `initialize.md` for initializatioon/setup details.
+
+Please read `Code Steps.md` for details on how LITMUS functions.
 
 
 # Configuration
@@ -26,4 +28,7 @@ The config file is located at `/etc/my.cnf`. The socket is located at `/var/lib/
 ## MYSQL DB
 All our work is done on the LITMUS database in mysql. Use `use LITMUS` when logging in to switch to the correct database
 
+# Redis Access
+
+## Redis DB
 
