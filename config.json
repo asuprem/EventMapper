@@ -1,16 +1,11 @@
 {
 	"tweets_per_file": 2000,
 	"languages": ["it", "pt", "ja", "zh", "ru", "en"],
-	"terms": ["сель", "landslide"],
-	"terms_en": ["landslide", "landslides", "mudslide", "mudslides"],
-	"terms_ru": ["сель", "селевой", "селевые", "селевого", "селевых", "оползень", "оползня", "оползнем", "оползни", "оползневый", "оползневые", "оползней"],
-	"terms_zh": ["滑坡", "塌方", "泥石流"],
-	"terms_it": ["frana", "fango"],
 	"microsoft_app_client_id": ["grait-dm3"],
 	"microsoft_app_client_secret": ["CTM3kQbrOmkaJExYbz213uWm2RZjrv5TYYb07Xah15I="],
 	"bing_translator_client_id": ["grait-dm1","grait-dm"],
 	"bing_translator_client_secret": ["biLv3wB9L+7a5EhgTKf3Rb5f43O6znujyF748FHKTiw=","Hcwfgs7Ml5QbAf5ZI2Rq4Z4eWQpl/A15NGN7wCUFbIg="],
-	    "landslide_stopwords": ["brittany","cocktail","conservative","dessert","dixie","dixiechicks","election","elected","elections","electoral","fleetwood","fleetwoodmac","football","game","lesbian","paramore","parliament","poll","polls","porno","presidential","sings","study","victorious","victory","vote","voted","votes","voters","elect","win","wins","won","trump"],
+	"landslide_stopwords": ["brittany","cocktail","conservative","dessert","dixie","dixiechicks","election","elected","elections","electoral","fleetwood","fleetwoodmac","football","game","lesbian","paramore","parliament","poll","polls","porno","presidential","sings","study","victorious","victory","vote","voted","votes","voters","elect","win","wins","won","trump"],
     "landslide_stopphrases": ["cafe latte chat","caught beneath the landslide","generation landslide","lyin on a landslide with","lying on a landslide with","maui mudslide","may cause","no escape from reality","of california to smoke","on a landslide with a bag","real madrid","some day you will find me","smashing pumpkins","stevie nicks"],
     "landslide_skip": [],
     "geo_stopwords": ["ain","are","aren","bye","christie","cos","coz","cut off","darling","dollar","elsa","fox","frost","haiyan","goes","hemsworth","killin","lea","mega","mga","namin","patay","ron","sent","the roads","the valley","to do","ulan","un","up to","wasn","woah","woke"],
@@ -20,11 +15,6 @@
 	"output_terms_file": "search_terms_translated.txt",
 	"project_root_directory": "/Users/aibek/grait-dm/",
 	"twitter_log_time_interval": 10,
-	"db_host": "127.0.0.1",
-	"db_port": 3306,
-	"db_passwd": "Lr1eUDc(f4Hi",
-	"db_user": "grait-dm",
-	"db_db": "LITMUS",
 	"grait-dm_log_file": "C:\\Program Files (x86)\\Apache Software Foundation\\Apache2.2\\htdocs\\grait-dm\\grait-dm.log",
 	"output_feature_directory": "/Users/aibek/grait-dm/features/",
 	"insert_limit": 5,
@@ -36,6 +26,23 @@
 	"sender_passw": "CaltonPu123",
 	"recipient": "graitdm.landslide@gmail.com",
 	"subject": "Landslide Notification System",
+	
+	"database":{
+		"db_host": "127.0.0.1",
+		"db_port": 3306,
+		"db_passwd": "Lr1eUDc(f4Hi",
+		"db_user": "grait-dm",
+		"db_db": "LITMUS",
+	},
+
+	"data_sources":{
+		"News":"news_download.py",
+		"Twitter":"twitter_download.py",
+		"Facebook":"facebook_download.py",
+		"USGS":"usgs_download.py",
+		"TRMM":"trmm_download.py"
+	},
+
     "keyws": {
         "landslide": {
 			"langs":{
@@ -46,7 +53,7 @@
 				"ja": ["土砂崩れ","山崩れ","土石流","地滑り"],
 				"zh": ["滑坡", "塌方", "泥石流", "坍塌"],
 				"hi": ["भूस्खलन"]},
-			"news_source":"landslide.json",
+			"news_source":"config/News/landslide.json",
 			"news_valid":1
         },
         "hab": {
@@ -95,21 +102,21 @@
 			 "langs":{
 				 "en": ["earthquake", "earthquakes", "shaking","richter", "seismic", "seismograph", "epicenter"]
 			},
-			"news_source":"earthquake.json",
+			"news_source":"config/News/earthquake.json",
 			"news_valid":1
          },
          "flooding": {
 			 "langs":{
 				 "en": ["floods", "flooded", "saltation", "torrential rain"]
 			},
-			"news_source":"flooding.json",
+			"news_source":"config/News/flooding.json",
 			"news_valid":1
          },
 		 "wildfire": {
 			 "langs":{
 				"en": ["wildfires", "brushfire", "wildfires", "bushfires", "wild fire", "wild fires"]
 			},
-			"news_source":"wildfire.json",
+			"news_source":"config/News/wildfire.json",
 			"news_valid":0
 		}
 

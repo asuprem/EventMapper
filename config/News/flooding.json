@@ -1,0 +1,2 @@
+{"url": "https://www.google.com/alerts/feeds/01793141521694384912/15773642414075892409", "parameters": ["","floodingGoogle","flooding","en"], "name": "floodingGoogle", "library": "google"}
+{"url": "https://www.bing.com/search?q=flooding+relief&format=rss", "parameters": ["","bingFlooding", "flooding","en"], "name": "bingFlooding", "library": "bing"}

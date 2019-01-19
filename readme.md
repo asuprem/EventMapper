@@ -25,3 +25,5 @@ The config file is located at `/etc/my.cnf`. The socket is located at `/var/lib/
 
 ## MYSQL DB
 All our work is done on the LITMUS database in mysql. Use `use LITMUS` when logging in to switch to the correct database
+
+

@@ -12,9 +12,20 @@ def load_config(config_file='config.json'):
 
 def get_db_connection(config,db=None):
     if db==None:
-        return mysql.connect(host=config['db_host'], port=config['db_port'], user=config['db_user'], passwd=config['db_passwd'], db=config['db_db'], charset='utf8')
+        return mysql.connect(   host=config['databases']['db_host'], 
+                                port=config['databases']['db_port'], 
+                                user=config['databases']['db_user'], 
+                                passwd=config['databases']['db_passwd'], 
+                                db=config['databases']['db_db'], 
+                                charset='utf8')
     else:
-        return mysql.connect(host=config['db_host'], port=config['db_port'], user=config['db_user'], passwd=config['db_passwd'], db=db, charset='utf8')
+        return mysql.connect(   host=config['databases']['db_host'], 
+                                port=config['databases']['db_port'], 
+                                user=config['databases']['db_user'], 
+                                passwd=config['databases']['db_passwd'], 
+                                db=db, 
+                                charset='utf8')
+
 def run_sql_file(filename, connection):
     '''
     The function takes a filename and a connection as input
