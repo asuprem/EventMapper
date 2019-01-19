@@ -9,13 +9,16 @@ Details will be added over time.
 
 # MYSQL Access
 Start the mysql server with
+
     sudo /etc/init.d/mysqld  start
 
 Access the mysql server with 
+
     > mysql -h 127.0.0.1 -P 3306 -u grait-dm -p
     > Lr1eUDc(f4Hi
 
 The format is:
+
     mysql -h HOST -P PORT_NUMBER -u USERNAME -p
 
 The config file is located at `/etc/my.cnf`. The socket is located at `/var/lib/mysql/mysql.sock`.
