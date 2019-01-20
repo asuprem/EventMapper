@@ -12,17 +12,17 @@ def load_config(config_file='config.json'):
 
 def get_db_connection(config,db=None):
     if db==None:
-        return mysql.connect(   host=config['databases']['db_host'], 
-                                port=config['databases']['db_port'], 
-                                user=config['databases']['db_user'], 
-                                passwd=config['databases']['db_passwd'], 
-                                db=config['databases']['db_db'], 
+        return mysql.connect(   host=config['database']['db_host'], 
+                                port=config['database']['db_port'], 
+                                user=config['database']['db_user'], 
+                                passwd=config['database']['db_passwd'], 
+                                db=config['database']['db_db'], 
                                 charset='utf8')
     else:
-        return mysql.connect(   host=config['databases']['db_host'], 
-                                port=config['databases']['db_port'], 
-                                user=config['databases']['db_user'], 
-                                passwd=config['databases']['db_passwd'], 
+        return mysql.connect(   host=config['database']['db_host'], 
+                                port=config['database']['db_port'], 
+                                user=config['database']['db_user'], 
+                                passwd=config['database']['db_passwd'], 
                                 db=db, 
                                 charset='utf8')
 
