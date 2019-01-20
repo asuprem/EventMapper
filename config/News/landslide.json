@@ -7,4 +7,6 @@
 {"url": "https://www.nbcnewyork.com/news/local/?rss=y", "parameters": ["", "newYorkLocalNBC", "landslide","en"], "name": "newYorkLocalNBC", "library": "nbc"}
 {"url": "https://www.nbclosangeles.com/news/top-stories/?rss=y", "parameters": ["", "losAngelesTopNBC", "landslide","en"], "name": "losAngelesTopNBC", "library": "nbc"}
 {"url": "https://www.nbcnewyork.com/news/top-stories/?rss=y", "parameters": ["", "newYorkTopNBC", "landslide","en"], "name": "newYorkTopNBC", "library": "nbc"}
-{"url": "https://www.bing.com/search?q=landslide+relief&format=rss", "parameters": ["","bingLandslide", "landslide","en"], "name": "bingLandslide", "library": "bing"}
+{"url": "https://www.bing.com/news/search?q=landslides&format=rss", "parameters": ["","bingLandslide", "landslide","en"], "name": "bingLandslide", "library": "bing"}
+{"url": "https://www.bing.com/news/search?q=mudslides&format=rss", "parameters": ["","bingMudslide", "landslide","en"], "name": "bingMudslide", "library": "bing"}
+{"url": "https://www.bing.com/news/search?q=rockslides&format=rss", "parameters": ["","bingRockslide", "landslide","en"], "name": "bingRockslide", "library": "bing"}

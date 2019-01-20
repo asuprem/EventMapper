@@ -11,18 +11,6 @@ class NewsDownloader(object):
         self.disaster_config = config['keyws']
 
     def get_max_timestamp(self, row_name):
-        '''
-        try:
-            str_ = row_name+'.txt'
-            with open(str,"r") as f:
-                timestamp = f.read()
-        except:
-            timestamp = 0
-            str_ = row_name+'.txt'
-            with open(str_,"w") as f:
-                f.write("%s" %timestamp)
-        return int(timestamp)
-        '''
         #UPDATE TO  THIS ON SERVER
         db = self.get_db_connection()    
         cursor = db.cursor()
@@ -63,12 +51,6 @@ class NewsDownloader(object):
     
 
     def update_timestamp(self,max_current_ts,row_name):
-        '''
-        str = row_name+'.txt'
-        with open(str,"w") as fp:
-            fp.write("%s" %max_current_ts)
-        return
-        '''
         db = self.get_db_connection()
         cursor = db.cursor()
         update_s = 'update news_timestamps set max_ts=%s where source=%s'
@@ -82,13 +64,6 @@ class NewsDownloader(object):
 
     
     def get(self,url,params=['Africa','AfricaBBC','landslide','en']):
-        '''
-            url -> This is the RSS feed url as a string
-            params -> ['DEF_L','ROW_N','D_TYPE','LANG']
-                DEF_L --> default location
-
-
-        '''
         default_location = params[0]
         row_name = params[1]
         disaster_type = params[2]

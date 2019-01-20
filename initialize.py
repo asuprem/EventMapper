@@ -14,9 +14,10 @@ config = utils.load_config()
 
 if argums['env'] == 'dirs':
     import os
-    directory = 'downloads'
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    dirs = ['downloads','logfiles']
+    for directory in dirs:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
 if argums['env'] == 'mysql':
     #set up mysql stuff (news and everything)

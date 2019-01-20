@@ -37,7 +37,7 @@ if __name__ == '__main__':
             #source is the name field
             #if source_data[source]['library'] == "landslide":
             #so this does 'from news_downloaders.google import google_downloader <-- google_downloader is the class'
-            print "Retrieving: ", source, "       using library: ", source_data[source]['library']
+            print "Retrieving: ", source, "       using library: ", source_data[source]['library'], " on ", datetime.now()
             feed_reader = __import__('news_downloaders.' + source_data[source]['library'],fromlist=[source_data[source]['library']+'_downloader'])
             feed_reader = getattr(feed_reader,source_data[source]['library']+'_downloader')
             feed_read = feed_reader(config)
