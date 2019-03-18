@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
-import json, MySQLdb as mysql, re, sys
-from datetime import datetime
-import codecs, logging, os.path
+import MySQLdb as mysql
 
-fileName = 'config.json'
-config = json.load(codecs.open(fileName, encoding='utf-8'))
-
-def load_config(config_file='config.json'):
-    return json.load(codecs.open(config_file, encoding='utf-8'))
-    
 
 def get_db_connection(config,db=None):
     if db==None:
