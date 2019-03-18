@@ -26,6 +26,7 @@ NOTE - All downloads are stored in the 'downloads' folder in top-level directory
 The cron line for news downloader is as follows:
 
     */20 * * * * sh /expansion2/LITMUS/news_download.sh
+    */20 * * * * sh /expansion2/LITMUS/twitter_download.sh
 
 This indicates the downloader is run every 20 minutes. The bash script `download_news.sh` performs top level tasks for news download.
 

@@ -16,3 +16,15 @@ def dict_equal(d1, d2):
             flag2 = False
     return flag1 and flag2
 
+
+#setu up PID for recurrence checks
+def setup_pid(pid_name):
+    #pid_name will be application name -- '/path/app.py'
+    pid = str(os.getpid())
+    pidFile = './logfiles/' + pid_name + '.pid'
+
+    if os.path.isfile(pidFile):
+        print "pidfile already exists. exiting"
+        sys.exit()
+    file(pidFile,'w').write(pid)
+

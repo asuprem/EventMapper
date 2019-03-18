@@ -10,13 +10,14 @@ from master_twitter_src.KeyServer import KeyServer
 
 # Utils import
 from utils.file_utils import load_config
-from utils.helper_utils import dict_equal
+from utils.helper_utils import dict_equal, setup_pid
 
 CONFIG_PATH = 'config/multiprocess.json'
 CONFIG_TIME_CHECK = 60*60
 
 if __name__ == '__main__':
-
+    pid_name = os.path.basename(sys.argv[0]).split('.')[0]
+    setup_pid(pid_name)
     #Set up configOriginal dict
     configOriginal = load_config(CONFIG_PATH)
     physicalEventTypes = configOriginal['keyws_twitter'].keys()
