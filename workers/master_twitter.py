@@ -10,7 +10,7 @@ from master_twitter_src.KeyServer import KeyServer
 
 # Utils import
 from utils.file_utils import load_config
-from utils.helper_utils import dict_equal, setup_pid
+from utils.helper_utils import dict_equal, setup_pid, readable_time
 
 CONFIG_PATH = 'config/multiprocess.json'
 CONFIG_TIME_CHECK = 60*60
@@ -35,6 +35,7 @@ if __name__ == '__main__':
     for physicalEvent in physicalEventTypes:
         for language in configOriginal['keyws_twitter'][physicalEvent]:
             eventLangTuple = (physicalEvent,language)
+            print " ".join(["Deploying", physicalEvent,language, "at", readable_time()])
             streamerConfig[eventLangTuple] = {}
             streamerConfig[eventLangTuple]['name'] = physicalEvent
             streamerConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
@@ -43,13 +44,14 @@ if __name__ == '__main__':
             streamerConfig[eventLangTuple]['keys'] = keyServer.get_key()
             streamerConfig[eventLangTuple]['process'] = MasterProcess(configOriginal, physicalEvent, language, streamerConfig[eventLangTuple]['keywords'],streamerConfig[eventLangTuple]['keys'][1],errorQueue)
             streamerConfig[eventLangTuple]['process'].start()
+            print " ".join(["Deployed",physicalEvent,language , "at", readable_time()])
 
     timer = time.time()
     while True:
         if time.time() - timer > CONFIG_TIME_CHECK:
 
             timer = time.time()
-            print "Checking configOriginal at ", timer
+            print " ".join(["Checking configuration at", readable_time()])
             configReload = load_config(CONFIG_PATH)
 
             keyServer.update(configReload)
@@ -57,12 +59,12 @@ if __name__ == '__main__':
             if not (dict_equal(configOriginal, configReload)):
                 print "Changes have been made to Multiprocessing config file"
                 configDifference = {i: configReload[i] for i in set(configReload) - set(configOriginal)}
-                print (configDifference)
+                #print (configDifference)
                 deltaPhysicalEvents = configDifference['keyws_twitter'].keys()
                 for deltaEvent in deltaPhysicalEvents:
                     for language in configReload['keyws_twitter'][deltaEvent]:
                         deltaEventLangTuple = (deltaEvent,language)
-                        print "changing configOriginal files"
+                        print " ".join(["Updating", deltaEvent,language, "at", readable_time()])
                         streamerConfig[deltaEventLangTuple] = {}
                         streamerConfig[deltaEventLangTuple]['name'] = deltaEvent
                         streamerConfig[deltaEventLangTuple]['keywords'] = configReload['keyws_twitter'][deltaEvent][language]
@@ -72,22 +74,28 @@ if __name__ == '__main__':
                         streamerConfig[deltaEventLangTuple]['process'] = MasterProcess(configReload, deltaEvent, language,
                                                                               streamerConfig[deltaEventLangTuple]['keywords'],streamerConfig[deltaEventLangTuple]['keys'][1], errorQueue)
                         streamerConfig[deltaEventLangTuple]['process'].start()
+                        print " ".join(["Completed update of", deltaEvent,language, "at", readable_time()])
 
                 #TODO optimize this
                 configOriginal = deepcopy(configReload)
 
-            print "Finished with TIMER!"
+                print " ".join(["Finished with Configuration update at", readable_time()])
+            else:
+                print "No changes have been made to Multiprocessing config file"
 
+        print " ".join(["Checking crashes at", readable_time()])
         while not errorQueue.empty():
+            
             eventName, lang, error_ = errorQueue.get()
-            print (eventName,lang), " crashed with error ", error_
+            print " ".join([eventName,lang, "crashed with error", error_, "at", readable_time()])
             #TODO TODO TODO have a try catch in case terminate causes problem
             streamerConfig[(eventName, lang)]['process'].terminate()
-            print "Terminating ",eventName, " ", lang 
+            print " ".join(["Terminating", eventName,lang, "at" , readable_time()])
             streamerConfig[(eventName, lang)]['keys'] = keyServer.refresh_key(streamerConfig[(eventName, lang)]['keys'][0])
             streamerConfig[(eventName, lang)]['process'] = MasterProcess(configOriginal, eventName, lang, streamerConfig[(eventName,lang)]['keywords'], errorQueue)
             streamerConfig[(eventName, lang)]['process'].start()
-            print "Restarted ", eventName, " ", lang
+            print " ".join(["Restarted", eventName,lang, "at" , readable_time()])
+        time.sleep(5)
 
 
 

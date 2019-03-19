@@ -14,6 +14,8 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
+from utils.helper_utils import readable_time
+
 class MasterProcess(multiprocessing.Process):
     """A Class for a process for a multiprocessing application.
 
@@ -70,14 +72,15 @@ class MasterProcess(multiprocessing.Process):
         """
         # TODO change print to logging; use logging function/API
         try:
-            print "entered" + " " + self.physical_event + " "+ self.lang
+            #print "entered" + " " + self.physical_event + " "+ self.lang
             #TODO have changed from json_array to self.keywords
             #json_array = config['keyws_twitter'][self.physical_event][self.lang]
             #print json_array
             self.stream.filter(track=self.keywords)
-            print "started running..."+ " "+self.physical_event+ " "+self.lang
+            print " ".join(["Running", self.physical_event,self.lang, "with PID", str(os.getpid()), "at", readable_time()])
+            pid = str(os.getpid())
         except Exception as e:
-            print "Crashed" + " "+ self.physical_event +" "+self.lang
+            print " ".join(["Crashed", self.physical_event,self.lang, "at", readable_time()])
             #TODO TODO TODO CHECK THIS
             self.errorQueue.put((self.physical_event, self.lang, e))
 

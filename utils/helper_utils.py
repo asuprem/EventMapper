@@ -1,4 +1,5 @@
-
+import time
+from datetime import datetime
 
 
 
@@ -19,6 +20,7 @@ def dict_equal(d1, d2):
 
 #setu up PID for recurrence checks
 def setup_pid(pid_name):
+    import os, sys
     #pid_name will be application name -- '/path/app.py'
     pid = str(os.getpid())
     pidFile = './logfiles/' + pid_name + '.pid'
@@ -27,4 +29,7 @@ def setup_pid(pid_name):
         print "pidfile already exists. exiting"
         sys.exit()
     file(pidFile,'w').write(pid)
+
+def readable_time():
+    return datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 

@@ -42,7 +42,7 @@ class KeyServer():
     def refresh_key(self,_key):
         if _key in self.keyserver:
             if self.keyserver[_key]["valid"]:
-                return (_key, self.keyserver[_key]["keys"])
+                return (_key, self.keyserver[_key]["key"])
             else:
                 self.keyserver[_key]["count"]-=1
                 self.verify()
