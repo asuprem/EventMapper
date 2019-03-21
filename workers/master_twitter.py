@@ -2,6 +2,7 @@
 import sys, time, pdb, os, json, codecs
 from datetime import datetime
 from copy import deepcopy
+from math import floor
 
 # Multiprocessing import
 import multiprocessing
@@ -40,11 +41,14 @@ if __name__ == '__main__':
             streamerConfig[eventLangTuple]['name'] = physicalEvent
             streamerConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
             streamerConfig[eventLangTuple]['lang'] = language
+            print " ".join(["Initialized",physicalEvent,language , "at", readable_time()])
             #keys is a tupe (keyStr, key)
             streamerConfig[eventLangTuple]['keys'] = keyServer.get_key()
+            print " ".join(["Retrieved keys for",physicalEvent,language , "at", readable_time(),"with key", streamerConfig[eventLangTuple]['keys'][0]])
             streamerConfig[eventLangTuple]['process'] = MasterProcess(configOriginal, physicalEvent, language, streamerConfig[eventLangTuple]['keywords'],streamerConfig[eventLangTuple]['keys'][1],errorQueue)
+            print " ".join(["Setu up complete for",physicalEvent,language , "at", readable_time()])
             streamerConfig[eventLangTuple]['process'].start()
-            print " ".join(["Deployed",physicalEvent,language , "at", readable_time()])
+            print " ".join(["Deployed",physicalEvent,language , "at", readable_time(),"with key", streamerConfig[eventLangTuple]['keys'][0]])
 
     timer = time.time()
     while True:
@@ -83,16 +87,18 @@ if __name__ == '__main__':
             else:
                 print "No changes have been made to Multiprocessing config file"
 
-        print " ".join(["Checking crashes at", readable_time()])
+        if int(floor (time.time() % 120)) < 2:
+            print " ".join(["Checking crashes at", readable_time()])
         while not errorQueue.empty():
             
             eventName, lang, error_ = errorQueue.get()
-            print " ".join([eventName,lang, "crashed with error", error_, "at", readable_time()])
+            print " ".join([eventName,lang, "crashed with error "]), error_
+            print "        at ", readable_time()
             #TODO TODO TODO have a try catch in case terminate causes problem
             streamerConfig[(eventName, lang)]['process'].terminate()
             print " ".join(["Terminating", eventName,lang, "at" , readable_time()])
             streamerConfig[(eventName, lang)]['keys'] = keyServer.refresh_key(streamerConfig[(eventName, lang)]['keys'][0])
-            streamerConfig[(eventName, lang)]['process'] = MasterProcess(configOriginal, eventName, lang, streamerConfig[(eventName,lang)]['keywords'], errorQueue)
+            streamerConfig[(eventName, lang)]['process'] = MasterProcess(configOriginal, eventName, lang, streamerConfig[(eventName,lang)]['keywords'], streamerConfig[(eventName,lang)]['keys'][1], errorQueue)
             streamerConfig[(eventName, lang)]['process'].start()
             print " ".join(["Restarted", eventName,lang, "at" , readable_time()])
         time.sleep(5)

@@ -1,3 +1,4 @@
 *.pyc
 downloads/*
 goof/*
+logfiles/*

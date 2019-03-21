@@ -80,7 +80,10 @@ class MasterProcess(multiprocessing.Process):
             print " ".join(["Running", self.physical_event,self.lang, "with PID", str(os.getpid()), "at", readable_time()])
             pid = str(os.getpid())
         except Exception as e:
+            print '------------'
             print " ".join(["Crashed", self.physical_event,self.lang, "at", readable_time()])
+            print e
+            print '------------'
             #TODO TODO TODO CHECK THIS
             self.errorQueue.put((self.physical_event, self.lang, e))
 
