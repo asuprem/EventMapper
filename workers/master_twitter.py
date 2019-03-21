@@ -24,6 +24,7 @@ if __name__ == '__main__':
 
     '''Error queue - This is the queue for errors; Each time process crashes, it will inform this queue'''
     errorQueue = multiprocessing.Queue()
+    messageQueue = multiprocessing.Queue()
     '''streamerConfig - streamerConfig'''
     streamerConfig = {}
     '''keyServer - determines which keys are assigned'''
@@ -46,7 +47,7 @@ if __name__ == '__main__':
             keywords += streamerConfig[eventLangTuple]['keywords']
 
     
-    tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue)
+    tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
     tweetStreamer.start()
     print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
     configCheckTimer = time.time()
@@ -98,7 +99,7 @@ if __name__ == '__main__':
                     tweetStreamer.terminate()
                 except:
                     pass
-                tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue)
+                tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
                 tweetStreamer.start()
                 print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
             else:
@@ -117,11 +118,13 @@ if __name__ == '__main__':
                 tweetStreamer.terminate()
             except:
                 pass
-            tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue)
+            tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
             tweetStreamer.start()
     
             print " ".join(["Restarted", _type, "at" , readable_time()])
-        time.sleep(5)
+        while not messageQueue.empty():
+            print messageQueue.get()
+        #time.sleep(5)
 
 
 

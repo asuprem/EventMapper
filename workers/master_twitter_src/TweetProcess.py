@@ -26,7 +26,7 @@ class TweetProcess(multiprocessing.Process):
 
     """
 
-    def __init__(self, keywords, apiKeys, errorQueue):
+    def __init__(self, keywords, apiKeys, errorQueue, messageQueue):
         #Initializes this class as a child of Multiprocessing.Process
         multiprocessing.Process.__init__(self)
 
@@ -42,6 +42,7 @@ class TweetProcess(multiprocessing.Process):
         self.timer = time.time()
         self.keywords = keywords
         self.errorQueue = errorQueue
+        self.messageQueue = messageQueue
 
 
         """ The next four are API keys.
@@ -73,13 +74,10 @@ class TweetProcess(multiprocessing.Process):
             #json_array = config['keyws_twitter'][self.physical_event][self.lang]
             #print json_array
             self.stream.filter(track=self.keywords)
-            print " ".join(["Running unstructured streamer", "with PID", str(os.getpid()), "at", readable_time()])
+            self.messageQueue.put(" ".join(["Running unstructured streamer", "with PID", str(os.getpid()), "at", readable_time()]))
             pid = str(os.getpid())
         except Exception as e:
-            print '------------'
-            print " ".join(["Crashed unstructured stream", "at", readable_time()])
-            print e
-            print '------------'
+            self.messageQueue.put(" ".join(["Crashed unstructured stream", "at", readable_time(), "with error", str(e)]))
             #TODO TODO TODO CHECK THIS
             self.errorQueue.put(('unstructured', e))
 
