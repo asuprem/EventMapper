@@ -44,16 +44,7 @@ if __name__ == '__main__':
             streamerConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
             streamerConfig[eventLangTuple]['lang'] = language
             keywords += streamerConfig[eventLangTuple]['keywords']
-            #print " ".join(["Initialized",physicalEvent,language , "at", readable_time()])
-            #keys is a tupe (keyStr, key)
-            '''
-            streamerConfig[eventLangTuple]['keys'] = keyServer.get_key()
-            print " ".join(["Retrieved keys for",physicalEvent,language , "at", readable_time(),"with key", streamerConfig[eventLangTuple]['keys'][0]])
-            streamerConfig[eventLangTuple]['process'] = MasterProcess(configOriginal, physicalEvent, language, streamerConfig[eventLangTuple]['keywords'],streamerConfig[eventLangTuple]['keys'][1],errorQueue)
-            print " ".join(["Setu up complete for",physicalEvent,language , "at", readable_time()])
-            streamerConfig[eventLangTuple]['process'].start()
-            print " ".join(["Deployed",physicalEvent,language , "at", readable_time(),"with key", streamerConfig[eventLangTuple]['keys'][0]])
-            '''
+
     
     tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue)
     tweetStreamer.start()
@@ -113,37 +104,6 @@ if __name__ == '__main__':
             else:
                 print "No changes have been made to Multiprocessing config file"
                 
-            #Then we iterate through local and for each NOT in, we remove
-
-
-            '''
-            for 
-                print "Changes have been made to Multiprocessing config file"
-                configDifference = {i: configReload[i] for i in set(configReload) - set(configOriginal)}
-                #print (configDifference)
-                deltaPhysicalEvents = configDifference['keyws_twitter'].keys()
-                for deltaEvent in deltaPhysicalEvents:
-                    for language in configReload['keyws_twitter'][deltaEvent]:
-                        deltaEventLangTuple = (deltaEvent,language)
-                        print " ".join(["Updating", deltaEvent,language, "at", readable_time()])
-                        streamerConfig[deltaEventLangTuple] = {}
-                        streamerConfig[deltaEventLangTuple]['name'] = deltaEvent
-                        streamerConfig[deltaEventLangTuple]['keywords'] = configReload['keyws_twitter'][deltaEvent][language]
-                        streamerConfig[deltaEventLangTuple]['lang'] = language
-                        streamerConfig[deltaEventLangTuple]['keys'] = keyServer.refresh_key(streamerConfig[deltaEventLangTuple]['keys'][0])
-                        streamerConfig[deltaEventLangTuple]['process'].terminate()
-                        streamerConfig[deltaEventLangTuple]['process'] = MasterProcess(configReload, deltaEvent, language,
-                                                                              streamerConfig[deltaEventLangTuple]['keywords'],streamerConfig[deltaEventLangTuple]['keys'][1], errorQueue)
-                        streamerConfig[deltaEventLangTuple]['process'].start()
-                        print " ".join(["Completed update of", deltaEvent,language, "at", readable_time()])
-
-                #TODO optimize this
-                configOriginal = deepcopy(configReload)
-
-                print " ".join(["Finished with Configuration update at", readable_time()])
-            else:
-                print "No changes have been made to Multiprocessing config file"
-            '''
 
         if int(floor (time.time() % 120)) < 2:
             print " ".join(["Checking crashes at", readable_time()])
@@ -152,14 +112,6 @@ if __name__ == '__main__':
             _type, _error = errorQueue.get()
             print " ".join([_type, "crashed with error "]), error_
             print "        at ", readable_time()
-            #TODO TODO TODO have a try catch in case terminate causes problem
-            '''
-            streamerConfig[(eventName, lang)]['process'].terminate()
-            print " ".join(["Terminating", eventName,lang, "at" , readable_time()])
-            streamerConfig[(eventName, lang)]['keys'] = keyServer.refresh_key(streamerConfig[(eventName, lang)]['keys'][0])
-            streamerConfig[(eventName, lang)]['process'] = MasterProcess(configOriginal, eventName, lang, streamerConfig[(eventName,lang)]['keywords'], streamerConfig[(eventName,lang)]['keys'][1], errorQueue)
-            streamerConfig[(eventName, lang)]['process'].start()
-            '''
             APIKeys = keyServer.refresh_key(APIKeys[0])
             try:
                 tweetStreamer.terminate()
