@@ -1,6 +1,6 @@
-*.pyc
+**.pyc
 downloads/*
 goof/*
 logfiles/*
-**/config.json
+**config.json
 **/multiprocess.json
