@@ -110,7 +110,7 @@ class MasterProcess(multiprocessing.Process):
             """
             self.TIMER = 60
             self.local_time = time.time()
-            self.date = datetime.utcnow()
+            self.date = datetime.now()
             self.physical_event = physical_event
             self.lang = lang
             self.PREPEND = './downloads/'
