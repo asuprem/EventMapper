@@ -11,7 +11,7 @@ parser.add_argument("--env",
                     help="Environment to setup")
 
 argums = vars(parser.parse_args())
-config = load_config()
+config = load_config('config.json')
 
 if argums['env'] == 'dirs':
     import os
