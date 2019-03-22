@@ -2,5 +2,5 @@
 downloads/*
 goof/*
 logfiles/*
-config.json
-config/multiprocess.json
+**/config.json
+**/multiprocess.json
