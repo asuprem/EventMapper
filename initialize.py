@@ -2,7 +2,8 @@
 import pdb
 import argparse
 import glob
-import utils
+from utils import db_utils
+from utils.file_utils import load_config
 
 parser = argparse.ArgumentParser(description="Initialize sets up various parts of LITMUS")
 parser.add_argument("--env",
@@ -10,7 +11,7 @@ parser.add_argument("--env",
                     help="Environment to setup")
 
 argums = vars(parser.parse_args())
-config = utils.load_config()
+config = load_config()
 
 if argums['env'] == 'dirs':
     import os
@@ -21,8 +22,8 @@ if argums['env'] == 'dirs':
 
 if argums['env'] == 'mysql':
     #set up mysql stuff (news and everything)
-    db_conn = utils.get_db_connection(config)
+    db_conn = db_utils.get_db_connection(config)
     for file_ in glob.glob('initialization/mysql/*.SQL'):
-        utils.run_sql_file(file_,db_conn)
+        db_utils.run_sql_file(file_,db_conn)
         db_conn.close()
         
