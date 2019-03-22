@@ -84,31 +84,26 @@
         }
     },
     "keyws_twitter": {
-            "landslide": {
-            "en": ["landslide", "mudslide", "rockslide", "mud slide"],
-            "pt": ["deslizamento", "desmoronamento", "desabamento"]
+        "landslide": {
+            "en": ["landslide", "mudslide", "landslides", "mudslides", "rockslide", "rockslides", "rockfall", "landslip", "flooding"],
+            "pt": ["deslizamento", "desmoronamento", "desabamento"],
+            "ja": ["土砂崩れ", "山崩れ", "土石流", "地滑り"],
+            "zh": ["滑坡", "塌方", "泥石流", "坍塌"],
+            "hi": ["भूस्खलन"],
+            "ru": ["сель", "селевой", "селевые", "селевого", "селевых", "оползень", "оползня", "оползнем", "оползни", "оползневый", "оползневые", "оползней"],
+            "it": ["frana", "fango"]
         },
-        "flood": {
-            "en": ["flooding", "heavy rain", "torrential"]
+        "flooding": {
+            "en": ["flood", "flooded", "saltation", "heavy rain", "flooding", "torrential rain"]
         },
-        "halo": {
-            "en": ["halo", "microsoft", "masterchief"]
+        "wildfire": {
+            "en": ["wildfires", "brushfire", "wildfires", "bushfires", "wild fire", "wild fires"]
         },
-        "software": {
-            "en": ["windows", "apple", "linux"]
+        "algae": {
+            "en": ["algal blooms", "harmful algal", "red tide algal", "algae"]
         },
-        "chicken": {
-            "en": ["chicken", "mutton", "pork","lamb","biryani","daal"]
-        },
-        "bioware2": {
-            "en": ["bioware", "anthem"]
-        },
-        "bioware3": {
-            "en": ["bioware", "anthem"]
-        },
-        "bioware4": {
-            "en": ["bioware", "anthem"]
+        "earthquake": {
+            "en": ["earthquake", "earthquakes", "richter", "seismic", "seismograph", "epicenter"]
         }
-        
     }
 }
