@@ -17,7 +17,7 @@ Start the mysql server with
 Access the mysql server with 
 
     > mysql -h 127.0.0.1 -P 3306 -u grait-dm -p
-    > Lr1eUDc(f4Hi
+    > 
 
 The format is:
 
