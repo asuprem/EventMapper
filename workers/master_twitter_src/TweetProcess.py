@@ -79,7 +79,7 @@ class TweetProcess(multiprocessing.Process):
         except Exception as e:
             self.messageQueue.put(" ".join(["Crashed unstructured stream", "at", readable_time(), "with error", str(e)]))
             #TODO TODO TODO CHECK THIS
-            self.errorQueue.put(('unstructured', e))
+            self.errorQueue.put(('unstructured', str(e)))
 
 
 

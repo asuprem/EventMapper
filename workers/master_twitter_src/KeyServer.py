@@ -16,14 +16,18 @@ class KeyServer():
     #Compare to config and update keyserver
     def update(self,config):
         for _key in config["APIKeys"]["keys"]:
-            #Invalidate key if it no longer exists
+            #new key in config that isn't in keyserver
             if _key not in self.keyserver:
-                self.invalidate(_key)
+                self.keyserver[_key] = {}
+                self.keyserver[_key]["key"] =  config["APIKeys"]["keys"][_key]
+                self.keyserver[_key]["count"] = 0
+                self.keyserver[_key]["valid"] = True
+                self.keyserver[_key]["MAX"] = 10
             else:
-                #if key exists but info has changed
+                #if key exists in keyserver - check if info has changed
                 #TODO generic
-                if self.keyserver[_key] != config["APIKeys"]["keys"]:
-                    self.keyserver[_key] = config["APIKeys"]["keys"]
+                if self.keyserver[_key]["key"] != config["APIKeys"]["keys"][_key]:
+                    self.keyserver[_key]["key"] = config["APIKeys"]["keys"][_key]
         #Now all keys in config have been validated. So any key in keyserver that is not in keyserver is a deleted key
         #We invalidate it
         for _key in self.keyserver:

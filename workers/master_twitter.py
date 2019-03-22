@@ -51,6 +51,8 @@ if __name__ == '__main__':
     tweetStreamer.start()
     print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
     configCheckTimer = time.time()
+    crashCheckInfoDump = False
+    crashCheckInfoDumpTimer = time.time()
     while True:
         if time.time() - configCheckTimer > CONFIG_TIME_CHECK:
 
@@ -74,6 +76,17 @@ if __name__ == '__main__':
                             print "Changes have been made to Multiprocessing config file"
                             configChangeFlag = True
                         print "New event-language pair added: ", str(eventLangTuple)
+                        print "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+                    else:
+                        if streamerConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
+                            if not configChangeFlag:
+                                print "Changes have been made to Multiprocessing config file"
+                                configChangeFlag = True
+                            print "Keyword changes made to event-language pair: ", str(eventLangTuple)
+                            print "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+                            streamerConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                            print "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+
             deleteEventLangTuples = []
             for eventLangTuple in streamerConfig:
                 if eventLangTuple[0] not in configReload['keyws_twitter'].keys():
@@ -99,6 +112,7 @@ if __name__ == '__main__':
                     tweetStreamer.terminate()
                 except:
                     pass
+                APIKeys = keyServer.refresh_key(APIKeys[0])
                 tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
                 tweetStreamer.start()
                 print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
@@ -106,12 +120,15 @@ if __name__ == '__main__':
                 print "No changes have been made to Multiprocessing config file"
                 
 
-        if int(floor (time.time() % 120)) < 2:
-            print " ".join(["Checking crashes at", readable_time()])
+        if int(floor (time.time() % 120)) == 1 and not crashCheckInfoDump:
+            print " ".join(["No crashes at", readable_time()])
+            crashCheckInfoDump = True
+        if int(floor (time.time() % 120)) == 5 and crashCheckInfoDump:
+            crashCheckInfoDump = False
         while not errorQueue.empty():
             
             _type, _error = errorQueue.get()
-            print " ".join([_type, "crashed with error "]), error_
+            print " ".join([_type, "crashed with error "]), _error
             print "        at ", readable_time()
             APIKeys = keyServer.refresh_key(APIKeys[0])
             try:
