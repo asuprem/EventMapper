@@ -120,10 +120,10 @@ if __name__ == '__main__':
                 print "No changes have been made to Multiprocessing config file"
                 
 
-        if int(floor (time.time() % 120)) == 1 and not crashCheckInfoDump:
+        if int(floor (time.time() % 600)) == 1 and not crashCheckInfoDump:
             print " ".join(["No crashes at", readable_time()])
             crashCheckInfoDump = True
-        if int(floor (time.time() % 120)) == 5 and crashCheckInfoDump:
+        if int(floor (time.time() % 600)) == 5 and crashCheckInfoDump:
             crashCheckInfoDump = False
         while not errorQueue.empty():
             
