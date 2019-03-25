@@ -14,7 +14,13 @@ from utils.file_utils import load_config
 from utils.helper_utils import dict_equal, setup_pid, readable_time
 
 CONFIG_PATH = 'config/multiprocess.json'
+#CHECK IF CONFIG FILE HAS CHANGED
 CONFIG_TIME_CHECK = 60*2
+#CHECK IF FILES ARE BEING CREATED
+FILE_TIME_CHECK = 60*60
+FIRST_FILE_CHECK = True
+#CHECK IF CRASHED
+CRASH_TIME_CHECK = 60*10
 
 if __name__ == '__main__':
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
@@ -51,7 +57,7 @@ if __name__ == '__main__':
     tweetStreamer.start()
     print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
     configCheckTimer = time.time()
-    crashCheckInfoDump = False
+    fileCheckTimer = time.time()
     crashCheckInfoDumpTimer = time.time()
     while True:
         if time.time() - configCheckTimer > CONFIG_TIME_CHECK:
@@ -118,13 +124,38 @@ if __name__ == '__main__':
                 print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
             else:
                 print "No changes have been made to Multiprocessing config file"
-                
 
-        if int(floor (time.time() % 600)) == 1 and not crashCheckInfoDump:
+        #Crash checks        
+        if time.time() - crashCheckInfoDumpTimer > CRASH_TIME_CHECK:
+            crashCheckInfoDumpTimer = time.time()
             print " ".join(["No crashes at", readable_time()])
-            crashCheckInfoDump = True
-        if int(floor (time.time() % 600)) == 5 and crashCheckInfoDump:
-            crashCheckInfoDump = False
+
+
+        #File write checks
+        if time.time() - fileCheckTimer > FILE_TIME_CHECK:
+            fileCheckTimer = time.time()
+
+            nowTime = datetime.now()
+            pathPrepend = './downloads/'
+            pathDir = os.path.join(pathPrepend + '%s_%s_%s' % ('tweets', 'unstructured', nowTime.year), '%02d' % nowTime.month,
+                                    '%02d' % nowTime.day, '%02d' % (nowTime.hour-1))
+            if not os.path.exists(pathDir):
+                if not FIRST_FILE_CHECK:
+                    #Restart
+                    print " ".join(["Unstructured downloader no longer creating files at",readable_time()])
+                    APIKeys = keyServer.refresh_key(APIKeys[0])
+                    try:
+                        tweetStreamer.terminate()
+                    except:
+                        pass
+                    tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
+                    tweetStreamer.start()
+                else:
+                    #wait for next check
+                    print " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."])
+
+       
+
         while not errorQueue.empty():
             
             _type, _error = errorQueue.get()
