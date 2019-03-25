@@ -152,6 +152,8 @@ if __name__ == '__main__':
                 else:
                     #wait for next check
                     std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
+            else:
+                std_flush( " ".join(["File creation functioning normally at",readable_time()]))
 
        
 

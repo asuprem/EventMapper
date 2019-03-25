@@ -1,11 +1,12 @@
 #!/bin/sh
-cd "/mnt/d/OneDrive - Georgia Institute of Technology/Projects/gatech/LITMUS/aibek/Final/LITMUS"
+cd /expansion2/LITMUS/
 if ps up `cat ./logfiles/master_twitter.pid ` > /dev/null
 then
-   echo "Already is running" >> ./logfiles/download_twitter_sh.out
-   # Do something knowing the pid exists, i.e. the process with $PID is running
+    printf "master_twitter.py is aleady running\n" >> ./logfiles/download_twitter_sh.out
 else
-   rm  ./logfiles/master_twitter.pid >> ./logfiles/download_twitter_sh.out
-   echo "uh oh. not running started running" >> ./logfiles/download_twitter_sh.out
-   nohup python workers/master_twitter.py >> ./logfiles/streamers.log &
+    printf "master_twitter is no longer running.\n    Deleting PID file.\n" >> ./logfiles/download_twitter_sh.out
+    rm  ./logfiles/master_twitter.pid >> ./logfiles/download_twitter_sh.out
+    printf "    Deleted file\n" >> ./logfiles/download_twitter_sh.out
+    printf "Starting master_twitter.py\n" >> ./logfiles/download_twitter_sh.out
+    nohup ./venv/bin/python workers/master_twitter.py >> ./logfiles/streamers.log 2>&1 &
 fi
