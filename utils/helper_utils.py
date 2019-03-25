@@ -1,6 +1,6 @@
 import time
 from datetime import datetime
-
+import sys
 
 
 # Checks if two dictionaries are equal
@@ -33,3 +33,6 @@ def setup_pid(pid_name):
 def readable_time():
     return datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
+def std_flush(*args,**kwargs):
+    print(" ".join(map(str,args)))
+    sys.stdout.flush()

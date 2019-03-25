@@ -11,7 +11,7 @@ from master_twitter_src.KeyServer import KeyServer
 
 # Utils import
 from utils.file_utils import load_config
-from utils.helper_utils import dict_equal, setup_pid, readable_time
+from utils.helper_utils import dict_equal, setup_pid, readable_time, std_flush
 
 CONFIG_PATH = 'config/multiprocess.json'
 #CHECK IF CONFIG FILE HAS CHANGED
@@ -45,7 +45,6 @@ if __name__ == '__main__':
             
             
             eventLangTuple = (physicalEvent,language)
-            #print " ".join(["Deploying", physicalEvent,language, "at", readable_time()])
             streamerConfig[eventLangTuple] = {}
             streamerConfig[eventLangTuple]['name'] = physicalEvent
             streamerConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
@@ -55,7 +54,7 @@ if __name__ == '__main__':
     
     tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
     tweetStreamer.start()
-    print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
+    std_flush(" ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]]))
     configCheckTimer = time.time()
     fileCheckTimer = time.time()
     crashCheckInfoDumpTimer = time.time()
@@ -63,7 +62,7 @@ if __name__ == '__main__':
         if time.time() - configCheckTimer > CONFIG_TIME_CHECK:
 
             configCheckTimer = time.time()
-            print " ".join(["Checking configuration at", readable_time()])
+            std_flush( " ".join(["Checking configuration at", readable_time()]))
             configReload = load_config(CONFIG_PATH)
             
             configChangeFlag = False
@@ -79,19 +78,19 @@ if __name__ == '__main__':
                         streamerConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
                         streamerConfig[eventLangTuple]['lang'] = language
                         if not configChangeFlag:
-                            print "Changes have been made to Multiprocessing config file"
+                            std_flush( "Changes have been made to Multiprocessing config file")
                             configChangeFlag = True
-                        print "New event-language pair added: ", str(eventLangTuple)
-                        print "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+                        std_flush( "New event-language pair added: ", str(eventLangTuple))
+                        std_flush( "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                     else:
                         if streamerConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
                             if not configChangeFlag:
-                                print "Changes have been made to Multiprocessing config file"
+                                std_flush( "Changes have been made to Multiprocessing config file")
                                 configChangeFlag = True
-                            print "Keyword changes made to event-language pair: ", str(eventLangTuple)
-                            print "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+                            std_flush( "Keyword changes made to event-language pair: ", str(eventLangTuple))
+                            std_flush( "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                             streamerConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
-                            print "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords'])
+                            std_flush( "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
 
             deleteEventLangTuples = []
             for eventLangTuple in streamerConfig:
@@ -105,9 +104,9 @@ if __name__ == '__main__':
             for eventLangTuple in deleteEventLangTuples:
                 del streamerConfig[eventLangTuple]
                 if not configChangeFlag:
-                    print "Changes have been made to Multiprocessing config file"
+                    std_flush( "Changes have been made to Multiprocessing config file")
                     configChangeFlag = True
-                print "Deleted event-language pair: ", str(eventLangTuple)
+                std_flush( "Deleted event-language pair: ", str(eventLangTuple))
 
             if configChangeFlag:
                 keywords = []
@@ -121,14 +120,14 @@ if __name__ == '__main__':
                 APIKeys = keyServer.refresh_key(APIKeys[0])
                 tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
                 tweetStreamer.start()
-                print " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]])
+                std_flush( " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]]))
             else:
-                print "No changes have been made to Multiprocessing config file"
+                std_flush( "No changes have been made to Multiprocessing config file")
 
         #Crash checks        
         if time.time() - crashCheckInfoDumpTimer > CRASH_TIME_CHECK:
             crashCheckInfoDumpTimer = time.time()
-            print " ".join(["No crashes at", readable_time()])
+            std_flush( " ".join(["No crashes at", readable_time()]))
 
 
         #File write checks
@@ -142,7 +141,7 @@ if __name__ == '__main__':
             if not os.path.exists(pathDir):
                 if not FIRST_FILE_CHECK:
                     #Restart
-                    print " ".join(["Unstructured downloader no longer creating files at",readable_time()])
+                    std_flush( " ".join(["Unstructured downloader no longer creating files at",readable_time()]))
                     APIKeys = keyServer.refresh_key(APIKeys[0])
                     try:
                         tweetStreamer.terminate()
@@ -152,15 +151,15 @@ if __name__ == '__main__':
                     tweetStreamer.start()
                 else:
                     #wait for next check
-                    print " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."])
+                    std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
 
        
 
         while not errorQueue.empty():
             
             _type, _error = errorQueue.get()
-            print " ".join([_type, "crashed with error "]), _error
-            print "        at ", readable_time()
+            std_flush( " ".join([_type, "crashed with error "]), _error)
+            std_flush( "        at ", readable_time())
             APIKeys = keyServer.refresh_key(APIKeys[0])
             try:
                 tweetStreamer.terminate()
@@ -169,9 +168,9 @@ if __name__ == '__main__':
             tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
             tweetStreamer.start()
     
-            print " ".join(["Restarted", _type, "at" , readable_time()])
+            std_flush( " ".join(["Restarted", _type, "at" , readable_time()]))
         while not messageQueue.empty():
-            print messageQueue.get()
+            std_flush( messageQueue.get())
         #time.sleep(5)
 
 
