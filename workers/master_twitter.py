@@ -17,7 +17,7 @@ CONFIG_PATH = 'config/multiprocess.json'
 #CHECK IF CONFIG FILE HAS CHANGED
 CONFIG_TIME_CHECK = 60*2
 #CHECK IF FILES ARE BEING CREATED
-FILE_TIME_CHECK = 60*60
+FILE_TIME_CHECK = 60*15
 FIRST_FILE_CHECK = True
 #CHECK IF CRASHED
 CRASH_TIME_CHECK = 60*10
@@ -133,14 +133,29 @@ if __name__ == '__main__':
         #File write checks
         if time.time() - fileCheckTimer > FILE_TIME_CHECK:
             fileCheckTimer = time.time()
-
-            nowTime = datetime.now()
+            fileCheckCounter = 0
+            
             pathPrepend = './downloads/'
+            #we check last three files
+            nowTime = datetime.now()
+            if nowTime.minute < 4:
+                #easiest error avoidance for backstop
+                continue
+            #range of minute files to check
+            nowTimeMinute = [nowTime.minute - item for item in range(1,4)]
             pathDir = os.path.join(pathPrepend + '%s_%s_%s' % ('tweets', 'unstructured', nowTime.year), '%02d' % nowTime.month,
-                                    '%02d' % nowTime.day, '%02d' % (nowTime.hour-1))
-            if not os.path.exists(pathDir):
-                if not FIRST_FILE_CHECK:
-                    #Restart
+                                    '%02d' % nowTime.day, '%02d' % (nowTime.hour))
+            for _minute in nowTimeMinute:
+                fileName = os.path.join(pathDir, '%02d.json' % _minute)
+                if not os.path.exists(fileName):
+                    fileCheckCounter+=1
+            if FIRST_FILE_CHECK:
+                #wait for next check
+                std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
+                FIRST_FILE_CHECK = False
+            else:
+                #Restart
+                if fileCheckCounter == 3:
                     std_flush( " ".join(["Unstructured downloader no longer creating files at",readable_time()]))
                     APIKeys = keyServer.refresh_key(APIKeys[0])
                     try:
@@ -149,14 +164,12 @@ if __name__ == '__main__':
                         pass
                     tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
                     tweetStreamer.start()
+                    std_flush( " ".join(["Restarted unstructured streamer at" , readable_time()]))
                 else:
-                    #wait for next check
-                    std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
-            else:
-                std_flush( " ".join(["File creation functioning normally at",readable_time()]))
+                    std_flush( " ".join(["Unstructured downloader is creating files normally at",readable_time()]))
+            
 
-       
-
+                    
         while not errorQueue.empty():
             
             _type, _error = errorQueue.get()
