@@ -35,14 +35,16 @@ ASSED goes through the following steps, detailed for each process.
 
 A process's configuration is stored as a JSON file. A process can have multiple export keys if it has several sub-applications that do things
 
-    {
-        "NAME": [Process name],
-        "TYPE": [Scheduled | Continuous],
-        "SCHEDULE": [SECOND-based DELAY]
-        "EXPORT-KEY(s)": ["KEY1","KEY2",...,],
-        "IMPORT-KEY(s)": ["KEY1","KEY2","KEY3",...],
-        "EXECUTE":["python", "envName"],
-    }
+```json
+{
+    "NAME": [Process name],
+    "TYPE": [Scheduled | Continuous],
+    "SCHEDULE": [SECOND-based DELAY]
+    "EXPORT-KEY(s)": ["KEY1","KEY2",...,],
+    "IMPORT-KEY(s)": ["KEY1","KEY2","KEY3",...],
+    "EXECUTE":["python", "envName"],
+}
+```
 
 ## a. Social Sensor Streamers: 
 
@@ -89,11 +91,13 @@ Types of metadata - geographic location, time of post, post credibility,
     - config file contains list of metadata extractors?
     - Each metadata extractor config contains:
 
-            {"NAME": Name of extractor
-             "APPLICATION":path to application
-             "EXEC": How to execute application (for now, basic - env in python)
-             "IMPORT-KEY" - social streamer import (wildcard...)
-             "EXPORT-KEY" - for output (focus on single meta extractor for now)}
+        ```json
+        {"NAME": Name of extractor
+         "APPLICATION":path to application
+         "EXEC": How to execute application (for now, basic - env in python)
+         "IMPORT-KEY" : social streamer import (wildcard...)
+         "EXPORT-KEY" : for output (focus on single meta extractor for now)}
+        ```
     - Execute metadata-extractor code
         - This further requires M_STORE
         - For locs identified, publish to M_Store
@@ -148,7 +152,7 @@ This is another important part of ASSED. MLEP performs filter generation, filter
         - UpdateFilterCopy()
 
 4. Manage these processes
-    
+   
 
 
 
