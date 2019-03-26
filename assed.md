@@ -127,23 +127,28 @@ This is an important part of ASSED. Combines info from HCEP and SSEP. This label
 
 This is another important part of ASSED. MLEP performs filter generation, filter updates, and filtering.
 
-1. Launch MLEP process
+1. Launch MLEP Classifier Process
     - Get Unlabeled, Labeled from HDI 
     - getTopKFilters(Unlabeled/Labeled)
     - classifyUnlabeled(Unlabaled, [topK], "weighting")
         - Unweighted, weighted, model-weighted
         - driftDetectUpdate([topK])
+2. Launch ScheduledGeneratorUpdate Process
     - scheduledFilterGenerate()
         - requestData(time)
         - createFilter()
     - scheduledFilterUpdate()
         - requestData(time)
         - data.forEach(getFilters(_topK) -> _topK.forEach(updateWithData(data)))
-    - DriftFilterUpdate(topK)
-        - requestData(sinceLastDriftUpdate)
-        - 
-    - updateFilters(Labeled)
-    - 
+3. Launch DriftGenerateUpdate Process
+    - FindFiltersThatHaveTooMuchDrift()
+    - ForEachFilter -->
+        - GetDataSinceLastUpdateThatWasMappedToThatFilter()
+        - CopyFilter()
+        - UpdateFilterCopy()
+
+4. Manage these processes
+    
 
 
 
