@@ -111,7 +111,6 @@ if __name__ == "__main__":
                     configChangeFlag = True
                 std_flush( "Deleted event-language pair: ", str(eventLangTuple))
             # TODO CHECK IF THIS IS WORKING
-            print configChangeSet
             for eventLangTupleStatus in configChangeSet:
                 eventLangTuple = eventLangTupleStatus[0]
                 #TODO Relaunch
