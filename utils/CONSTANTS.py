@@ -1,7 +1,7 @@
 
 GENERAL_CONFIG_PATH = 'config/multiprocess.json'
 #TOPIC_CONFIG_PATH = 'config/topics.json'
-TOPIC_CONFIG_PATH = 'config/debugtopics.json'
+TOPIC_CONFIG_PATH = 'config/topics.json'
 CONFIG_PATH = 'config/multiprocess.json'
 
 

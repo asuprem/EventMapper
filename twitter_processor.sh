@@ -9,6 +9,6 @@ else
     rm  ./logfiles/streamCollector.pid >> ./logfiles/twitterProcessor_sh.out
     printf "    Deleted file\n" >> ./logfiles/twitterProcessor_sh.out
     printf "Starting streamCollector.py\n" >> ./logfiles/twitterProcessor_sh.out
-    #nohup ./venv/bin/python workers/streamCollector.py >> ./logfiles/streamers.log 2>&1 &
+    #nohup ./venv/bin/python workers/streamCollector.py >> ./logfiles/streamerProcessor.log 2>&1 &
     nohup python workers/streamCollector.py >> ./logfiles/streamerProcessor.log 2>&1 &
 fi
