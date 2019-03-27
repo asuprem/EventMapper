@@ -9,6 +9,7 @@ from utils.file_utils import load_config
 from utils.helper_utils import setup_pid, readable_time, std_flush
 from utils.CONSTANTS import *
 
+from stream_collector_src.StreamFilesProcessor import StreamFilesProcessor
 
 
 if __name__ == "__main__":
@@ -23,16 +24,24 @@ if __name__ == "__main__":
     messageQueue = multiprocessing.Queue()
 
     keyStreamConfig = {}
-    # for each keyword-lang pair type, launch a streamKeyProcessor
+    # for each keyword-lang pair type, launch a StreamFilesProcessor
     for physicalEvent in keywordConfig['keyws_twitter'].keys():
         for language in keywordConfig['keyws_twitter'][physicalEvent]:
             eventLangTuple = (physicalEvent,language)
             keyStreamConfig[eventLangTuple] = {}
-            keywordConfig[eventLangTuple]['name'] = physicalEvent
-            keywordConfig[eventLangTuple]['lang'] = language
-            keywordConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
+            keyStreamConfig[eventLangTuple]['name'] = physicalEvent
+            keyStreamConfig[eventLangTuple]['lang'] = language
+            keyStreamConfig[eventLangTuple]['keywords'] = keywordConfig['keyws_twitter'][physicalEvent][language]
+            std_flush(" ".join(["Deploying",str(eventLangTuple), "at", readable_time()]))
+            keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+                                                                                keyStreamConfig[eventLangTuple]['keywords'], 
+                                                                                "_".join([physicalEvent,language]), 
+                                                                                errorQueue,
+                                                                                messageQueue, 
+                                                                                SOCIAL_STREAMER_FILE_CHECK_COUNT )
+            #TODO launch the File Processor
+            keyStreamConfig[eventLangTuple]['processor'].start()
 
-    #TODO launch the keywordConfig streamer
     configCheckTimer = time.time()
 
     while True:
@@ -47,29 +56,30 @@ if __name__ == "__main__":
             for physicalEvent in configReload['keyws_twitter'].keys():
                 for language in configReload['keyws_twitter'][physicalEvent]:
                     eventLangTuple = (physicalEvent,language)
-                    if eventLangTuple not in keywordConfig:
+                    if eventLangTuple not in keyStreamConfig:
                         #new pair
-                        keywordConfig[eventLangTuple] = {}
-                        keywordConfig[eventLangTuple]['name'] = physicalEvent
-                        keywordConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
-                        keywordConfig[eventLangTuple]['lang'] = language
+                        
+                        keyStreamConfig[eventLangTuple] = {}
+                        keyStreamConfig[eventLangTuple]['name'] = physicalEvent
+                        keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                        keyStreamConfig[eventLangTuple]['lang'] = language
                         if not configChangeFlag:
                             std_flush( "Changes have been made to Multiprocessing config file")
                             configChangeFlag = True
                         std_flush( "New event-language pair added: ", str(eventLangTuple))
-                        std_flush( "   with keywords: ", str(keywordConfig[eventLangTuple]['keywords']))
+                        std_flush( "   with keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
                     else:
-                        if keywordConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
+                        if keyStreamConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
                             if not configChangeFlag:
                                 std_flush( "Changes have been made to Multiprocessing config file")
                                 configChangeFlag = True
                             std_flush( "Keyword changes made to event-language pair: ", str(eventLangTuple))
-                            std_flush( "    Old keywords: ", str(keywordConfig[eventLangTuple]['keywords']))
-                            keywordConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
-                            std_flush( "    New keywords: ", str(keywordConfig[eventLangTuple]['keywords']))
+                            std_flush( "    Old keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
+                            keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                            std_flush( "    New keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
 
             deleteEventLangTuples = []
-            for eventLangTuple in keywordConfig:
+            for eventLangTuple in keyStreamConfig:
                 if eventLangTuple[0] not in configReload['keyws_twitter'].keys():
                     #This event type has been deleted
                     deleteEventLangTuples.append(eventLangTuple)
@@ -78,7 +88,7 @@ if __name__ == "__main__":
                     if eventLangTuple[1] not in configReload['keyws_twitter'][eventLangTuple[0]]:
                         deleteEventLangTuples.append(eventLangTuple)
             for eventLangTuple in deleteEventLangTuples:
-                del keywordConfig[eventLangTuple]
+                del keyStreamConfig[eventLangTuple]
                 if not configChangeFlag:
                     std_flush( "Changes have been made to Multiprocessing config file")
                     configChangeFlag = True
@@ -86,12 +96,30 @@ if __name__ == "__main__":
 
             if configChangeFlag:
                 #TODO Relaunch
+                try:
+                    keyStreamConfig[eventLangTuple]['processor'].terminate()
+                except:
+                    pass
+                std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
+                std_flush(" ".join(["Redeploying",str(eventLangTuple), "at", readable_time()]))
+                keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+                                                                            keyStreamConfig[eventLangTuple]['keywords'], 
+                                                                            "_".join(physicalEvent,lang), 
+                                                                            errorQueue,
+                                                                            messageQueue, 
+                                                                            SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                keyStreamConfig[eventLangTuple]['processor'].start()
             else:
                 std_flush( "No changes have been made to Multiprocessing config file")
 
 
         while not errorQueue.empty():
             #TODO get error, time, restart
+            _rootName, _error = errorQueue.get()
+            std_flush(" ".join([_rootName, "crashed with error: ", str(_error)]))
+            assert(1==2)
+
+
             
 
         while not messageQueue.empty():

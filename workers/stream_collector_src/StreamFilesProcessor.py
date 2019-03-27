@@ -1,6 +1,6 @@
-import json, os, sys
+import json, os, sys, traceback
 import multiprocessing
-from utils.helper_utils import readable_time
+from utils.helper_utils import readable_time, std_flush
 from datetime import datetime, timedelta
 import time
 
@@ -18,17 +18,22 @@ StreamKeyProcessor, given a list of keywords, sorts files into its given folder 
 class StreamFilesProcessor(multiprocessing.Process):
     def __init__(self, startTime, keywords, rootName, errorQueue,messageQueue, SOCIAL_STREAMER_FILE_CHECK_COUNT):
         multiprocessing.Process.__init__(self)
+        
+        ''' Message queue for passing back errors and current times '''
+        self.errorQueue = errorQueue
+        self.messageQueue = messageQueue
 
         ''' set up relevant details '''
         self.keywords = keywords
         self.rootName = rootName
         self.DOWNLOAD_PREPEND = './downloads/'
         self.SOCIAL_STREAMER_FILE_CHECK_COUNT = SOCIAL_STREAMER_FILE_CHECK_COUNT
-
+        self.BACK_CHECK_FILES_DAYS = 10
         self.timeDelta = timedelta(seconds=60)
 
         ''' Set up the time counter 
             Note the finishedUpToTime MUST be a datetime object '''
+        
         if startTime is None:
             self.fishedUpToTime = None
             #First attempt to get most recent output file
@@ -39,19 +44,20 @@ class StreamFilesProcessor(multiprocessing.Process):
                 if os.path.exists(filePath):
                     #we found the most recent file, and increment our counter
                     self.finishedUpToTime = currentTime+self.timeDelta
-                    self.messageQueue.put(" ".join(["Found input file at",(str(self.finishedUpToTime))]))
+                    #self.messageQueue.put(" ".join(["Found input file at",(str(self.finishedUpToTime))]))
+                    std_flush(" ".join(["Found output-stream file at",(str(filePath))]))
                     foundFlag = 1
                 else:
                     #if our search is too broad - i.e. we are a month behind, ignore
                     #TODO need better checks here
                     currentTime-=self.timeDelta
-                    if (datetime.now() - currentTime).days > 25:
+                    if (datetime.now() - currentTime).days > self.BACK_CHECK_FILES_DAYS:
                         foundFlag = -1
             
             #If not exists, attempt to get earliest download file
             if foundFlag == -1:
-                self.messageQueue.put("Did not find input file")
-                currentTime = datetime.now() - timedelta(days=25)
+                std_flush("Did not find any output-stream files.")
+                currentTime = datetime.now() - timedelta(days=self.BACK_CHECK_FILES_DAYS)
 
                 foundFlag = 0
                 while foundFlag == 0:
@@ -59,33 +65,26 @@ class StreamFilesProcessor(multiprocessing.Process):
                     if os.path.exists(filePath):
                         #we found the most recent file, and increment our counter
                         self.finishedUpToTime = currentTime
-                        self.messageQueue.put(" ".join(["Found output file at",(str(self.finishedUpToTime))]))
+                        std_flush(" ".join(["Found input-stream file at",(str(filePath))]))
                         foundFlag = 1
                     else:
                         #if our search is too broad - i.e. we are a month behind, ignore
                         #TODO need better checks here
                         currentTime+=self.timeDelta
-                        if (datetime.now() - currentTime).seconds < 1:
+                        timeDeltaOutputStream = (datetime.now() - currentTime)
+                        if timeDeltaOutputStream.days  == 0 and timeDeltaOutputStream.seconds  < 1:
                             foundFlag = -1
 
             if foundFlag == -1:
                 #So nothing is there
-                self.errorQueue.put("No files have been created.")
-
-
-            
-
+                std_flush("Did not find any input-stream files.")
+                assert(1==2)
             #If not, crash???????
 
         else:
             self.fishedUpToTime = startTime
         #reset seconds to 0
         self.finishedUpToTime -= timedelta(seconds=self.finishedUpToTime.second)
-
-        ''' Message queue for passing back errors and current times '''
-        self.errorQueue = errorQueue
-        self.messageQueue = messageQueue
-
         
     def run(self):
         ''' Starts the Processor '''
@@ -104,22 +103,27 @@ class StreamFilesProcessor(multiprocessing.Process):
 
                     if not os.path.exists(filePath):
                         # At this point, we are at least 2 minutes behind, but the file still has not been created. So we wait for four total minutes
-                        self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()]))
-                        waitTime = (datetime.now()-self.finishedUpToTime.second).seconds
+                        ''' self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()])) '''
+                        waitTime = (datetime.now()-self.finishedUpToTime).seconds
                         #Difference is less than Four minutes
                         if waitTime < 60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1):
                             self.messageQueue.put("Waiting for four minute delay")
-                            waitTime = waitTime - (60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1))
+                            #std_flush(str(waitTime))
+                            waitTime =  (60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1)) - waitTime
+                            #std_flush(str(waitTime))
                             time.sleep(waitTime)
                         else:
                             #difference is more than four minutes - we can increment the the by one minute for the next ones
+                            self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()]))
                             self.updateTime()
                     else:
                         #So at this point, we have a file and its been at least two minutes
                         
                         #Open the output writing path
+                        '''
                         outputPath = self.getOutputPath()
                         outputWritePath = open(outputPath, 'a')
+                        '''
                         with open(filePath, 'r') as fileRead:
                             
                             for line in fileRead:
@@ -127,24 +131,34 @@ class StreamFilesProcessor(multiprocessing.Process):
                                 try:
                                     jsonVersion = json.loads(line.strip())
                                     #Now we check if our keywords match
+                                    keywordFoundFlag = False
                                     for keyword in self.keywords:
-                                        if keyword in jsonVersion:
+                                        if keyword in jsonVersion["text"]:
                                             #write this to file
+                                            '''
                                             outputWritePath.write(line)
-                                            continue
+                                            '''
+                                            std_flush(" ".join(["Good:   ", jsonVersion['text']]))
+                                            keywordFoundFlag = True
+                                            break
                                     #So the previous one did not match the keyword
                                     #Now we go to the next line
+                                    if not keywordFoundFlag:
+                                        std_flush(" ".join(["Bad:   ", jsonVersion['text']]))
                                 except:
                                     #Maybe some error
                                     pass
                         #Done with file. Increment counter
+                        '''
                         outputWritePath.close()
+                        '''
                         self.updateTime()
 
 
         except Exception as e:
-            self.errorQueue.put((str(e)))
-            assert(1==2)
+            traceback.print_exc(file=sys.stdout)
+            self.errorQueue.put((self.rootName, str(e)))
+            
 
 
 
@@ -153,22 +167,22 @@ class StreamFilesProcessor(multiprocessing.Process):
 
     def getInputPath(self, _time = None):
         if _time is None:
-            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
+            pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
                                             '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
             filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
         else:
-            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', _time.year), '%02d' % _time.month,
+            pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', _time.year), '%02d' % _time.month,
                                             '%02d' % _time.day, '%02d' % _time.hour)
             filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
 
     def getOutputPath(self, _time = None):
         if _time is None:
-            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
+            pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
                                             '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
             filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
         else:
-            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', self.rootName, _time.year), '%02d' % _time.month,
+            pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', self.rootName, _time.year), '%02d' % _time.month,
                                             '%02d' % _time.day, '%02d' % _time.hour)
             filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
