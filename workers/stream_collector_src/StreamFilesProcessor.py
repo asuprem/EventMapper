@@ -72,7 +72,7 @@ class StreamFilesProcessor(multiprocessing.Process):
                         #TODO need better checks here
                         currentTime+=self.timeDelta
                         timeDeltaOutputStream = (datetime.now() - currentTime)
-                        if timeDeltaOutputStream.days  >= 0 and timeDeltaOutputStream.seconds  < 1:
+                        if timeDeltaOutputStream.days  == 0 and timeDeltaOutputStream.seconds  <= 1:
                             foundFlag = -1
 
             if foundFlag == -1:
@@ -121,7 +121,7 @@ class StreamFilesProcessor(multiprocessing.Process):
                         #So at this point, we have a file and its been at least two minutes
                         
                         #Open the output writing path
-                        
+                        self.makeOutputPath()
                         outputPath = self.getOutputPath()
                         outputWritePath = open(outputPath, 'a')
                         
@@ -146,7 +146,7 @@ class StreamFilesProcessor(multiprocessing.Process):
                                     #Now we go to the next line
                                     #if not keywordFoundFlag:
                                     #    std_flush(" ".join(["Bad:   ", jsonVersion['text']]))
-                                except e:
+                                except Exception as e:
                                     #Maybe some error
                                     self.messageQueue.put(" ".join(["Possible warning for", self.rootName,":",str(e) ]))
                                     pass
@@ -177,6 +177,13 @@ class StreamFilesProcessor(multiprocessing.Process):
             filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
 
+    def makeOutputPath(self):
+        pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
+                                            '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
+        try:
+            os.makedirs(pathDir)
+        except:
+            pass
     def getOutputPath(self, _time = None):
         if _time is None:
             pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
