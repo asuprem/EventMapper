@@ -150,7 +150,7 @@ class TweetProcess(multiprocessing.Process):
             Function to set up a path.
             """
             self.local_time = time.time()
-            self.date = datetime.utcnow()
+            self.date = datetime.now()
             self.dir = os.path.join(self.PREPEND+'%s_%s_%s' % ('tweets', 'unstructured', self.date.year),
                                     '%02d' % self.date.month,
                                     '%02d' % self.date.day, '%02d' % self.date.hour)
