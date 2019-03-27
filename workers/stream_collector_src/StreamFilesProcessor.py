@@ -6,14 +6,14 @@ import time
 
 '''
 StreamKeyProcessor, given a list of keywords, sorts files into its given folder path
-    start_time  - the start-time for this Processor. This is used in case of crashes. Parent tracks start-time for each pair
+    startTime  - the start-time for this Processor. This is used in case of crashes. Parent tracks start-time for each pair
                 - This is a datetime object
                 - StreamKeyProcessor can do the following for time processing
                     - check which file has been created in output directory. Get the next one from input directory (minute lossy)
                     - check most recent timestamp of output file, and continue from there (more granular)
                     - for each timestamp processed, register with parent. When start, parent informs about timestamp
     keywords    - a list of keywords for this StreamKeyProcessor
-    root_name   - the name_lang pair for this processor, ex: "landslide_en"
+    rootName   - the name_lang pair for this processor, ex: "landslide_en"
 '''
 class StreamFilesProcessor(multiprocessing.Process):
     def __init__(self, startTime, keywords, rootName, errorQueue,messageQueue, SOCIAL_STREAMER_FILE_CHECK_COUNT):
@@ -22,7 +22,13 @@ class StreamFilesProcessor(multiprocessing.Process):
         ''' Set up the time counter 
             Note the finishedUpToTime MUST be a datetime object '''
         if startTime is None:
-            self.fishedUpToTime = time.time()
+            self.fishedUpToTime = None
+            #First attempt to get most recent output file
+
+            #If not exists, attempt to get most recent download file
+
+            #If not, crash???????
+
         else:
             self.fishedUpToTime = startTime
         #reset seconds to 0
@@ -41,24 +47,26 @@ class StreamFilesProcessor(multiprocessing.Process):
 
     def run(self):
         ''' Starts the Processor '''
+        self.messageQueue.put(" ".join(["Starting processor for",self.rootName]))
         try:
             #Run forever
             while True:
                 #If we are not two minutes behind, we have to wait (to make sure the file is finished being written to)
                 if (datetime.now() - self.finishedUpToTime).seconds < 120:
-                
+                    #self.messageQueue.put(" ".join(["Waiting for 2 minute delay at",readable_time()]))
                     waitTime = 120 -  (datetime.now() - self.finishedUpToTime).seconds
                     time.sleep(waitTime)
                 else:
                     #We are not two minutes behind. We can start attempting to see if the file exists
-                    
                     filePath = self.getInputPath()
 
                     if not os.path.exists(filePath):
                         # At this point, we are at least 2 minutes behind, but the file still has not been created. So we wait for four total minutes
+                        self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()]))
                         waitTime = (datetime.now()-self.finishedUpToTime.second).seconds
                         #Difference is less than Four minutes
                         if waitTime < 60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1):
+                            self.messageQueue.put("Waiting for four minute delay")
                             waitTime = waitTime - (60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1))
                             time.sleep(waitTime)
                         else:
