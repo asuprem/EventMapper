@@ -32,15 +32,23 @@ if __name__ == "__main__":
             keyStreamConfig[eventLangTuple]['name'] = physicalEvent
             keyStreamConfig[eventLangTuple]['lang'] = language
             keyStreamConfig[eventLangTuple]['keywords'] = keywordConfig['keyws_twitter'][physicalEvent][language]
+            keyStreamConfig[eventLangTuple]['postpone'] = False
             std_flush(" ".join(["Deploying",str(eventLangTuple), "at", readable_time()]))
-            keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+            try:
+                keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
                                                                                 keyStreamConfig[eventLangTuple]['keywords'], 
                                                                                 "_".join([physicalEvent,language]), 
                                                                                 errorQueue,
                                                                                 messageQueue, 
                                                                                 SOCIAL_STREAMER_FILE_CHECK_COUNT )
+            except AssertionError:
+                std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
+                keyStreamConfig[eventLangTuple]['postpone'] = True
+            keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
             #TODO launch the File Processor
-            keyStreamConfig[eventLangTuple]['processor'].start()
+
+            if not keyStreamConfig[eventLangTuple]['postpone']:
+                keyStreamConfig[eventLangTuple]['processor'].start()
 
     configCheckTimer = time.time()
 
@@ -63,6 +71,7 @@ if __name__ == "__main__":
                         keyStreamConfig[eventLangTuple]['name'] = physicalEvent
                         keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
                         keyStreamConfig[eventLangTuple]['lang'] = language
+                        keyStreamConfig[eventLangTuple]['postpone'] = False
                         if not configChangeFlag:
                             std_flush( "Changes have been made to Multiprocessing config file")
                             configChangeFlag = True
@@ -101,14 +110,22 @@ if __name__ == "__main__":
                 except:
                     pass
                 std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
-                std_flush(" ".join(["Redeploying",str(eventLangTuple), "at", readable_time()]))
-                keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
-                                                                            keyStreamConfig[eventLangTuple]['keywords'], 
-                                                                            "_".join(physicalEvent,lang), 
-                                                                            errorQueue,
-                                                                            messageQueue, 
-                                                                            SOCIAL_STREAMER_FILE_CHECK_COUNT )
-                keyStreamConfig[eventLangTuple]['processor'].start()
+                std_flush(" ".join(["Redeploying",str(eventLangTuple), "due to configChange at", readable_time()]))
+                try:
+                    keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+                                                                                    keyStreamConfig[eventLangTuple]['keywords'], 
+                                                                                    "_".join([physicalEvent,language]), 
+                                                                                    errorQueue,
+                                                                                    messageQueue, 
+                                                                                    SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                except AssertionError:
+                    std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
+                    keyStreamConfig[eventLangTuple]['postpone'] = True
+                keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
+                #TODO launch the File Processor
+
+                if not keyStreamConfig[eventLangTuple]['postpone']:
+                    keyStreamConfig[eventLangTuple]['processor'].start()
             else:
                 std_flush( "No changes have been made to Multiprocessing config file")
 
@@ -117,8 +134,59 @@ if __name__ == "__main__":
             #TODO get error, time, restart
             _rootName, _error = errorQueue.get()
             std_flush(" ".join([_rootName, "crashed with error: ", str(_error)]))
-            assert(1==2)
+            
+            eLT = _rootName.split("_")
+            eventLangTuple = (eLT[0], eLT[1])
+            try:
+                keyStreamConfig[eventLangTuple]['processor'].terminate()
+            except:
+                pass
+            std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
+            std_flush(" ".join(["Redeploying",str(eventLangTuple), "at", readable_time()]))
+            try:
+                keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+                                                                                keyStreamConfig[eventLangTuple]['keywords'], 
+                                                                                "_".join([physicalEvent,language]), 
+                                                                                errorQueue,
+                                                                                messageQueue, 
+                                                                                SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                keyStreamConfig[eventLangTuple]['postpone'] = False
+            except AssertionError:
+                std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
+                keyStreamConfig[eventLangTuple]['postpone'] = True
+            keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
+            #TODO launch the File Processor
 
+            if not keyStreamConfig[eventLangTuple]['postpone']:
+                keyStreamConfig[eventLangTuple]['processor'].start()
+
+        for eventLangTuple in keyStreamConfig:
+            if keyStreamConfig[eventLangTuple]["postpone"]:
+                if (datetime.now() - keyStreamConfig[eventLangTuple]["launchTime"]).seconds  > STREAM_PROCESSOR_POSTPONE_SECONDS:
+                    std_flush(" ".join(["Attempting relaunch of", str(eventLangTuple), " after postponement at", readable_time()]))
+                    #We can try to relaunch. maybe files have been created by this point
+                    try:
+                        keyStreamConfig[eventLangTuple]['processor'].terminate()
+                    except:
+                        pass
+                    std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
+                    std_flush(" ".join(["Redeploying",str(eventLangTuple), "at", readable_time()]))
+                    try:
+                        keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
+                                                                                        keyStreamConfig[eventLangTuple]['keywords'], 
+                                                                                        "_".join([physicalEvent,language]), 
+                                                                                        errorQueue,
+                                                                                        messageQueue, 
+                                                                                        SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                        keyStreamConfig[eventLangTuple]['postpone'] = False
+                    except AssertionError:
+                        std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
+                        keyStreamConfig[eventLangTuple]['postpone'] = True
+                    keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
+                    #TODO launch the File Processor
+
+                    if not keyStreamConfig[eventLangTuple]['postpone']:
+                        keyStreamConfig[eventLangTuple]['processor'].start()
 
             
 
