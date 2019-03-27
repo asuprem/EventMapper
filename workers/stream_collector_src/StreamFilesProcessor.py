@@ -19,13 +19,61 @@ class StreamFilesProcessor(multiprocessing.Process):
     def __init__(self, startTime, keywords, rootName, errorQueue,messageQueue, SOCIAL_STREAMER_FILE_CHECK_COUNT):
         multiprocessing.Process.__init__(self)
 
+        ''' set up relevant details '''
+        self.keywords = keywords
+        self.rootName = rootName
+        self.DOWNLOAD_PREPEND = './downloads/'
+        self.SOCIAL_STREAMER_FILE_CHECK_COUNT = SOCIAL_STREAMER_FILE_CHECK_COUNT
+
+        self.timeDelta = timedelta(seconds=60)
+
         ''' Set up the time counter 
             Note the finishedUpToTime MUST be a datetime object '''
         if startTime is None:
             self.fishedUpToTime = None
             #First attempt to get most recent output file
+            currentTime = datetime.now()
+            foundFlag = 0
+            while foundFlag == 0:
+                filePath = self.getOutputPath(currentTime)
+                if os.path.exists(filePath):
+                    #we found the most recent file, and increment our counter
+                    self.finishedUpToTime = currentTime+self.timeDelta
+                    self.messageQueue.put(" ".join(["Found input file at",(str(self.finishedUpToTime))]))
+                    foundFlag = 1
+                else:
+                    #if our search is too broad - i.e. we are a month behind, ignore
+                    #TODO need better checks here
+                    currentTime-=self.timeDelta
+                    if (datetime.now() - currentTime).days > 25:
+                        foundFlag = -1
+            
+            #If not exists, attempt to get earliest download file
+            if foundFlag == -1:
+                self.messageQueue.put("Did not find input file")
+                currentTime = datetime.now() - timedelta(days=25)
 
-            #If not exists, attempt to get most recent download file
+                foundFlag = 0
+                while foundFlag == 0:
+                    filePath = self.getInputPath(currentTime)
+                    if os.path.exists(filePath):
+                        #we found the most recent file, and increment our counter
+                        self.finishedUpToTime = currentTime
+                        self.messageQueue.put(" ".join(["Found output file at",(str(self.finishedUpToTime))]))
+                        foundFlag = 1
+                    else:
+                        #if our search is too broad - i.e. we are a month behind, ignore
+                        #TODO need better checks here
+                        currentTime+=self.timeDelta
+                        if (datetime.now() - currentTime).seconds < 1:
+                            foundFlag = -1
+
+            if foundFlag == -1:
+                #So nothing is there
+                self.errorQueue.put("No files have been created.")
+
+
+            
 
             #If not, crash???????
 
@@ -33,18 +81,12 @@ class StreamFilesProcessor(multiprocessing.Process):
             self.fishedUpToTime = startTime
         #reset seconds to 0
         self.finishedUpToTime -= timedelta(seconds=self.finishedUpToTime.second)
-        self.timeDelta = timedelta(seconds=60)
 
         ''' Message queue for passing back errors and current times '''
         self.errorQueue = errorQueue
         self.messageQueue = messageQueue
 
-        ''' set up relevant details '''
-        self.keywords = keywords
-        self.rootName = rootName
-        self.DOWNLOAD_PREPEND = './downloads/'
-        self.SOCIAL_STREAMER_FILE_CHECK_COUNT = SOCIAL_STREAMER_FILE_CHECK_COUNT
-
+        
     def run(self):
         ''' Starts the Processor '''
         self.messageQueue.put(" ".join(["Starting processor for",self.rootName]))
@@ -102,24 +144,36 @@ class StreamFilesProcessor(multiprocessing.Process):
 
         except Exception as e:
             self.errorQueue.put((str(e)))
+            assert(1==2)
 
 
 
     def updateTime(self):
         self.finishedUpToTime += self.timeDelta
 
-    def getInputPath(self):
-        pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
-                                        '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
-        filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
+    def getInputPath(self, _time = None):
+        if _time is None:
+            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
+                                            '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
+            filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
+        else:
+            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', 'unstructured', _time.year), '%02d' % _time.month,
+                                            '%02d' % _time.day, '%02d' % _time.hour)
+            filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
 
-    def getOutputPath(self):
-        pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
-                                        '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
-        filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
+    def getOutputPath(self, _time = None):
+        if _time is None:
+            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', self.rootName, self.finishedUpToTime.year), '%02d' % self.finishedUpToTime.month,
+                                            '%02d' % self.finishedUpToTime.day, '%02d' % self.finishedUpToTime.hour)
+            filePath = os.path.join(pathDir, '%02d.json' % self.finishedUpToTime.minute)
+        else:
+            pathDir = os.path.join(self.PREPEND + '%s_%s_%s' % ('tweets', self.rootName, _time.year), '%02d' % _time.month,
+                                            '%02d' % _time.day, '%02d' % _time.hour)
+            filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
 
+    
 
 
 

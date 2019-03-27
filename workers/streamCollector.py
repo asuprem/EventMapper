@@ -92,6 +92,7 @@ if __name__ == "__main__":
 
         while not errorQueue.empty():
             #TODO get error, time, restart
+            
 
         while not messageQueue.empty():
             std_flush(messageQueue.get())
