@@ -1,6 +1,8 @@
 {
     "keyws_twitter": {
-        "landslide": {
+        "flooding": {
+            "en": ["flood", "flooded", "saltation", "heavy rain", "flooding", "torrential rain"]
+        },"landslide": {
             "en": ["landslide", "mudslide", "landslides", "mudslides", "rockslide", "rockslides", "rockfall", "landslip", "flooding"]
         }
     }
