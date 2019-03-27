@@ -3,7 +3,12 @@
         "flooding": {
             "en": ["flood", "flooded", "saltation", "heavy rain", "flooding", "torrential rain"]
         },"landslide": {
-            "en": ["landslide", "mudslide", "landslides", "mudslides", "rockslide", "rockslides", "rockfall", "landslip", "flooding"]
+            "en": ["landslide", "mudslide", "landslides", "mudslides", "rockslide", "rockslides", "rockfall", "landslip", "flooding"],
+            "pt": ["deslizamento", "desmoronamento", "desabamento"],
+            "ja": ["土砂崩れ", "山崩れ", "土石流", "地滑り"]
+        },
+        "earthquake": {
+            "en": ["earthquake", "earthquakes", "richter", "seismic", "seismograph", "epicenter"]
         }
     }
 }

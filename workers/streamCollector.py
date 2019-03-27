@@ -37,7 +37,7 @@ if __name__ == "__main__":
             try:
                 keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
                                                                                 keyStreamConfig[eventLangTuple]['keywords'], 
-                                                                                "_".join([physicalEvent,language]), 
+                                                                                "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                 errorQueue,
                                                                                 messageQueue, 
                                                                                 SOCIAL_STREAMER_FILE_CHECK_COUNT )
@@ -60,6 +60,7 @@ if __name__ == "__main__":
             configReload = load_config(TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
+            configChangeSet = []
             #First we check reloaded and for each changed, we replace
             for physicalEvent in configReload['keyws_twitter'].keys():
                 for language in configReload['keyws_twitter'][physicalEvent]:
@@ -77,6 +78,7 @@ if __name__ == "__main__":
                             configChangeFlag = True
                         std_flush( "New event-language pair added: ", str(eventLangTuple))
                         std_flush( "   with keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
+                        configChangeSet.append((eventLangTuple, 'new'))
                     else:
                         if keyStreamConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
                             if not configChangeFlag:
@@ -86,6 +88,7 @@ if __name__ == "__main__":
                             std_flush( "    Old keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
                             keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
                             std_flush( "    New keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
+                            configChangeSet.append((eventLangTuple,'change'))
 
             deleteEventLangTuples = []
             for eventLangTuple in keyStreamConfig:
@@ -97,24 +100,39 @@ if __name__ == "__main__":
                     if eventLangTuple[1] not in configReload['keyws_twitter'][eventLangTuple[0]]:
                         deleteEventLangTuples.append(eventLangTuple)
             for eventLangTuple in deleteEventLangTuples:
+                try:
+                    keyStreamConfig[eventLangTuple]["processor"].terminate()
+                except:
+                    pass
+                std_flush( "Terminated: ", str(eventLangTuple))    
                 del keyStreamConfig[eventLangTuple]
                 if not configChangeFlag:
                     std_flush( "Changes have been made to Multiprocessing config file")
                     configChangeFlag = True
                 std_flush( "Deleted event-language pair: ", str(eventLangTuple))
-
-            if configChangeFlag:
+            # TODO CHECK IF THIS IS WORKING
+            print configChangeSet
+            for eventLangTupleStatus in configChangeSet:
+                eventLangTuple = eventLangTupleStatus[0]
                 #TODO Relaunch
-                try:
-                    keyStreamConfig[eventLangTuple]['processor'].terminate()
-                except:
-                    pass
-                std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
-                std_flush(" ".join(["Redeploying",str(eventLangTuple), "due to configChange at", readable_time()]))
+                if eventLangTupleStatus[1] == 'change':
+                    try:
+                        keyStreamConfig[eventLangTuple]['processor'].terminate()
+                    except:
+                        pass
+
+                    std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
+                #if eventLangTupleStatus[1] == 'change':
+                if eventLangTupleStatus[1] == 'change':
+                    std_flush(" ".join(["Redeploying",str(eventLangTuple), "due to configChange at", readable_time()]))
+                elif eventLangTupleStatus[1] == 'new':
+                    std_flush(" ".join(["Deploying new ",str(eventLangTuple), readable_time()]))
+                else:
+                    std_flush(" ".join(["Deploying",str(eventLangTuple), readable_time()]))
                 try:
                     keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
                                                                                     keyStreamConfig[eventLangTuple]['keywords'], 
-                                                                                    "_".join([physicalEvent,language]), 
+                                                                                    "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                     errorQueue,
                                                                                     messageQueue, 
                                                                                     SOCIAL_STREAMER_FILE_CHECK_COUNT )
@@ -146,7 +164,7 @@ if __name__ == "__main__":
             try:
                 keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
                                                                                 keyStreamConfig[eventLangTuple]['keywords'], 
-                                                                                "_".join([physicalEvent,language]), 
+                                                                                "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                 errorQueue,
                                                                                 messageQueue, 
                                                                                 SOCIAL_STREAMER_FILE_CHECK_COUNT )
@@ -174,7 +192,7 @@ if __name__ == "__main__":
                     try:
                         keyStreamConfig[eventLangTuple]['processor'] = StreamFilesProcessor(  None, 
                                                                                         keyStreamConfig[eventLangTuple]['keywords'], 
-                                                                                        "_".join([physicalEvent,language]), 
+                                                                                        "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                         errorQueue,
                                                                                         messageQueue, 
                                                                                         SOCIAL_STREAMER_FILE_CHECK_COUNT )

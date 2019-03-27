@@ -148,7 +148,7 @@ class StreamFilesProcessor(multiprocessing.Process):
                                     #    std_flush(" ".join(["Bad:   ", jsonVersion['text']]))
                                 except Exception as e:
                                     #Maybe some error
-                                    self.messageQueue.put(" ".join(["Possible warning for", self.rootName,":",str(e) ]))
+                                    self.messageQueue.put(" ".join(["Possible warning for",filePath,": file for",  self.rootName,":",str(e) ]))
                                     pass
                         #Done with file. Increment counter
                         outputWritePath.close()
