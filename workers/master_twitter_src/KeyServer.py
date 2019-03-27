@@ -22,7 +22,7 @@ class KeyServer():
                 self.keyserver[_key]["key"] =  config["APIKeys"]["keys"][_key]
                 self.keyserver[_key]["count"] = 0
                 self.keyserver[_key]["valid"] = True
-                self.keyserver[_key]["MAX"] = 10
+                self.keyserver[_key]["MAX"] = 2
             else:
                 #if key exists in keyserver - check if info has changed
                 #TODO generic
