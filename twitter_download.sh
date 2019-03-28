@@ -1,14 +1,14 @@
 #!/bin/sh
 #cd /expansion2/LITMUS/
 cd "/mnt/d/OneDrive - Georgia Institute of Technology/Projects/gatech/LITMUS/aibek/Final/LITMUS"
-if ps up `cat ./logfiles/master_twitter.pid ` > /dev/null
+if ps up `cat ./logfiles/SocialStreamer.pid ` > /dev/null
 then
-    printf "master_twitter.py is aleady running\n" >> ./logfiles/download_twitter_sh.out
+    printf "SocialStreamer.py is aleady running\n" >> ./logfiles/SocialStreamer.out
 else
-    printf "master_twitter is no longer running.\n    Deleting PID file.\n" >> ./logfiles/download_twitter_sh.out
-    rm  ./logfiles/master_twitter.pid >> ./logfiles/download_twitter_sh.out
-    printf "    Deleted file\n" >> ./logfiles/download_twitter_sh.out
-    printf "Starting master_twitter.py\n" >> ./logfiles/download_twitter_sh.out
-    #nohup ./venv/bin/python workers/master_twitter.py >> ./logfiles/streamers.log 2>&1 &
-    nohup python workers/master_twitter.py >> ./logfiles/streamers.log 2>&1 &
+    printf "SocialStreamer is no longer running.\n    Deleting PID file.\n" >> ./logfiles/SocialStreamer.out
+    rm  ./logfiles/SocialStreamer.pid >> ./logfiles/SocialStreamer.out
+    printf "    Deleted file\n" >> ./logfiles/SocialStreamer.out
+    printf "Starting SocialStreamer.py\n" >> ./logfiles/SocialStreamer.out
+    #nohup ./venv/bin/python workers/SocialStreamer.py >> ./logfiles/SocialStreamer.log 2>&1 &
+    nohup python workers/SocialStreamer.py >> ./logfiles/SocialStreamer.log 2>&1 &
 fi

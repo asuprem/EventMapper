@@ -6,8 +6,8 @@ from math import floor
 
 # Multiprocessing import
 import multiprocessing
-from master_twitter_src.TweetProcess import TweetProcess
-from master_twitter_src.KeyServer import KeyServer
+from SocialStreamerSrc.TweetProcess import TweetProcess
+from SocialStreamerSrc.KeyServer import KeyServer
 
 # Utils import
 from utils.file_utils import load_config
