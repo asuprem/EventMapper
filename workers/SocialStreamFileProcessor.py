@@ -9,7 +9,7 @@ from utils.file_utils import load_config
 from utils.helper_utils import setup_pid, readable_time, std_flush
 from utils.CONSTANTS import *
 
-from stream_collector_src.StreamFilesProcessor import StreamFilesProcessor
+from SocialStreamFileProcessorSrc.StreamFilesProcessor import StreamFilesProcessor
 
 
 if __name__ == "__main__":
