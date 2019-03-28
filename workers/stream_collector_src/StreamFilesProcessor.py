@@ -39,13 +39,13 @@ class StreamFilesProcessor(multiprocessing.Process):
         This increments internal time state by a single timedelta (1 minute), allowing access to the next file
 
     getInputPath(self, _time)
-
+        This gets the path for the input-stream (tweets_unstructured_[YEAR]/)
 
     getOutputPath(self, _time)
-
+        This gets the path for the output-stream (tweets_[TOPIC]_[LANGUAGE]_[YEAR]/)
 
     makeOutputPath(self)
-
+        Creates the output-stream directory path for checks.
 
     """
 
