@@ -14,6 +14,7 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
+from utils.CONSTANTS import *
 from utils.helper_utils import readable_time
 
 class MasterProcess(multiprocessing.Process):
@@ -108,7 +109,7 @@ class MasterProcess(multiprocessing.Process):
                     output (PATH)           This is the flush path. Each data item is written to this file buffer.
 
             """
-            self.TIMER = 60
+            self.TIMER = STREAMING_GRANULARITY_SECONDS
             self.local_time = time.time()
             self.date = datetime.now()
             self.physical_event = physical_event

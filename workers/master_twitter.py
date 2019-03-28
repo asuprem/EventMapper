@@ -14,6 +14,7 @@ from utils.file_utils import load_config
 from utils.helper_utils import dict_equal, setup_pid, readable_time, std_flush
 from utils.CONSTANTS import *
 
+SOCIAL_STREAMER_FIRST_FILE_CHECK = True
 
 
 if __name__ == '__main__':

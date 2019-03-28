@@ -1,22 +1,55 @@
+""" This module contains the StreamFilesProcessor, which extracts relevant tweets from the data dumps given a set of keywords for a topic. """
+
 import json, os, sys, traceback
 import multiprocessing
 from utils.helper_utils import readable_time, std_flush
+from utils.CONSTANTS import *
 from datetime import datetime, timedelta
 import time
 
-'''
-StreamKeyProcessor, given a list of keywords, sorts files into its given folder path
-    startTime  - the start-time for this Processor. This is used in case of crashes. Parent tracks start-time for each pair
-                - This is a datetime object
-                - StreamKeyProcessor can do the following for time processing
-                    - check which file has been created in output directory. Get the next one from input directory (minute lossy)
-                    - check most recent timestamp of output file, and continue from there (more granular)
-                    - for each timestamp processed, register with parent. When start, parent informs about timestamp
-    keywords    - a list of keywords for this StreamKeyProcessor
-    rootName   - the name_lang pair for this processor, ex: "landslide_en"
-'''
 class StreamFilesProcessor(multiprocessing.Process):
-    def __init__(self, startTime, keywords, rootName, errorQueue,messageQueue, SOCIAL_STREAMER_FILE_CHECK_COUNT):
+    """ 
+    
+    This is the StreamFilesProcessor class. It is inherited from multiprocessing.Process. StreamKeyProcessor, given a list of keywords, sorts files into its given folder path
+
+    ...
+
+    Attributes
+    ----------
+    startTime : datetime
+        The start-time for this StreamFilesProcessor object. If None, StreamFilesProcessor handles when to start by searching for either the latest generated output or the earliest input files. startTime should normally be None.
+    keywords : list
+        A list of keywords for this StreamFilesProcessor object. They should be utf-8 encoded. StreamFilesProcessor takes the list of keywords and searches the text content of a social post for the keywords.
+    rootName : str
+        rootName is used by the StreamFilesProcessor object to create output folder. The folder follows [source]_rootName_[YEAR]/[MONTH]/[DAY]/[HOUSE]/[MINUTE].json. rootName should follow this format: "[TOPIC]_[LANGUAGE]". 
+    errorQueue : multiprocessing.Queue
+        This Queue is used to post erros back to the parent.
+    messageQueue : multiprocessing.Queue
+        This Queue is used to post messages back to the parent.
+
+    Methods
+    -------
+    __init__(self, startTime, keywords, rootName, errorQueue,messageQueue)
+        Sets up the StreamFilesProcessor object. 
+
+    run(self)
+        This executes the core code. The StreamFilesProcessor object iterates through unread files in tweets_unstructured_2019/. Any social objects with words matching keywords are sent to the appropriate directory.
+
+    updateTime(self)
+        This increments internal time state by a single timedelta (1 minute), allowing access to the next file
+
+    getInputPath(self, _time)
+
+
+    getOutputPath(self, _time)
+
+
+    makeOutputPath(self)
+
+
+    """
+
+    def __init__(self, startTime, keywords, rootName, errorQueue,messageQueue):
         multiprocessing.Process.__init__(self)
         
         ''' Message queue for passing back errors and current times '''
@@ -27,9 +60,9 @@ class StreamFilesProcessor(multiprocessing.Process):
         self.keywords = keywords
         self.rootName = rootName
         self.DOWNLOAD_PREPEND = './downloads/'
-        self.SOCIAL_STREAMER_FILE_CHECK_COUNT = SOCIAL_STREAMER_FILE_CHECK_COUNT
+        self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = STREAM_FILES_PROCESSOR_MAX_FILE_DELAY
         self.BACK_CHECK_FILES_DAYS = 10
-        self.timeDelta = timedelta(seconds=60)
+        self.timeDelta = timedelta(seconds=STREAMING_GRANULARITY_SECONDS)
 
         ''' Set up the time counter 
             Note the finishedUpToTime MUST be a datetime object '''
@@ -107,10 +140,10 @@ class StreamFilesProcessor(multiprocessing.Process):
                         ''' self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()])) '''
                         waitTime = (datetime.now()-self.finishedUpToTime).seconds
                         #Difference is less than Four minutes
-                        if waitTime < 60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1):
+                        if waitTime < self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY:
                             #self.messageQueue.put("Waiting for four minute delay")
                             #std_flush(str(waitTime))
-                            waitTime =  (60 * (self.SOCIAL_STREAMER_FILE_CHECK_COUNT + 1)) - waitTime
+                            waitTime = self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY - waitTime
                             #std_flush(str(waitTime))
                             time.sleep(waitTime)
                         else:

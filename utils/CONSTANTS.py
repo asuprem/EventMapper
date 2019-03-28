@@ -1,30 +1,52 @@
+""" This file containts constants used throughout ASSED. """
 
+# This is the path to the general configuration file.
 GENERAL_CONFIG_PATH = 'config/multiprocess.json'
-#TOPIC_CONFIG_PATH = 'config/topics.json'
+
+# Path to topics file which contains all topics and keywords for each topic
 TOPIC_CONFIG_PATH = 'config/topics.json'
+
+# CONFIG_PATH: ????????
 CONFIG_PATH = 'config/multiprocess.json'
 
+# ------------------------------------------------------
+# CHECK IF CONFIG FILE HAS CHANGED
 
-#CHECK IF CONFIG FILE HAS CHANGED
+# Time in seconds when a process checks if its configuration file has changed
 CONFIG_TIME_CHECK = 60*2
 
-SOCIAL_STREAMER_CONFIG_TIME_CHECK = 60*2
-STREAM_COLLECTOR_CONFIG_TIME_CHECK = 60*2
+# CONFIG_TIME_CHECK for the SocialStreamer (master_twitter)
+SOCIAL_STREAMER_CONFIG_TIME_CHECK = CONFIG_TIME_CHECK
+# CONFIG_TIME_CHECK for the StreamFilesProcessor (streamCollector)
+STREAM_COLLECTOR_CONFIG_TIME_CHECK = CONFIG_TIME_CHECK
 
-#CHECK IF FILES ARE BEING CREATED
+# ------------------------------------------------------
+# CHECK IF FILES ARE BEING CREATED
+
+# Seconds between checking if files are being created for a processor
 FILE_TIME_CHECK = 60*15
-FIRST_FILE_CHECK = True
+# Flag for file check
 
+# FILE_TIME_CHECK and FIRST_FILE_CHECK for social streamer
 SOCIAL_STREAMER_FILE_TIME_CHECK = 60*5
-SOCIAL_STREAMER_FIRST_FILE_CHECK = True
 
+# Number of files to check before declaring Streamer is no longer working
 SOCIAL_STREAMER_FILE_CHECK_COUNT = 3
 
-#CHECK IF CRASHED
+# Maximum delay StreamFilesProcessor lags behind SocialStreamer (master_twitter)
+STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = 60*4
+
+# ------------------------------------------------------
+# CHECK IF CRASHED
+
+# Delay in seconds before a master checks if a child has died
 CRASH_TIME_CHECK = 60*10
 
+# Delay in seconds before a SocialStreamer master checks if a child (TweetProcess) has died
 SOCIAL_STREAMER_CRASH_TIME_CHECK = 60*10
 
+# Time in seconds StreamProcessor delays relaunching a StreamFilesProcessor when files are not available
+STREAM_PROCESSOR_POSTPONE_SECONDS = 60*60
 
-#Postponement for 2 hours
-STREAM_PROCESSOR_POSTPONE_SECONDS = 60
+# Granularity in seconds for StreamFilesProcessor timeDelta
+STREAMING_GRANULARITY_SECONDS = 60
