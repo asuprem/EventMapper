@@ -9,26 +9,56 @@
                 "hi": ["भूस्खलन"],
                 "ru": ["сель", "селевой", "селевые", "селевого", "селевых", "оползень", "оползня", "оползнем", "оползни", "оползневый", "оползневые", "оползней"],
                 "it": ["frana", "fango"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
             }
         },
         "flooding": {
             "languages":{
                 "en": ["flood", "flooded", "saltation", "heavy rain", "flooding", "torrential rain"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
             }
         },
         "wildfire": {
             "languages":{
                 "en": ["wildfires", "brushfire", "wildfires", "bushfires", "wild fire", "wild fires"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
             }
         },
         "algae": {
             "languages":{
                 "en": ["algal blooms", "harmful algal", "red tide algal", "algae"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
             }
         },
         "earthquake": {
             "languages":{
                 "en": ["earthquake", "earthquakes", "richter", "seismic", "seismograph", "epicenter"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
             }
         }
     }

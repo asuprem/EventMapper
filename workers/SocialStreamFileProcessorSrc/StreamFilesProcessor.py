@@ -60,7 +60,7 @@ class StreamFilesProcessor(multiprocessing.Process):
         self.keywords = keywords
         self.rootName = rootName
         self.DOWNLOAD_PREPEND = './downloads/'
-        self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = STREAM_FILES_PROCESSOR_MAX_FILE_DELAY
+        self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY
         self.BACK_CHECK_FILES_DAYS = 10
         self.timeDelta = timedelta(seconds=STREAMING_GRANULARITY_SECONDS)
 
