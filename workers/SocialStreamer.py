@@ -35,14 +35,12 @@ if __name__ == '__main__':
     '''Launch the Streamer with all keywords'''
     keywords = []
     APIKeys = keyServer.get_key()
-    for physicalEvent in configOriginal['keyws_twitter'].keys():
-        for language in configOriginal['keyws_twitter'][physicalEvent]:
-            
-            
+    for physicalEvent in configOriginal['topic_names'].keys():
+        for language in configOriginal['topic_names'][physicalEvent]["languages"]:
             eventLangTuple = (physicalEvent,language)
             streamerConfig[eventLangTuple] = {}
             streamerConfig[eventLangTuple]['name'] = physicalEvent
-            streamerConfig[eventLangTuple]['keywords'] = configOriginal['keyws_twitter'][physicalEvent][language]
+            streamerConfig[eventLangTuple]['keywords'] = configOriginal['topic_names'][physicalEvent]["languages"][language]
             streamerConfig[eventLangTuple]['lang'] = language
             keywords += streamerConfig[eventLangTuple]['keywords']
 
@@ -63,14 +61,14 @@ if __name__ == '__main__':
             configChangeFlag = False
             keyServer.update(load_config(GENERAL_CONFIG_PATH))
             #First we check reloaded and for each changed, we replace
-            for physicalEvent in configReload['keyws_twitter'].keys():
-                for language in configReload['keyws_twitter'][physicalEvent]:
+            for physicalEvent in configReload['topic_names'].keys():
+                for language in configReload['topic_names'][physicalEvent]["languages"]:
                     eventLangTuple = (physicalEvent,language)
                     if eventLangTuple not in streamerConfig:
                         #new pair
                         streamerConfig[eventLangTuple] = {}
                         streamerConfig[eventLangTuple]['name'] = physicalEvent
-                        streamerConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                        streamerConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                         streamerConfig[eventLangTuple]['lang'] = language
                         if not configChangeFlag:
                             std_flush( "Changes have been made to Multiprocessing config file")
@@ -78,23 +76,23 @@ if __name__ == '__main__':
                         std_flush( "New event-language pair added: ", str(eventLangTuple))
                         std_flush( "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                     else:
-                        if streamerConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
+                        if streamerConfig[eventLangTuple]['keywords'] != configReload['topic_names'][physicalEvent]["languages"][language]:
                             if not configChangeFlag:
                                 std_flush( "Changes have been made to Multiprocessing config file")
                                 configChangeFlag = True
                             std_flush( "Keyword changes made to event-language pair: ", str(eventLangTuple))
                             std_flush( "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
-                            streamerConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                            streamerConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                             std_flush( "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
 
             deleteEventLangTuples = []
             for eventLangTuple in streamerConfig:
-                if eventLangTuple[0] not in configReload['keyws_twitter'].keys():
+                if eventLangTuple[0] not in configReload['topic_names'].keys():
                     #This event type has been deleted
                     deleteEventLangTuples.append(eventLangTuple)
                 else:
                     #Event type exists, but lanuage has been deleted
-                    if eventLangTuple[1] not in configReload['keyws_twitter'][eventLangTuple[0]]:
+                    if eventLangTuple[1] not in configReload['topic_names'][eventLangTuple[0]]["languages"]:
                         deleteEventLangTuples.append(eventLangTuple)
             for eventLangTuple in deleteEventLangTuples:
                 del streamerConfig[eventLangTuple]

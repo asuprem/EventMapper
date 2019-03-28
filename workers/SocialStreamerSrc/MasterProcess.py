@@ -75,7 +75,6 @@ class MasterProcess(multiprocessing.Process):
         try:
             #print "entered" + " " + self.physical_event + " "+ self.lang
             #TODO have changed from json_array to self.keywords
-            #json_array = config['keyws_twitter'][self.physical_event][self.lang]
             #print json_array
             self.stream.filter(track=self.keywords)
             print " ".join(["Running", self.physical_event,self.lang, "with PID", str(os.getpid()), "at", readable_time()])

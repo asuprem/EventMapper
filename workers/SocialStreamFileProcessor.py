@@ -25,13 +25,13 @@ if __name__ == "__main__":
 
     keyStreamConfig = {}
     # for each keyword-lang pair type, launch a StreamFilesProcessor
-    for physicalEvent in keywordConfig['keyws_twitter'].keys():
-        for language in keywordConfig['keyws_twitter'][physicalEvent]:
+    for physicalEvent in keywordConfig['topic_names'].keys():
+        for language in keywordConfig['topic_names'][physicalEvent]["languages"]:
             eventLangTuple = (physicalEvent,language)
             keyStreamConfig[eventLangTuple] = {}
             keyStreamConfig[eventLangTuple]['name'] = physicalEvent
             keyStreamConfig[eventLangTuple]['lang'] = language
-            keyStreamConfig[eventLangTuple]['keywords'] = keywordConfig['keyws_twitter'][physicalEvent][language]
+            keyStreamConfig[eventLangTuple]['keywords'] = keywordConfig['topic_names'][physicalEvent]["languages"][language]
             keyStreamConfig[eventLangTuple]['postpone'] = False
             std_flush(" ".join(["Deploying",str(eventLangTuple), "at", readable_time()]))
             try:
@@ -39,8 +39,7 @@ if __name__ == "__main__":
                                                                                 keyStreamConfig[eventLangTuple]['keywords'], 
                                                                                 "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                 errorQueue,
-                                                                                messageQueue, 
-                                                                                SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                                                                                messageQueue)
             except AssertionError:
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                 keyStreamConfig[eventLangTuple]['postpone'] = True
@@ -62,15 +61,15 @@ if __name__ == "__main__":
             configChangeFlag = False
             configChangeSet = []
             #First we check reloaded and for each changed, we replace
-            for physicalEvent in configReload['keyws_twitter'].keys():
-                for language in configReload['keyws_twitter'][physicalEvent]:
+            for physicalEvent in configReload['topic_names'].keys():
+                for language in configReload['topic_names'][physicalEvent]["languages"]:
                     eventLangTuple = (physicalEvent,language)
                     if eventLangTuple not in keyStreamConfig:
                         #new pair
                         
                         keyStreamConfig[eventLangTuple] = {}
                         keyStreamConfig[eventLangTuple]['name'] = physicalEvent
-                        keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                        keyStreamConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                         keyStreamConfig[eventLangTuple]['lang'] = language
                         keyStreamConfig[eventLangTuple]['postpone'] = False
                         if not configChangeFlag:
@@ -80,24 +79,25 @@ if __name__ == "__main__":
                         std_flush( "   with keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
                         configChangeSet.append((eventLangTuple, 'new'))
                     else:
-                        if keyStreamConfig[eventLangTuple]['keywords'] != configReload['keyws_twitter'][physicalEvent][language]:
+                        if keyStreamConfig[eventLangTuple]['keywords'] != configReload['topic_names'][physicalEvent]["languages"][language]:
                             if not configChangeFlag:
                                 std_flush( "Changes have been made to Multiprocessing config file")
                                 configChangeFlag = True
                             std_flush( "Keyword changes made to event-language pair: ", str(eventLangTuple))
                             std_flush( "    Old keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
-                            keyStreamConfig[eventLangTuple]['keywords'] = configReload['keyws_twitter'][physicalEvent][language]
+                            keyStreamConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                             std_flush( "    New keywords: ", str(keyStreamConfig[eventLangTuple]['keywords']))
                             configChangeSet.append((eventLangTuple,'change'))
 
             deleteEventLangTuples = []
             for eventLangTuple in keyStreamConfig:
-                if eventLangTuple[0] not in configReload['keyws_twitter'].keys():
+                # eventLangTuple --> (topic_name, language)
+                if eventLangTuple[0] not in configReload['topic_names'].keys():
                     #This event type has been deleted
                     deleteEventLangTuples.append(eventLangTuple)
                 else:
                     #Event type exists, but lanuage has been deleted
-                    if eventLangTuple[1] not in configReload['keyws_twitter'][eventLangTuple[0]]:
+                    if eventLangTuple[1] not in configReload['topic_names'][eventLangTuple[0]]["languages"]:
                         deleteEventLangTuples.append(eventLangTuple)
             for eventLangTuple in deleteEventLangTuples:
                 try:
@@ -133,8 +133,7 @@ if __name__ == "__main__":
                                                                                     keyStreamConfig[eventLangTuple]['keywords'], 
                                                                                     "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                     errorQueue,
-                                                                                    messageQueue, 
-                                                                                    SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                                                                                    messageQueue)
                 except AssertionError:
                     std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                     keyStreamConfig[eventLangTuple]['postpone'] = True
@@ -165,8 +164,7 @@ if __name__ == "__main__":
                                                                                 keyStreamConfig[eventLangTuple]['keywords'], 
                                                                                 "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                 errorQueue,
-                                                                                messageQueue, 
-                                                                                SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                                                                                messageQueue)
                 keyStreamConfig[eventLangTuple]['postpone'] = False
             except AssertionError:
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
@@ -193,8 +191,7 @@ if __name__ == "__main__":
                                                                                         keyStreamConfig[eventLangTuple]['keywords'], 
                                                                                         "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                         errorQueue,
-                                                                                        messageQueue, 
-                                                                                        SOCIAL_STREAMER_FILE_CHECK_COUNT )
+                                                                                        messageQueue)
                         keyStreamConfig[eventLangTuple]['postpone'] = False
                     except AssertionError:
                         std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))

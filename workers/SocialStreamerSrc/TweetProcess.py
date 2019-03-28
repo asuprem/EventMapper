@@ -69,10 +69,6 @@ class TweetProcess(multiprocessing.Process):
         """
         # TODO change print to logging; use logging function/API
         try:
-            #print "entered" + " " + self.physical_event + " "+ self.lang
-            #TODO have changed from json_array to self.keywords
-            #json_array = config['keyws_twitter'][self.physical_event][self.lang]
-            #print json_array
             self.stream.filter(track=self.keywords)
             self.messageQueue.put(" ".join(["Running unstructured streamer", "with PID", str(os.getpid()), "at", readable_time()]))
             pid = str(os.getpid())
