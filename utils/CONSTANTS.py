@@ -4,7 +4,7 @@
 GENERAL_CONFIG_PATH = 'config/multiprocess.json'
 
 # Path to topics file which contains all topics and keywords for each topic
-TOPIC_CONFIG_PATH = 'config/topics.json'
+TOPIC_CONFIG_PATH = 'config/social_streamer_topics.json'
 
 # CONFIG_PATH: ????????
 CONFIG_PATH = 'config/multiprocess.json'

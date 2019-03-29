@@ -1,0 +1,21 @@
+{
+    "topic_names": {
+        "landslide": {
+            "languages":{
+                "en": ["landslide", "mudslide", "landslides", "mudslides", "rockslide", "rockslides", "rockfall", "landslip", "flooding"],
+                "pt": ["deslizamento", "desmoronamento", "desabamento"],
+                "ja": ["土砂崩れ", "山崩れ", "土石流", "地滑り"],
+                "zh": ["滑坡", "塌方", "泥石流", "坍塌"],
+                "hi": ["भूस्खलन"],
+                "ru": ["сель", "селевой", "селевые", "селевого", "селевых", "оползень", "оползня", "оползнем", "оползни", "оползневый", "оползневые", "оползней"],
+                "it": ["frana", "fango"]
+            },
+            "social_source": {
+                "valid": 1
+            },
+            "high_confidence": {
+                "valid": 1
+            }
+        }
+    }
+}

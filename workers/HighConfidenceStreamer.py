@@ -11,6 +11,65 @@ if __name__ == '__main__':
     startTime = time.time()
     configOriginal = load_config(TOPIC_CONFIG_PATH)
 
+    # Launch Conitinuous General News Streamer
+    #   News Tweets Downloads into news_tweets_2019/
+    cnt = ContinuousNewsStreamer()
+    cnt.start()
+    
+    # TODO Develop Continuous News Crawler
+    #   Download into news_crawler_2019/
+    crwl = ContinuousNewsCrawler()
+    crwl.start()
+    
+    # Launch Scheduled General News Streamer(s)
+    #   Use NewsDownloader to perform general download into news_unstructured_2019/
+    sgns = ScheduledGeneralNewsStreamer()
+    sgns.start()
+
+
+    # Launch Continuous Specific Source Streamer(s)
+    #   download into whatever they download into
+    #   HighConf Streamer manages all these
+    for topics in highConfidenceContinuousConfig:
+        if execType == "subprocess":
+            subprocess [env]/bin/python workers/HighConfSpecSourceStreams/execName.py >> [logfile].log
+            # subprocess python needs API acceess to create PID file
+            # We will check PID once in a while
+            # API interface access from ASSED
+            """
+                createPID()
+                saveData(data)
+                setUpGranulatity(def = 60)
+                internals
+                    .granularity = 60s
+                    .pathBaseName = trmm, noaaRain, etc
+
+            """
+        #if execType == "class":
+
+
+
+    # Launch Scheduled Specific Source Streamer(s)
+    #   download into whatever they download into
+    #   HighConf Streamer manages all these every once in a while
+    for topics in highConfidenceScheduledConfig:
+        if execType == "subprocess":
+            subprocess [env]/bin/python workers/HighConfSpecSourceStreams/execName.py >> [logfile].log
+            # subprocess python needs API acceess to create PID file
+            # We will check PID and relaunch @ frequency if PID is not alive
+            # API interface access from ASSED
+            """
+                createPID()
+                saveData(data)
+                setUpGranulatity(def = 60)
+                internals
+                    .pathBaseName = trmm, noaaRain, etc
+
+            """
+        #if execType == "class":
+
+
+
     # Get the eventlang pairs 
     for physicalEvent in configOriginal['topic_names'].keys():
         if configOriginal['topic_names'][physicalEvent]["high_confidence"]["valid"] == 0:
@@ -19,7 +78,7 @@ if __name__ == '__main__':
             # extract source_file for current diasters
             source_data = {}
             source_list = config['keyws'][keyword]['news_source']
-            #extract sources from source list
+            # extract sources from source list
             with open ('../'+source_list, 'r') as sources:
                 for line in sources:
                     lines_json = json.loads(line)
