@@ -12,7 +12,7 @@ from SocialStreamerSrc.KeyServer import KeyServer
 # Utils import
 from utils.file_utils import load_config
 from utils.helper_utils import dict_equal, setup_pid, readable_time, std_flush
-from utils.CONSTANTS import *
+import utils.CONSTANTS as CONSTANTS
 
 SOCIAL_STREAMER_FIRST_FILE_CHECK = True
 
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     setup_pid(pid_name)
     #Set up configOriginal dict
-    configOriginal = load_config(TOPIC_CONFIG_PATH)
+    configOriginal = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
 
     '''Error queue - This is the queue for errors; Each time process crashes, it will inform this queue'''
     errorQueue = multiprocessing.Queue()
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     '''streamerConfig - streamerConfig'''
     streamerConfig = {}
     '''keyServer - determines which keys are assigned'''
-    keyServer = KeyServer(load_config(GENERAL_CONFIG_PATH))
+    keyServer = KeyServer(load_config(CONSTANTS.GENERAL_CONFIG_PATH))
 
     
     '''Launch the Streamer with all keywords'''
@@ -52,14 +52,14 @@ if __name__ == '__main__':
     fileCheckTimer = time.time()
     crashCheckInfoDumpTimer = time.time()
     while True:
-        if time.time() - configCheckTimer > SOCIAL_STREAMER_CONFIG_TIME_CHECK:
+        if time.time() - configCheckTimer > CONSTANTS.SOCIAL_STREAMER_CONFIG_TIME_CHECK:
 
             configCheckTimer = time.time()
             std_flush( " ".join(["Checking configuration at", readable_time()]))
-            configReload = load_config(TOPIC_CONFIG_PATH)
+            configReload = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
-            keyServer.update(load_config(GENERAL_CONFIG_PATH))
+            keyServer.update(load_config(CONSTANTS.GENERAL_CONFIG_PATH))
             #First we check reloaded and for each changed, we replace
             for physicalEvent in configReload['topic_names'].keys():
                 for language in configReload['topic_names'][physicalEvent]["languages"]:
@@ -118,13 +118,13 @@ if __name__ == '__main__':
                 std_flush( "No changes have been made to Multiprocessing config file")
 
         #Crash checks        
-        if time.time() - crashCheckInfoDumpTimer > SOCIAL_STREAMER_CRASH_TIME_CHECK:
+        if time.time() - crashCheckInfoDumpTimer > CONSTANTS.SOCIAL_STREAMER_CRASH_TIME_CHECK:
             crashCheckInfoDumpTimer = time.time()
             std_flush( " ".join(["No crashes at", readable_time()]))
 
 
         #File write checks
-        if time.time() - fileCheckTimer > SOCIAL_STREAMER_FILE_TIME_CHECK:
+        if time.time() - fileCheckTimer > CONSTANTS.SOCIAL_STREAMER_FILE_TIME_CHECK:
             fileCheckTimer = time.time()
             fileCheckCounter = 0
             
@@ -148,7 +148,7 @@ if __name__ == '__main__':
                 SOCIAL_STREAMER_FIRST_FILE_CHECK = False
             else:
                 #Restart
-                if fileCheckCounter == SOCIAL_STREAMER_FILE_CHECK_COUNT:
+                if fileCheckCounter == CONSTANTS.SOCIAL_STREAMER_FILE_CHECK_COUNT:
                     std_flush( " ".join(["Unstructured downloader no longer creating files at",readable_time()]))
                     APIKeys = keyServer.refresh_key(APIKeys[0])
                     try:

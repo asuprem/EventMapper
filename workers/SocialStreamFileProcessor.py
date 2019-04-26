@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import multiprocessing
 from utils.file_utils import load_config
 from utils.helper_utils import setup_pid, readable_time, std_flush
-from utils.CONSTANTS import *
+import utils.CONSTANTS as CONSTANTS
 
 from SocialStreamFileProcessorSrc.StreamFilesProcessor import StreamFilesProcessor
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
 
     #Load the keywords
-    keywordConfig = load_config(TOPIC_CONFIG_PATH)
+    keywordConfig = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
     errorQueue = multiprocessing.Queue()
     messageQueue = multiprocessing.Queue()
 
@@ -52,11 +52,11 @@ if __name__ == "__main__":
     configCheckTimer = time.time()
 
     while True:
-        if time.time() - configCheckTimer > STREAM_COLLECTOR_CONFIG_TIME_CHECK:
+        if time.time() - configCheckTimer > CONSTANTS.STREAM_COLLECTOR_CONFIG_TIME_CHECK:
 
             configCheckTimer = time.time()
             std_flush( " ".join(["Checking configuration at", readable_time()]))
-            configReload = load_config(TOPIC_CONFIG_PATH)
+            configReload = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
             configChangeSet = []
@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
         for eventLangTuple in keyStreamConfig:
             if keyStreamConfig[eventLangTuple]["postpone"]:
-                if (datetime.now() - keyStreamConfig[eventLangTuple]["launchTime"]).seconds  > STREAM_PROCESSOR_POSTPONE_SECONDS:
+                if (datetime.now() - keyStreamConfig[eventLangTuple]["launchTime"]).seconds  > CONSTANTS.STREAM_PROCESSOR_POSTPONE_SECONDS:
                     std_flush(" ".join(["Attempting relaunch of", str(eventLangTuple), " after postponement at", readable_time()]))
                     #We can try to relaunch. maybe files have been created by this point
                     try:
@@ -193,8 +193,8 @@ if __name__ == "__main__":
                                                                                         errorQueue,
                                                                                         messageQueue)
                         keyStreamConfig[eventLangTuple]['postpone'] = False
-                    except AssertionError:
-                        std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
+                    except RuntimeError:
+                        std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch for 1 hour at", readable_time()]))
                         keyStreamConfig[eventLangTuple]['postpone'] = True
                     keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
                     #TODO launch the File Processor

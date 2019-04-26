@@ -1,4 +1,29 @@
 {
+    "trmm":{
+        "name": "TRMM",
+        "db_name": "TRMM",
+        "source_file":"TRMM.py",
+        "type":"scheduled",
+        "schedule":43200
+    },
+
+    "usgs":{
+        "name": "USGS",
+        "db_name": "USGS",
+        "source_file":"USGS.py",
+        "type":"scheduled",
+        "schedule":43200
+    },
+
+    "news":{
+        "name": "news",
+        "db_name": "news",
+        "source_file":"news.py",
+        "type":"scheduled",
+        "schedule":1200
+    },
+
+
     "topic_names": {
         "landslide": {
             "languages":{

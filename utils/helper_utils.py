@@ -26,9 +26,9 @@ def setup_pid(pid_name):
     pidFile = './logfiles/' + pid_name + '.pid'
 
     if os.path.isfile(pidFile):
-        print "pidfile already exists. exiting"
+        print("pidfile already exists. exiting")
         sys.exit()
-    file(pidFile,'w').write(pid)
+    open(pidFile,'w').write(pid)
 
 def readable_time():
     return datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')

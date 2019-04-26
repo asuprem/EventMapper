@@ -7,12 +7,10 @@ This will launch a twitter streamer for all of twitter
 import multiprocessing
 import time, os, sys, json
 from datetime import datetime
-
 # General tweepy imports
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
-
 from utils.helper_utils import readable_time
 
 class TweetProcess(multiprocessing.Process):

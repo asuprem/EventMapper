@@ -22,7 +22,7 @@ if __name__ == '__main__':
     crwl.start()
     
     # Launch Scheduled General News Streamer(s)
-    #   Use NewsDownloader to perform general download into news_unstructured_2019/
+    #   Use NewsDownloader to perform general download into news_[EVENT]_2019/
     sgns = ScheduledGeneralNewsStreamer()
     sgns.start()
 
@@ -37,12 +37,19 @@ if __name__ == '__main__':
             # We will check PID once in a while
             # API interface access from ASSED
             """
-                createPID()
+                __init__
+                    registerName()
+                    setUpGranulatity(def = 60)
                 saveData(data)
-                setUpGranulatity(def = 60)
+                
                 internals
                     .granularity = 60s
                     .pathBaseName = trmm, noaaRain, etc
+                config{
+                    'name'
+                    'scheduled/continuous'
+                    'environment'
+                }
 
             """
         #if execType == "class":

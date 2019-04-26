@@ -3,7 +3,7 @@
 import json, os, sys, traceback
 import multiprocessing
 from utils.helper_utils import readable_time, std_flush
-from utils.CONSTANTS import *
+import utils.CONSTANTS as CONSTANTS
 from datetime import datetime, timedelta
 import time
 
@@ -60,9 +60,9 @@ class StreamFilesProcessor(multiprocessing.Process):
         self.keywords = keywords
         self.rootName = rootName
         self.DOWNLOAD_PREPEND = './downloads/'
-        self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY
+        self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY = CONSTANTS.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY
         self.BACK_CHECK_FILES_DAYS = 10
-        self.timeDelta = timedelta(seconds=STREAMING_GRANULARITY_SECONDS)
+        self.timeDelta = timedelta(seconds=CONSTANTS.STREAMING_GRANULARITY_SECONDS)
 
         ''' Set up the time counter 
             Note the finishedUpToTime MUST be a datetime object '''
@@ -112,22 +112,27 @@ class StreamFilesProcessor(multiprocessing.Process):
                 #So nothing is there
                 std_flush(" ".join([self.rootName, "Did not find any input-stream files."]))
                 #raise(self.NoStartTimeGivenAndNoFilesExist)
-                assert(1==2)
+                raise RuntimeError()
             #If not, crash???????
 
         else:
             self.fishedUpToTime = startTime
         #reset seconds to 0
         self.finishedUpToTime -= timedelta(seconds=self.finishedUpToTime.second)
-        
+        self.previousMessageTime = self.finishedUpToTime
+
     def run(self):
         ''' Starts the Processor '''
         self.messageQueue.put(" ".join(["Starting processor for",self.rootName]))
         try:
             #Run forever
+            #Message every two hours that all's going well...
+            if (self.finishedUpToTime - self.previousMessageTime).total_seconds() > 7200:
+                self.previousMessageTime = self.finishedUpToTime
+                self.messageQueue.put("Still chugging along. Just starting to process file at : " + str(self.finishedUpToTime))
             while True:
                 #If we are not two minutes behind, we have to wait (to make sure the file is finished being written to)
-                if (datetime.now() - self.finishedUpToTime).seconds < 120:
+                if (datetime.now() - self.finishedUpToTime).total_seconds() < 120:
                     #self.messageQueue.put(" ".join(["Waiting for 2 minute delay at",readable_time()]))
                     waitTime = 120 -  (datetime.now() - self.finishedUpToTime).seconds
                     time.sleep(waitTime)
@@ -137,8 +142,8 @@ class StreamFilesProcessor(multiprocessing.Process):
 
                     if not os.path.exists(filePath):
                         # At this point, we are at least 2 minutes behind, but the file still has not been created. So we wait for four total minutes
-                        ''' self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()])) '''
-                        waitTime = (datetime.now()-self.finishedUpToTime).seconds
+                        #self.messageQueue.put(" ".join(["Expected file at",filePath,"has not been created at",readable_time()]))
+                        waitTime = (datetime.now()-self.finishedUpToTime).total_seconds()
                         #Difference is less than Four minutes
                         if waitTime < self.STREAM_FILES_PROCESSOR_MAX_SECOND_DELAY:
                             #self.messageQueue.put("Waiting for four minute delay")
@@ -157,15 +162,15 @@ class StreamFilesProcessor(multiprocessing.Process):
                         self.makeOutputPath()
                         outputPath = self.getOutputPath()
                         outputWritePath = open(outputPath, 'a')
-                        
+                        #badCount = 0
+                        #totalCount = 0
                         with open(filePath, 'r') as fileRead:
-                            
                             for line in fileRead:
                                 #try to read the file if it fails skip it
                                 try:
                                     jsonVersion = json.loads(line.strip())
                                     #Now we check if our keywords match
-                                    keywordFoundFlag = False
+                                    #keywordFoundFlag = False
                                     for keyword in self.keywords:
                                         if keyword in jsonVersion["text"]:
                                             #write this to file
@@ -173,16 +178,19 @@ class StreamFilesProcessor(multiprocessing.Process):
                                             outputWritePath.write(line)
                                             
                                             #std_flush(" ".join(["Good:   ", jsonVersion['text']]))
-                                            keywordFoundFlag = True
+                                            #keywordFoundFlag = True
                                             break
                                     #So the previous one did not match the keyword
                                     #Now we go to the next line
                                     #if not keywordFoundFlag:
-                                    #    std_flush(" ".join(["Bad:   ", jsonVersion['text']]))
-                                except Exception as e:
+                                    #    badCount += 1
+                                    #totalCount+=1
+                                except ValueError as e:
                                     #Maybe some error
-                                    self.messageQueue.put(" ".join(["Possible warning for",filePath,": file for",  self.rootName,":",str(e) ]))
-                                    pass
+                                    self.messageQueue.put(" ".join(["Possible warning for",filePath,": file for",  self.rootName,":",str(e)]))
+                        #if badCount:
+                        #    std_flush(" ".join([self.rootName, " : Number of skips:   ", str(badCount), " out of ", str(totalCount), " at ", str(self.finishedUpToTime)]))
+                        #    badCount = 0; totalCount = 0
                         #Done with file. Increment counter
                         outputWritePath.close()
                         
