@@ -23,7 +23,8 @@ def run_sql_file(filename, connection):
     and will run the SQL query on the given connection  
     '''    
     file = open(filename, 'r')
-    sql = s = " ".join(file.readlines())
+    sql = " ".join(file.readlines())
     cursor = connection.cursor()
     cursor.execute(sql)    
     connection.commit()
+    cursor.close()
