@@ -17,7 +17,7 @@ def main(assedtopic):
 
     pipeline_config_name = configuration["topic_names"][assedtopic]["pipeline"]["src"] + ".json"
     pipeline_configuration = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
-    assed_pipeline = AssedPipeline.AssedPipeline(file_utils.load_config(pipeline_configuration))
+    assed_pipeline = AssedPipeline.AssedPipeline(pipeline_configuration)
     assed_pipeline.run()
 
     helper_utils.std_flush("Finished")
