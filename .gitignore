@@ -7,3 +7,6 @@ logfiles/*
 private.md
 **/assed_config.json
 **NOTES
+**/news.json
+**/redis.conf
+config/social_streamer_topics.json
