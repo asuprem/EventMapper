@@ -6,7 +6,7 @@ import utils.helper_utils as helper_utils
 class AssedPipeline():
 
     """ This is an ASSED Pipeline class..."""
-    def __init__(self,, home_dir, pipeline_config):
+    def __init__(self, home_dir, pipeline_config):
         self.config = pipeline_config
         self.home_dir = home_dir
 
