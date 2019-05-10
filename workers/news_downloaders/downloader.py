@@ -7,10 +7,11 @@ from nltk import word_tokenize
 
 class NewsDownloader(object):
     def __init__(self,config):
-        self.config=config
+        self.db_config=config['database']
+        self.disaster_config = config['keyws']
 
     def get_max_timestamp(self, row_name):
-
+        '''
         try:
             str_ = row_name+'.txt'
             with open(str,"r") as f:
@@ -21,7 +22,7 @@ class NewsDownloader(object):
             with open(str_,"w") as f:
                 f.write("%s" %timestamp)
         return int(timestamp)
-
+        '''
         #UPDATE TO  THIS ON SERVER
         db = self.get_db_connection()    
         cursor = db.cursor()
@@ -34,22 +35,27 @@ class NewsDownloader(object):
             insert_s = 'insert into news_timestamps(source,max_ts) values(%s,%s)'
             parameter = (row_name,timestamp)
             cursor.execute(insert_s,parameter)
+            db.commit()
+        else:
+            #for fetchrows
+            timestamp = timestamp[0][0]
         cursor.close()
-        return int(timestamp[0][0])
+        db.close()
+        return int(timestamp)
             
     def get_db_connection(self,db=None):
         if db==None:
-            return mysql.connect(   host=self.config['db_host'], 
-                                    port=self.config['db_port'], 
-                                    user=self.config['db_user'], 
-                                    passwd=self.config['db_passwd'], 
-                                    db=self.config['db_db'], 
+            return mysql.connect(   host=self.db_config['db_host'], 
+                                    port=self.db_config['db_port'], 
+                                    user=self.db_config['db_user'], 
+                                    passwd=self.db_config['db_passwd'], 
+                                    db=self.db_config['db_db'], 
                                     charset='utf8')
         else:
-            return mysql.connect(   host=self.config['db_host'], 
-                                    port=self.config['db_port'], 
-                                    user=self.config['db_user'], 
-                                    passwd=self.config['db_passwd'], 
+            return mysql.connect(   host=self.db_config['db_host'], 
+                                    port=self.db_config['db_port'], 
+                                    user=self.db_config['db_user'], 
+                                    passwd=self.db_config['db_passwd'], 
                                     db=db, 
                                     charset='utf8')
 
@@ -57,17 +63,20 @@ class NewsDownloader(object):
     
 
     def update_timestamp(self,max_current_ts,row_name):
+        '''
         str = row_name+'.txt'
         with open(str,"w") as fp:
             fp.write("%s" %max_current_ts)
         return
-        
+        '''
         db = self.get_db_connection()
         cursor = db.cursor()
         update_s = 'update news_timestamps set max_ts=%s where source=%s'
         parameter = (max_current_ts,row_name)
         cursor.execute(update_s,parameter)
+        db.commit()
         cursor.close()
+        db.close()
         
 
 
@@ -104,8 +113,8 @@ class NewsDownloader(object):
             search_flag = False
             #check if sarch terms exist in title <-- simpe checker
             #iterate throught list of keywords w/ search_counter, flag positives with search_flag
-            while not search_flag and search_counter < len(self.config['keyws'][disaster_type]['langs']['en']):
-                if self.config['keyws'][disaster_type]['langs']['en'][search_counter] in title_tokens:
+            while not search_flag and search_counter < len(self.disaster_config[disaster_type]['langs']['en']):
+                if self.disaster_config[disaster_type]['langs']['en'][search_counter] in title_tokens:
                     search_flag = True
                 search_counter+=1
             if not search_flag:

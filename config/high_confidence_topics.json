@@ -1,0 +1,25 @@
+{
+    "trmm":{
+        "name": "TRMM",
+        "db_name": "HCS_TRMM",
+        "source_file":"TRMM",
+        "type":"scheduled",
+        "schedule":43200
+    },
+
+    "usgs":{
+        "name": "USGS",
+        "db_name": "HCS_USGS",
+        "source_file":"USGS",
+        "type":"scheduled",
+        "schedule":43200
+    },
+    "news":{
+        "name": "news",
+        "db_name": "news",
+        "source_file":"News",
+        "type":"scheduled",
+        "schedule":43200,
+        "config":"config/assed_config.json"
+    }
+}

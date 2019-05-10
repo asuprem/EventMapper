@@ -1,2 +1,11 @@
 *.pyc
 downloads/*
+
+archives/*
+logfiles/*
+tools/*
+assed_env/*
+**/*.rdb
+**/*.out
+venv/*
+redis/*
