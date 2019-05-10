@@ -1,10 +1,12 @@
 """ This file containts constants used throughout ASSED. """
 
+ASSED_CONFIG = "config/assed_config.json"
+
 # This is the path to the general configuration file.
 GENERAL_CONFIG_PATH = 'config/multiprocess.json'
 
 # Path to topics file which contains all topics and keywords for each topic
-TOPIC_CONFIG_PATH = 'config/social_streamer_topics.json'
+TOPIC_CONFIG_PATH = 'config/assed_config.json'
 
 # CONFIG_PATH: ????????
 CONFIG_PATH = 'config/multiprocess.json'
@@ -19,6 +21,8 @@ CONFIG_TIME_CHECK = 60*2
 SOCIAL_STREAMER_CONFIG_TIME_CHECK = CONFIG_TIME_CHECK
 # CONFIG_TIME_CHECK for the StreamFilesProcessor (streamCollector)
 STREAM_COLLECTOR_CONFIG_TIME_CHECK = CONFIG_TIME_CHECK
+# CONFIG_TIME_CHECK for the High Confidence Streamer (streamCollector)
+HCS_CONFIG_TIME_CHECK = 60*60*6
 
 # ------------------------------------------------------
 # CHECK IF FILES ARE BEING CREATED
@@ -50,3 +54,8 @@ STREAM_PROCESSOR_POSTPONE_SECONDS = 60*60
 
 # Granularity in seconds for StreamFilesProcessor timeDelta
 STREAMING_GRANULARITY_SECONDS = 60
+
+# ------------------------------------------------------
+# HIGH CONFIDENCE STREAMER
+
+HIGH_CONFIDENCE_CONFIG_PATH = "config/high_confidence_topics.json"
