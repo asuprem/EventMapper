@@ -1,0 +1,39 @@
+{
+    "configuration":{
+        "source_dir":"assed_landslide"
+    },
+
+    "input_buffer":{
+        "name":"input_buffer",
+        "script":"landslide_inputbuffer",
+        "export-key":"assed:landslide:buffer:stream"
+    },
+
+    "output_buffer":{
+        "name":"output_buffer",
+        "script":"landslide_outputbuffer",
+        "import-key":"assed:landslide:events" 
+    },
+
+    "location_extractor":{
+        "name":"location_extractor",
+        "script":"landslide_location_extractor",
+        "import-key":"assed:landslide:buffer:stream",
+        "export-key":"assed:landslide:location:extractor"
+    },
+
+    "hdi":{
+        "name":"hdi",
+        "script":"landslide_hdi",
+        "import-key":"assed:landslide:location:extractor", 
+        "export-key":"assed:landslide:hdi"
+    },
+
+    "event_detection":{
+        "name":"event_detection", 
+        "script":"landslide_event_detection",
+        "import-key":"assed:landslide:hdi",
+        "export-key":"assed:landslide:events"
+    }
+
+}
