@@ -12,7 +12,6 @@ import utils.CONSTANTS as CONSTANTS
 @click.command()
 @click.argument("assedtopic")
 def main(assedtopic):
-
     assedtopic = "landslide"
     configuration = file_utils.load_config(CONSTANTS.ASSED_CONFIG)
 
