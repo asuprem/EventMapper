@@ -2,8 +2,6 @@
 
 ASSED_CONFIG = "config/assed_config.json"
 
-# This is the path to the general configuration file.
-GENERAL_CONFIG_PATH = 'config/multiprocess.json'
 
 # Path to topics file which contains all topics and keywords for each topic
 TOPIC_CONFIG_PATH = 'config/assed_config.json'
