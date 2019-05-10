@@ -9,7 +9,6 @@ import utils.helper_utils as helper_utils, utils.file_utils as file_utils, utils
 import utils.AssedPipeline as AssedPipeline
 import utils.CONSTANTS as CONSTANTS
 
-
 @click.command()
 @click.argument("assedtopic")
 def main(assedtopic):
