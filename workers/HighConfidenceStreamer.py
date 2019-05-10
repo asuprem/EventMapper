@@ -72,8 +72,12 @@ if __name__ == '__main__':
                         std_flush("Terminated possible zombie process for ", hcs_type, " at ",readable_time())
                     except:
                         pass
+                    # Set up kwargs...
+                    kwargs = {}
+                    if "config" in HCS_configuration[hcs_type]:
+                        kwargs["config"] = HCS_configuration[hcs_type]["config"]
                     try:
-                        HCS_configuration[hcs_type]['processor'] = Executor(assed_config, root_name=hcs_type, errorQueue=errorQueue, messageQueue=messageQueue)
+                        HCS_configuration[hcs_type]['processor'] = Executor(assed_config, root_name=hcs_type, errorQueue=errorQueue, messageQueue=messageQueue, **kwargs)
                     except Exception as e:
                         std_flush("Failed to launch %s with error %s"%(hcs_type, repr(e)))
                     HCS_configuration[hcs_type]['processor'].start()
