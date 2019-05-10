@@ -1,6 +1,7 @@
 {
     "configuration":{
-        "source_dir":"assed_landslide"
+        "script_dir":"assed_landslide", 
+        "log_dir":"assed_landslide"
     },
 
     "input_buffer":{
