@@ -27,7 +27,7 @@ class KeyServer():
     def update(self,config):
         """ Update keyserver with new configuration file """
 
-        for _key in config["APIKeys"][self.key_mode]:
+        for _key in config["APIKEYS"][self.key_mode]:
             # For a new key in config that is not in key_server
             if _key not in self.keyserver:
                 self.keyserver[_key] = {}
@@ -36,8 +36,8 @@ class KeyServer():
                 self.keyserver[_key]["valid"] = True
             else:
                 # Key exists in keyserver, but may have changed...
-                if self.keyserver[_key]["key"] != config["APIKeys"]["keys"][_key]:
-                    self.keyserver[_key]["key"] = config["APIKeys"]["keys"][_key]
+                if self.keyserver[_key]["key"] != config["APIKEYS"][self.key_mode][_key]:
+                    self.keyserver[_key]["key"] = config["APIKEYS"][self.key_mode][_key]
         # Now all keys in config have been validated.Any remaining key in keyserver not in config is a deleted key. Invalidate the key
         for _key in self.keyserver:
             if _key not in config["APIKEYS"][self.key_mode]:
