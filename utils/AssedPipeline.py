@@ -10,7 +10,7 @@ class AssedPipeline():
         self.config = pipeline_config
 
         # Create Log directory
-        self.log_dir = "./logfiles/" + self.pipeline_config["configuration"]["log_dir"]
+        self.log_dir = "./logfiles/" + self.config["configuration"]["log_dir"]
         if not os.path.exists(self.log_dir):
             helper_utils.std_flush("Log directory not created. Creating")
             os.makedirs(self.log_dir)
