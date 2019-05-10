@@ -1,5 +1,5 @@
 import time, os, sys, traceback, redis
-
+import pdb
 
 class AssedPipeline():
 
@@ -12,4 +12,4 @@ class AssedPipeline():
         def run(self,):
             # Initiate each of the config executables.
             # Assume they all require python and are executed through assed_env
-        
+            pdb.set_trace()

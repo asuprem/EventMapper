@@ -6,15 +6,25 @@ This is the server for ASSED. Once it begins running, it should begin taking req
 # General Imports
 import os, json, click
 import utils.helper_utils as helper_utils, utils.file_utils as file_utils, utils.db_utils as db_utils
-import utils.Pipeline as Pipeline
+import utils.AssedPipeline as AssedPipeline
 import utils.CONSTANTS as CONSTANTS
+
 
 @click.command()
 @click.argument("assedtopic")
 def main(assedtopic):
 
+    assedtopic = "landslide"
     configuration = file_utils.load_config(CONSTANTS.ASSED_CONFIG)
-    assed_pipeline = Pipeline.Pipeline()
+
+    pipeline_config_name = configuration["topic_names"][assedtopic]["pipeline"]["src"] + ".json"
+    pipeline_configuration = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
+    assed_pipeline = AssedPipeline.AssedPipeline(file_utils.load_config(pipeline_configuration))
+
+
+    assed_pipeline.run()
+
+    helper_utils.std_flush("Finished").
 
 
 
