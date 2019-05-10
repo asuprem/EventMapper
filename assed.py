@@ -24,7 +24,7 @@ def main(assedtopic):
 
     assed_pipeline.run()
 
-    helper_utils.std_flush("Finished").
+    helper_utils.std_flush("Finished")
 
 
 
