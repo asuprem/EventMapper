@@ -13,10 +13,18 @@ import utils.CONSTANTS as CONSTANTS
 @click.argument("assedtopic")
 def main(assedtopic):
     assedtopic = "landslide"
-    configuration = file_utils.load_config(CONSTANTS.ASSED_CONFIG)
+    manager = {}
 
-    pipeline_config_name = configuration["topic_names"][assedtopic]["pipeline"]["src"] + ".json"
-    pipeline_configuration = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
+    manager[assedtopic] = {}
+
+    assed_config = file_utils.load_config(CONSTANTS.ASSED_CONFIG)
+
+    pipeline_config_name = assed_config["topic_names"][assedtopic]["pipeline"]["src"] + ".json"
+    manager[assedtopic]["pipeline_configuration"] = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
+
+    
+    
+
     assed_pipeline = AssedPipeline.AssedPipeline(pipeline_configuration)
     assed_pipeline.run()
 
