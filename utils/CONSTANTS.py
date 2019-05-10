@@ -8,8 +8,6 @@ GENERAL_CONFIG_PATH = 'config/multiprocess.json'
 # Path to topics file which contains all topics and keywords for each topic
 TOPIC_CONFIG_PATH = 'config/assed_config.json'
 
-# CONFIG_PATH: ????????
-CONFIG_PATH = 'config/multiprocess.json'
 
 # ------------------------------------------------------
 # CHECK IF CONFIG FILE HAS CHANGED
