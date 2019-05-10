@@ -1,8 +1,19 @@
 *.pyc
+**.pyc
 downloads/*
+goof/*
+logfiles/*
+**config.json
+**/multiprocess.json
+private.md
+**/assed_config.json
+**NOTES
+**/news.json
+**/redis.conf
+config/social_streamer_topics.json
+.vscode/
 
 archives/*
-logfiles/*
 tools/*
 assed_env/*
 **/*.rdb
