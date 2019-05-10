@@ -9,7 +9,10 @@
     
     "APIKEYS":
     {
-        "googlemaps": "AIzaSyCJcIWOYOEDL8FeBo_G5JGqiBLjw6kD4Sk"
+        "googlemaps": "AIzaSyCJcIWOYOEDL8FeBo_G5JGqiBLjw6kD4Sk",
+        "twitter":{            
+            "key1": ["xK50ZAcaCSkIt3j3fBgGsEgYHop2MbIx86XgHcshbmAn1", "3405518446-jnuCEajC2YsGgyF5S9lZauhYjD8BtgmcxIa4NdV", "cfT0Cdro7tsT6RSzI1slTL5dZ", "TKeaVjIhqkJ7AUzVN0SoRYLHiWxasV2YiI4mYrtSxFzAYemkMQ"]
+        }
     },
 
     "topic_names": {

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     '''streamerConfig - streamerConfig'''
     streamerConfig = {}
     '''keyServer - determines which keys are assigned'''
-    keyServer = KeyServer(load_config(CONSTANTS.GENERAL_CONFIG_PATH))
+    keyServer = KeyServer(load_config(CONSTANTS.ASSED_CONFIG))
 
     
     '''Launch the Streamer with all keywords'''
@@ -59,7 +59,7 @@ if __name__ == '__main__':
             configReload = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
-            keyServer.update(load_config(CONSTANTS.GENERAL_CONFIG_PATH))
+            keyServer.update(load_config(CONSTANTS.ASSED_CONFIG))
             #First we check reloaded and for each changed, we replace
             for physicalEvent in configReload['topic_names'].keys():
                 for language in configReload['topic_names'][physicalEvent]["languages"]:
