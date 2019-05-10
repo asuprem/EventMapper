@@ -40,7 +40,7 @@ if __name__ == "__main__":
                                                                                 "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                 errorQueue,
                                                                                 messageQueue)
-            except AssertionError:
+            except RuntimeError:
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                 keyStreamConfig[eventLangTuple]['postpone'] = True
             keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
                                                                                     "_".join([eventLangTuple[0],eventLangTuple[1]]), 
                                                                                     errorQueue,
                                                                                     messageQueue)
-                except AssertionError:
+                except RuntimeError:
                     std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                     keyStreamConfig[eventLangTuple]['postpone'] = True
                 keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                                                                                 errorQueue,
                                                                                 messageQueue)
                 keyStreamConfig[eventLangTuple]['postpone'] = False
-            except AssertionError:
+            except RuntimeError:
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                 keyStreamConfig[eventLangTuple]['postpone'] = True
             keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
