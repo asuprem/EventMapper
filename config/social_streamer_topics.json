@@ -14,7 +14,8 @@
                 "valid": 1
             },
             "high_confidence": {
-                "valid": 1
+                "valid": true,
+                "keywords":["landslide","mudslide","rockslide"]
             }
         },
         "flooding": {
@@ -25,7 +26,8 @@
                 "valid": 1
             },
             "high_confidence": {
-                "valid": 1
+                "valid": true,
+                "keywords":["flooding","floods"]
             }
         },
         "wildfire": {
@@ -36,7 +38,8 @@
                 "valid": 1
             },
             "high_confidence": {
-                "valid": 1
+                "valid": true,
+                "keywords":["wildfires","brushfires"]
             }
         },
         "algae": {
@@ -47,7 +50,7 @@
                 "valid": 1
             },
             "high_confidence": {
-                "valid": 1
+                "valid": false
             }
         },
         "earthquake": {
@@ -58,7 +61,8 @@
                 "valid": 1
             },
             "high_confidence": {
-                "valid": 1
+                "valid": true,
+                "keywords":["earthquake"]
             }
         }
     }
