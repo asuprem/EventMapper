@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /expansion2/LITMUS/
+cd /expansion1/LITMUS/
 if ps up `cat ./logfiles/HighConfidenceStreamer.pid ` > /dev/null
 then
     printf "HighConfidenceStreamer.py is aleady running\n" >> ./logfiles/HighConfidenceStreamer.out

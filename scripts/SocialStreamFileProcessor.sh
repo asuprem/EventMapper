@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /expansion2/LITMUS/
+cd /expansion1/LITMUS/
 if ps up `cat ./logfiles/SocialStreamFileProcessor.pid ` > /dev/null
 then
     printf "SocialStreamFileProcessor.py is aleady running\n" >> ./logfiles/SocialStreamFileProcessor.out
@@ -8,5 +8,5 @@ else
     rm  ./logfiles/SocialStreamFileProcessor.pid >> ./logfiles/SocialStreamFileProcessor.out
     printf "    Deleted file\n" >> ./logfiles/SocialStreamFileProcessor.out
     printf "Starting SocialStreamFileProcessor.py\n" >> ./logfiles/SocialStreamFileProcessor.out
-    nohup ./venv/bin/python workers/SocialStreamFileProcessor.py >> ./logfiles/SocialStreamFileProcessor.log 2>&1 &
+    nohup ./assed_env/bin/python workers/SocialStreamFileProcessor.py >> ./logfiles/SocialStreamFileProcessor.log 2>&1 &
 fi
