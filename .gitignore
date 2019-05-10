@@ -20,3 +20,4 @@ assed_env/*
 **/*.out
 venv/*
 redis/*
+workers/utils
