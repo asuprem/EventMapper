@@ -2,7 +2,6 @@
 
 ASSED_CONFIG = "config/assed_config.json"
 
-
 # Path to topics file which contains all topics and keywords for each topic
 TOPIC_CONFIG_PATH = 'config/assed_config.json'
 
