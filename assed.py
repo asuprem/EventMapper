@@ -22,11 +22,9 @@ def main(assedtopic):
     pipeline_config_name = assed_config["topic_names"][assedtopic]["pipeline"]["src"] + ".json"
     manager[assedtopic]["pipeline_configuration"] = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
 
-    
-    
 
-    assed_pipeline = AssedPipeline.AssedPipeline(pipeline_configuration)
-    assed_pipeline.run()
+    manager[assedtopic]["assed_pipeline"] = AssedPipeline.AssedPipeline(manager[assedtopic]["pipeline_configuration"])
+    manager[assedtopic]["assed_pipeline"].run()
 
     helper_utils.std_flush("Finished")
 
