@@ -10,3 +10,4 @@ private.md
 **/news.json
 **/redis.conf
 config/social_streamer_topics.json
+.vscode/
