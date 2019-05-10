@@ -8,5 +8,5 @@ else
     rm  ./logfiles/SocialStreamFileProcessor.pid >> ./logfiles/SocialStreamFileProcessor.out
     printf "    Deleted file\n" >> ./logfiles/SocialStreamFileProcessor.out
     printf "Starting SocialStreamFileProcessor.py\n" >> ./logfiles/SocialStreamFileProcessor.out
-    nohup ./assed_env/bin/python3.63.63.63.63.63.6 workers/SocialStreamFileProcessor.py >> ./logfiles/SocialStreamFileProcessor.log 2>&1 &
+    nohup ./assed_env/bin/python workers/SocialStreamFileProcessor.py >> ./logfiles/SocialStreamFileProcessor.log 2>&1 &
 fi

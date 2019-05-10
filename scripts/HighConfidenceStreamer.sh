@@ -8,5 +8,5 @@ else
     rm  ./logfiles/HighConfidenceStreamer.pid >> ./logfiles/HighConfidenceStreamer.out
     printf "    Deleted file\n" >> ./logfiles/HighConfidenceStreamer.out
     printf "Starting HighConfidenceStreamer.py\n" >> ./logfiles/HighConfidenceStreamer.out
-    nohup ./assed_env/bin/python3.6 workers/HighConfidenceStreamer.py >> ./logfiles/HighConfidenceStreamer.log 2>&1 &
+    nohup ./assed_env/bin/python workers/HighConfidenceStreamer.py >> ./logfiles/HighConfidenceStreamer.log 2>&1 &
 fi
