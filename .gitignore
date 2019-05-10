@@ -1,3 +1,4 @@
+*.pyc
 **.pyc
 downloads/*
 goof/*
@@ -11,3 +12,11 @@ private.md
 **/redis.conf
 config/social_streamer_topics.json
 .vscode/
+
+archives/*
+tools/*
+assed_env/*
+**/*.rdb
+**/*.out
+venv/*
+redis/*
