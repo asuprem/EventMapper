@@ -1,7 +1,8 @@
 import time
 from datetime import datetime
 import sys
-
+import http.client as httplib, urllib.parse as urllib, json
+import re
 
 # Checks if two dictionaries are equal
 # TODO optimize this
@@ -36,3 +37,59 @@ def readable_time():
 def std_flush(*args,**kwargs):
     print(" ".join(map(str,args)))
     sys.stdout.flush()
+
+def location_standardize(location):
+    """ Standardize by removing special characters and location stopwords. """
+    temp_str = location_normalize(location)
+    temp_lst = temp_str.split(" ")
+    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern"]
+    temp_lst = [item for item in temp_lst if (item not in location_stopwords and len(item) > 5)]
+
+    return ":".join(temp_lst)
+
+def location_normalize(location):
+    return re.sub('[^a-zA-Z0-9\n\.]', ' ',location.strip().lower())
+
+def high_confidence_streamer_key(key_val):
+    return "assed:hcs:" + key_val
+
+def sublocation_key(key_val):
+    return "assed:sublocation:"+key_val
+
+def lookup_address_only(address, API_KEY):
+    # So first we need to check if the location is in our database...
+    host = 'maps.googleapis.com'
+    params = {'address': address, 'key': API_KEY}
+    url = '/maps/api/geocode/json?'+urllib.urlencode(params)
+    req = httplib.HTTPSConnection(host)
+    req.putrequest('GET', url)
+    req.putheader('Host', host)
+    req.endheaders()
+    resp = req.getresponse()
+    if resp.status==200:
+        result = json.load(resp, encoding='UTF-8')
+        if 'results' in result:
+            results = result['results']
+            if len(results) > 0:
+                item = results[0]
+                if 'geometry' in item:
+                    geometry = item['geometry']
+                    if 'location' in geometry:
+                        location = geometry['location']
+                        lat = location['lat']
+                        lng = location['lng']
+            else:
+                return None, None
+    else:
+        return None, None
+    return lat, lng
+
+def generate_cell(N, E, coef=0.04166666666667):
+    if coef<0.04166666666667: coef = 0.04166666666667
+    if coef>1: coef = 1
+    row = int(round((90.0+N)/coef))
+    if row<0:
+        raise ValueError
+    col = int(round((180.0+E)/coef))
+    key = str(row)+'_'+str(col)
+    return key
