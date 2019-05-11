@@ -45,7 +45,7 @@ def location_standardize(location):
     """ Standardize by removing special characters and location stopwords. """
     temp_str = location_normalize(location)
     temp_lst = temp_str.split(" ")
-    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern", "junction"]
+    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern", "junction", "station", "little", "central", "republic", "region", "western", "eastern", "general", "center", "ground"]
     temp_lst = [item for item in temp_lst if (item not in location_stopwords and len(item) > 5)]
 
     return ":".join(temp_lst)
