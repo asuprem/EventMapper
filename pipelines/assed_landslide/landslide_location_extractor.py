@@ -16,4 +16,5 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
 
 
     def update_location_store(self,):
-        pdb.set_trace()
+        for _key in self.r.scan_iter(match="assed:sublocation:*", count=500):
+            pdb.set_trace()
