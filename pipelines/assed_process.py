@@ -19,7 +19,10 @@ from datetime import datetime, timedelta
 @click.argument("exportkey")
 @click.argument("processscript")
 def main(logdir, importkey, exportkey, processscript):
-    pdb.set_trace()
+    pid_name = os.path.basename(sys.argv[0]).split('.')[0]
+    #helper_utils.setup_pid(pid_name, logdir=logdir)
+
+    
     kafka_import = importkey.replace(":","_")
     kafka_export = exportkey.replace(":","_")
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
@@ -28,7 +31,7 @@ def main(logdir, importkey, exportkey, processscript):
     kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
 
     for message in kafka_consumer:
-        pass
+        pdb.set_trace()
     
 
 
