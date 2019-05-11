@@ -18,6 +18,7 @@ class AssedPipeline():
         self.script_dir = "./pipelines/" + self.config["configuration"]["script_dir"]
         self.assed_sript_dir = "./pipelines"
         self.sh_dir = "./scripts/" + self.config["configuration"]["sh_dir"]
+        self.script_dir_importname = self.config["configuration"]["script_dir"]
 
         self.createIfNotExists(self.log_dir)
         self.createIfNotExists(self.script_dir)
@@ -113,7 +114,7 @@ else
     printf "Deleted file\\n" >> {logdir}/{processname}.out
     printf "Starting {processname}.py\\n" >> {logdir}/{processname}.out
     nohup ./assed_env/bin/python {assedscript}/assed_process.py {logdir} {importkey} {exportkey} {processscriptname} {processscriptdir} >> {logdir}/{processname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.script_dir)
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.script_dir_importname)
         
 
             self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
