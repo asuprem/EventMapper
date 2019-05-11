@@ -14,7 +14,8 @@
     "output_buffer":{
         "name":"output_buffer",
         "script":"landslide_outputbuffer",
-        "import-key":"assed:landslide:events" 
+        "import-key":"assed:landslide:events" ,
+        "export-key":"assed:landslide:output:buffer"
     },
 
     "location_extractor":{
