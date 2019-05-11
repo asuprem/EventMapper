@@ -1,6 +1,6 @@
 import time
 from datetime import datetime
-import sys
+import sys, os
 import http.client as httplib, urllib.parse as urllib, json
 import re
 
@@ -20,11 +20,14 @@ def dict_equal(d1, d2):
 
 
 #setu up PID for recurrence checks
-def setup_pid(pid_name):
+def setup_pid(pid_name, logdir=None):
     import os, sys
     #pid_name will be application name -- '/path/app.py'
     pid = str(os.getpid())
-    pidFile = './logfiles/' + pid_name + '.pid'
+    if logdir is None:
+        pidFile = './logfiles/' + pid_name + '.pid'
+    else:
+        pidFile = os.path.join(logdir, pid_name + '.pid')
 
     if os.path.isfile(pidFile):
         print("pidfile already exists. exiting")
