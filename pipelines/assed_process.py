@@ -48,16 +48,20 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
         # Push the message to kafka...if true
         if processedMessage[0]:
             pass
+            # Message failed to be encoded
         else:
             pass
+            # Message succeeded. We will push to kafka.
             #helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, item["id_str"]))
         
+            #byted = bytes(json.dumps(extractTweet(jsonVersion)), encoding="utf-8")
+            #kafka_producer.send(kafka_key, byted)
+            #kafka_producer.flush()
         
-        """
         r.set(exportkey+":partition", message.partition)
         r.set(exportkey+":offset", message.offset)
         r.set(exportkey+":timestamp", message.timestamp)
-        """
+        
         
     
 
