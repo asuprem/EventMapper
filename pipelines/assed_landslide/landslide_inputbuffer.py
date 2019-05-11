@@ -104,7 +104,7 @@ def main(logdir, exportkey):
                         else:
                             # Have not done this item yet...
                             # process
-                            byted = bytes(json.dumps(extractTweet(jsonVersion)))
+                            byted = bytes(json.dumps(extractTweet(jsonVersion)), encode="utf-8")
                             kafka_producer.send(kafka_key, byted)
                             kafka_producer.flush()
 
