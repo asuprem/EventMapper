@@ -66,18 +66,31 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             #pass
             #
             #
-            # Attempt 
+            # Attempt to get location from extractor memory (assed:extractor...)
             
-            if message["location"] in self.memory:
-                pass
-            else:
-                utils.helper_utils.std_flush(utils.helper_utils.location_standardize(message["location"]), message["location"])
-                #self.counter+=1
-                #utils.helper_utils.std_flush(self.counter)
-                self.memory[message["location"]] = 1
-
-
-
+            # First normalize...
+            extractor_locations = utils.helper_utils.location_standardize(message["location"])
+            # Then attempt retrieve
+            coordinates = None
+            for extractor_sublocation in extractor_locations.split(":"):
+                r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
+                coordinates = self.r.get(r_key)
+                if coordinates is not None:
+                    break
+            
+            if coordinates is None:
+                # no sublocation exists. We are gonna have to geocode
+                # TODO TODO TODO TODO -------------
+                coordinates = "GEOCODE"
+                # if fails, return True with stuff...
+                # return (True, message)
+                # else
+                for extractor_sublocation in extractor_locations.split(":"):
+                    r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
+                    # TODO ADD TO MEMORY AS WELL
+                    self.r.set(r_key, coordinates, ex=259200)
+                self.counter+=1
+                utils.helper_utils.std_flush(extractor_locations)
 
 
         return (True, message)
