@@ -36,10 +36,11 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
                     longitude = self.locations[sublocations][1]
-                    utils.helper_utils.std_flush(locations)
                     break
         else:
-            self.counter+=1
+            # This is number of location items...
+            pass
+
             #utils.helper_utils.std_flush(self.counter)
                     
         if locations is None:
@@ -54,11 +55,15 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 if sublocation in self.locations:
                     latitude = self.locations[sublocation][0]
                     longitude = self.locations[sublocation][1]
+            
         
         message["locatioin"] = locations
         if latitude is not None and longitude is not None:
             message["latitude"] = str(latitude)
             message["longitude"] = str(longitude)
+        else:
+            self.counter+=1
+            utils.helper_utils.std_flush(self.counter)
 
 
         return (True, message)
