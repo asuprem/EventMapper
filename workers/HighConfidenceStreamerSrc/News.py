@@ -28,6 +28,8 @@ class News(multiprocessing.Process):
         # No cached list because we are getting new stuff every day...
         self.config = kwargs["config"]
         self.NER = Ner(host='localhost', port=9199)
+        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
+        self.r=redis.Redis(connection_pool = pool) 
         pass
 
     def run(self,):
@@ -113,7 +115,9 @@ class News(multiprocessing.Process):
                 continue
             item["locations"] = final_locations
             
-            lat,lng = lookup_address_only(desc_locations, self.config["APIKEYS"]["googlemaps"])
+            lat,lng = lookup_address_only(desc_locations, self.config["APIKEYS"]["googlemaps"], self.r)
+            if lat == False:
+                raise ValueError("Ran out of GoogleMaps daily keys")
             if lat is None or lng is None:
                 coordinate_skip+=1
                 continue
@@ -183,20 +187,19 @@ class News(multiprocessing.Process):
 
     def updateRedisLocations(self,article_location):
         # get REDIS connection
-        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
-        r=redis.Redis(connection_pool = pool) 
+        
         totalLocations = len(article_location)
         sublocations = 0
         for location in article_location:
             converted_location = " ".join(location["name"])
             location_std = location_standardize(converted_location)
             location_key = high_confidence_streamer_key("news:location:"+location_std)
-            r.set(location_key,converted_location,ex=259200)
+            self.r.set(location_key,converted_location,ex=259200)
 
             point_str = str(location["lat"]) + "," + str(location["lng"])
             for sublocation in location_std.split(":"):
                 sublocationkey = sublocation_key(sublocation)
-                r.set(sublocationkey, point_str, ex=259200)
+                self.r.set(sublocationkey, point_str, ex=259200)
                 sublocations+=1
         self.messageQueue.put("Completed News with: %i locations and %i sublocations"%(totalLocations, sublocations))
 

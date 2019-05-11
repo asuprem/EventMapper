@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 import sys, os
 import http.client as httplib, urllib.parse as urllib, json
-import re
+import re, redis
 
 # Checks if two dictionaries are equal
 # TODO optimize this
@@ -59,7 +59,21 @@ def high_confidence_streamer_key(key_val):
 def sublocation_key(key_val):
     return "assed:sublocation:"+key_val
 
-def lookup_address_only(address, API_KEY):
+def lookup_address_only(address, API_KEY, redis_key = None):
+    if redis_key is None:
+        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
+        redis_key=redis.Redis(connection_pool = pool) 
+
+    redis_get = redis_key.get("apiaccess:googlemaps")    
+    if redis_get is None:
+        redis_get = 0
+    else:
+        redis_get = int(redis_get)
+    if redis_get > 1290:
+        return False, False
+    else:
+        redis_key.set("apiaccess:googlemaps", redis_get+1)
+
     # So first we need to check if the location is in our database...
     host = 'maps.googleapis.com'
     params = {'address': address, 'key': API_KEY}
@@ -86,6 +100,7 @@ def lookup_address_only(address, API_KEY):
     else:
         return None, None
     return lat, lng
+
 
 def generate_cell(N, E, coef=0.04166666666667):
     if coef<0.04166666666667: coef = 0.04166666666667
