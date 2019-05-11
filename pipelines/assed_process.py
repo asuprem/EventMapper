@@ -49,7 +49,8 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
         if processedMessage[0]:
             pass
         else:
-            helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, item["id_str"]))
+            pass
+            #helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, item["id_str"]))
         
         
         """
