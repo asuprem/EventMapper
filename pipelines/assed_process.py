@@ -27,7 +27,7 @@ def main(logdir, importkey, exportkey, processscript):
     seek_partition = r.get(exportkey+":partition")
     seek_offset = r.get(exportkey+":offset")
     seek_partition = 0 if seek_partition is None else int(seek_partition)
-    seek_offset = 0 if seek_offset is None else int(seek_offset)
+    seek_offset = 0 if seek_offset is None else int(seek_offset)+1
     
     kafka_producer = kafka.KafkaProducer()
     kafka_consumer = kafka.KafkaConsumer()
