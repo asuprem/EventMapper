@@ -104,6 +104,7 @@ def main(logdir, exportkey):
                         else:
                             # Have not done this item yet...
                             # process
+                            pdb.set_trace()
                             pass
 
                             
@@ -113,16 +114,6 @@ def main(logdir, exportkey):
                                 helper_utils.std_flush("Finished with %s"%(str(datetime.fromtimestamp(granularTime/1000.0))))
                                 prevGranular = granularTime
                 finishedUpToTime += TIME_DELTA_MINIMAL
-
-
-
-
-
-                        
-
-
-                            
-                    
 
 
 
