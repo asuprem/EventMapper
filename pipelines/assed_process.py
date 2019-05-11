@@ -32,6 +32,7 @@ def main(logdir, importkey, exportkey, processscript):
     kafka_producer = kafka.KafkaProducer()
     kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
     TopicPartition = kafka.TopicPartition(kafka_import, seek_partition)
+    kafka_consumer.assign(TopicPartition)
     kafka_consumer.seek(TopicPartition, seek_offset)
     
     for message in kafka_consumer:
