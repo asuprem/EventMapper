@@ -43,7 +43,7 @@ else
     rm  {logdir}/{inputbuffername}.pid >> {logdir}/{inputbuffername}.out
     printf "Deleted file\\n" >> {logdir}/{inputbuffername}.out
     printf "Starting {inputbuffername}.py\\n" >> {logdir}/{inputbuffername}.out
-    nohup ./assed_env/bin/python {scriptdir}/{inputbuffername}.py {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
+    nohup ./assed_env/bin/python {scriptdir}/{inputbuffername}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
 fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbuffername = scriptname, scriptdir = self.script_dir, exportkey = exportkey)
         
 
