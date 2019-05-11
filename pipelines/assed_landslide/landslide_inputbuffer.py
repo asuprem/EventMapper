@@ -112,6 +112,7 @@ def main(logdir, exportkey):
                             if granularTime - prevGranular > 86400000:
                                 helper_utils.std_flush("Finished with %s"%(str(datetime.fromtimestamp(granularTime/1000.0))))
                                 prevGranular = granularTime
+                finishedUpToTime += TIME_DELTA_MINIMAL
 
 
 
