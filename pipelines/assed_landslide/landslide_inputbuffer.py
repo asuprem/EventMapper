@@ -6,17 +6,18 @@ import utils.helper_utils as helper_utils
 import time, pdb
 
 @click.command()
-@click.argument("importkey")
-def main(importkey):
+@click.argument("logdir")
+@click.argument("exportkey")
+def main(logdir, exportkey):
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
-    helper_utils.setup_pid(pid_name)
+    helper_utils.setup_pid(pid_name, logdir=logdir)
     
-    helper_utils.std_flush(importkey)
+    helper_utils.std_flush(exportkey)
 
 
     while True:
         time.sleep(10)
-        helper_utils.std_flush(importkey)
+        helper_utils.std_flush(exportkey)
 
 
 if __name__ == "__main__":
