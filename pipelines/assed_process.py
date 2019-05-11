@@ -25,7 +25,7 @@ def main(logdir, importkey, exportkey, processscript):
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
     r=redis.Redis(connection_pool = pool)
     kafka_producer = kafka.KafkaProducer()
-    kafka_consumer = kafka.KafkaConsumer(kafka_import, "auto_offset_reset"="earliest")
+    kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
 
     for message in kafka_consumer:
         pass
