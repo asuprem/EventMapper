@@ -88,7 +88,7 @@ else
     rm  {logdir}/{inputbuffername}.pid >> {logdir}/{inputbuffername}.out
     printf "Deleted file\\n" >> {logdir}/{inputbuffername}.out
     printf "Starting {inputbuffername}.py\\n" >> {logdir}/{inputbuffername}.out
-    nohup ./assed_env/bin/python {scriptdir}/{inputbufferscriptname}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
+    nohup ./assed_env/bin/python {scriptdir}/{inputbufferscriptname}.py {logdir} {exportkey} {pidname} >> {logdir}/{inputbuffername}.log 2>&1 &
 fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptname = scriptname, inputbuffername = inputbuffername, scriptdir = self.script_dir, exportkey = exportkey)
         
 
@@ -113,8 +113,8 @@ else
     rm  {logdir}/{processname}.pid >> {logdir}/{processname}.out
     printf "Deleted file\\n" >> {logdir}/{processname}.out
     printf "Starting {processname}.py\\n" >> {logdir}/{processname}.out
-    nohup ./assed_env/bin/python {assedscript}/assed_process.py {logdir} {importkey} {exportkey} {processscriptname} {processscriptdir} >> {logdir}/{processname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.script_dir_importname)
+    nohup ./assed_env/bin/python {assedscript}/assed_process.py {logdir} {importkey} {exportkey} {processscriptname} {processscriptdir} {pidname} >> {logdir}/{processname}.log 2>&1 &
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.script_dir_importname, pidname=processname)
         
 
             self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
