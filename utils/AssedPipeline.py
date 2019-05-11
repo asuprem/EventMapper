@@ -6,10 +6,13 @@ import utils.helper_utils as helper_utils
 class AssedPipeline():
 
     """ This is an ASSED Pipeline class..."""
-    def __init__(self, home_dir, pipeline_config):
+    def __init__(self, home_dir, pipeline_config, mode="DEBUG"):
         self.config = pipeline_config
         self.home_dir = home_dir
-
+        if mode == "DEBUG" or mode == "production":
+            self.mode = mode
+        else:
+            raise ValueError("Unrecognized mode. Set mode to one of: 'DEBUG', 'production'.")
         # Create Log directory TODO Sanitize
         self.log_dir = "./logfiles/" + self.config["configuration"]["log_dir"]
         self.script_dir = "./pipelines/" + self.config["configuration"]["script_dir"]
@@ -35,6 +38,8 @@ class AssedPipeline():
 
         # Set up kafka keys:
         self.initializeKafka()
+        # If debug, delete assed keys
+        #self.deleteRedisKeys()
 
         # Create Scripts
         self.createInputBufferScript()
@@ -51,6 +56,20 @@ class AssedPipeline():
             except kafka.errors.TopicAlreadyExistsError:
                 helper_utils.std_flush("%s exportkey already exists in Kafka broker"%kafka_key)
 
+    def deleteRedisKeys(self,):
+        if self.mode == "production":
+            return
+        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
+        r=redis.Redis(connection_pool = pool)
+        # TODO Fix this...maybe remove; probably no longer needed...
+        #for _scriptref in self.input_scripts + self.output_scripts + self.process_scripts:
+        for _scriptref in self.output_scripts + self.process_scripts:
+            r_offset = self.config[_scriptref]["export-key"]+":offset"
+            r_partition = self.config[_scriptref]["export-key"]+":partition"
+            r_timestamp = self.config[_scriptref]["export-key"]+":timestamp"
+            r.delete(r_offset)
+            r.delete(r_partition)
+            r.delete(r_timestamp)
 
     def createInputBufferScript(self):
         for _inputscript in self.input_scripts:
