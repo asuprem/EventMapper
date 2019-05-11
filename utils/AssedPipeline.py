@@ -48,7 +48,7 @@ class AssedPipeline():
                 admin.create_topics(new_topics=[kafka.admin.NewTopic(name=kafka_key, num_partitions=1, replication_factor=1)], validate_only=False)
                 helper_utils.std_flush("Created %s export key in kafka broker"%kafka_key)
             except kafka.errors.TopicAlreadyExistsError:
-                helper_utils.std_flush("%s exportkey already exists in Kafka broker")
+                helper_utils.std_flush("%s exportkey already exists in Kafka broker"%kafka_key)
 
 
     def createInputBufferScript(self):
