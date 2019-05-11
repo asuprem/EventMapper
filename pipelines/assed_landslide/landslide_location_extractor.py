@@ -61,9 +61,10 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         if latitude is not None and longitude is not None:
             message["latitude"] = str(latitude)
             message["longitude"] = str(longitude)
-        else:
             self.counter+=1
             utils.helper_utils.std_flush(self.counter)
+        else:
+            pass
 
 
         return (True, message)
