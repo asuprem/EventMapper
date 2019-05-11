@@ -15,6 +15,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.update_location_store()
         self.NER =  Ner(host="localhost", port=9199)
         self.counter = 0
+        self.memory={}
 
     def process(self,message):
         if time.time() - self.time > self.timecheck:
@@ -65,8 +66,16 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             #pass
             #self.counter+=1
             #utils.helper_utils.std_flush(self.counter)
-            # Attempt geocoding...
-            utils.helper_utils.std_flush(message["location"])
+            # Attempt 
+            
+            if message["location"] in self.memory:
+                pass
+            else:
+                utils.helper_utils.std_flush(message["location"])
+                self.memory[message["location"]] == 1
+                
+
+
 
 
         return (True, message)
