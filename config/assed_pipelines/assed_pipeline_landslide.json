@@ -6,9 +6,9 @@
     },
 
     "input_buffer":{
-        "name":"input_buffer",
+        "name":"input_buffer_twitter",
         "script":"landslide_inputbuffer",
-        "export-key":"assed:landslide:buffer:stream"
+        "export-key":"assed:landslide:twitter:buffer:stream"
     },
 
     "output_buffer":{
@@ -20,7 +20,7 @@
     "location_extractor":{
         "name":"location_extractor",
         "script":"landslide_location_extractor",
-        "import-key":"assed:landslide:buffer:stream",
+        "import-key":"assed:landslide:twitter:buffer:stream",
         "export-key":"assed:landslide:location:extractor"
     },
 
