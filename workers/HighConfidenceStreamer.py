@@ -78,13 +78,14 @@ if __name__ == '__main__':
                         kwargs["config"] = HCS_configuration[hcs_type]["config"]
                     try:
                         HCS_configuration[hcs_type]['processor'] = Executor(assed_config, root_name=hcs_type, errorQueue=errorQueue, messageQueue=messageQueue, **kwargs)
+                        HCS_configuration[hcs_type]['processor'].start()
+                        std_flush("Scheduled launch complete for ", hcs_type, "HighConfigurationStreamer at ",readable_time())
+                        HCS_configuration[hcs_type]['timestamp'] = time.time()
                     except Exception as e:
+                        traceback.print_exc()
                         std_flush("Failed to launch %s with error %s"%(hcs_type, repr(e)))
-                    HCS_configuration[hcs_type]['processor'].start()
-                    std_flush("Scheduled launch complete for ", hcs_type, "HighConfigurationStreamer at ",readable_time())
-                    HCS_configuration[hcs_type]['timestamp'] = time.time()
+                    
         
-
         while not errorQueue.empty():
             #TODO get error, time, restart
             _rootName, _error = errorQueue.get()
