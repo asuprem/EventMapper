@@ -38,13 +38,13 @@ class AssedPipeline():
 cd {homedir}
 if ps up `cat {logdir}/{inputbuffername}.pid ` > /dev/null
 then
-    printf "{inputbuffersciptname}.py is aleady running\\n" >> {logdir}/{inputbuffername}.out
+    printf "{inputbufferscriptname}.py is aleady running\\n" >> {logdir}/{inputbuffername}.out
 else
     printf "{inputbuffername} is no longer running. Deleting PID file.\\n" >> {logdir}/{inputbuffername}.out
     rm  {logdir}/{inputbuffername}.pid >> {logdir}/{inputbuffername}.out
     printf "Deleted file\\n" >> {logdir}/{inputbuffername}.out
     printf "Starting {inputbuffername}.py\\n" >> {logdir}/{inputbuffername}.out
-    nohup ./assed_env/bin/python {scriptdir}/{inputbuffersciptname}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
+    nohup ./assed_env/bin/python {scriptdir}/{inputbufferscriptname}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
 fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptname = scriptname, inputbuffername = inputbuffername, scriptdir = self.script_dir, exportkey = exportkey)
         
 
