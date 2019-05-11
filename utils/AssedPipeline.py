@@ -1,4 +1,4 @@
-import time, os, sys, traceback, redis
+import time, os, sys, traceback, redis, kafka
 import pdb
 import subprocess
 import utils.helper_utils as helper_utils
@@ -24,17 +24,40 @@ class AssedPipeline():
         self.outputBufferScriptFile = None
         self.processScripts = []
 
+        # set up script deets
+        self.input_scripts = ['input_buffer']
+        self.output_scripts = ['output_buffer']
+        self.process_scripts = []
+        for script_type in self.config:
+            if script_type not in self.input_scripts + self.output_scripts + ['configuration']:
+                self.process_scripts.append(script_type)
+
+        # Set up kafka keys:
+        self.initializeKafka()
+
         # Create Scripts
         self.createInputBufferScript()
         self.createProcessScripts()
         self.createOutputBufferScript()
-        
+    
+    def initializeKafka(self):
+        admin = kafka.admin.KafkaAdminClient()
+        for _scriptref in self.input_scripts + self.output_scripts + self.process_scripts:
+            kafka_key = self.config[_scriptref]["export-key"].replace(":","_")
+            try:
+                admin.create_topics(new_topics=[kafka.admin.NewTopic(name=kafka_key, num_partitions=1, replication_factor=1)], validate_only=False)
+                helper_utils.std_flush("Created %s export key in kafka broker"%kafka_key)
+            except kafka.errors.TopicAlreadyExistsError:
+                helper_utils.std_flush("%s exportkey already exists in Kafka broker")
+
+
     def createInputBufferScript(self):
-        scriptname = self.config["input_buffer"]["script"]
-        inputbuffername = self.config["input_buffer"]["name"]
-        exportkey = self.config["input_buffer"]["export-key"]
-        bufferStr = \
-        '''#!/bin/sh
+        for _inputscript in self.input_scripts:
+            scriptname = self.config[_inputscript]["script"]
+            inputbuffername = self.config[_inputscript]["name"]
+            exportkey = self.config[_inputscript]["export-key"]
+            bufferStr = \
+            '''#!/bin/sh
 cd {homedir}
 if ps up `cat {logdir}/{inputbuffername}.pid ` > /dev/null
 then
@@ -53,7 +76,29 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptna
         helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
     def createProcessScripts(self):
-        pass
+        for _processscript in self.process_scripts:
+            scriptname = self.config[_processscript]["script"]
+            processname = self.config[_processscript]["name"]
+            importkey = self.config[_processscript]["import-key"]
+            exportkey = self.config[_processscript]["export-key"]
+            bufferStr = \
+            '''#!/bin/sh
+cd {homedir}
+if ps up `cat {logdir}/{processname}.pid ` > /dev/null
+then
+    printf "{processscriptname}.py is aleady running\\n" >> {logdir}/{processname}.out
+else
+    printf "{processname} is no longer running. Deleting PID file.\\n" >> {logdir}/{processname}.out
+    rm  {logdir}/{processname}.pid >> {logdir}/{processname}.out
+    printf "Deleted file\\n" >> {logdir}/{processname}.out
+    printf "Starting {processname}.py\\n" >> {logdir}/{processname}.out
+    nohup ./assed_env/bin/python {scriptdir}/{processscriptname}.py {logdir} {importkey} {exportkey} >> {logdir}/{processname}.log 2>&1 &
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, scriptdir = self.script_dir, exportkey = exportkey, importkey = importkey)
+        
+
+        self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
+        self.writeScript(self.inputBufferScriptFile, bufferStr)
+        helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
     def createOutputBufferScript(self):
         pass    
