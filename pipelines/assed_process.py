@@ -24,12 +24,11 @@ def main(logdir, importkey, exportkey, processscript):
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
     r=redis.Redis(connection_pool = pool)
     
-    seek_partition = int(r.get(exportkey+":partition"))
-    seek_offset = int(r.get(exportkey+":offset"))
-    if seek_partition is None:
-        seek_partition = 0
-    if seek_offset is None:
-        seek_offset = 0
+    seek_partition = r.get(exportkey+":partition")
+    seek_offset = r.get(exportkey+":offset")
+    seek_partition = 0 if seek_partition is None else int(seek_partition)
+    seek_offset = 0 if seek_offset is None else int(seek_offset)
+    
     kafka_producer = kafka.KafkaProducer()
     kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
     TopicPartition = kafka.TopicPartition(kafka_import, seek_partition)
