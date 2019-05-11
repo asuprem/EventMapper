@@ -1,13 +1,13 @@
-import pdb
-pdb.set_trace()
+import sys, os
+sys.path.append(os.getcwd())
+
 import click
 import utils.helper_utils as helper_utils
-import time, os, sys
+import time, pdb
 
 @click.command()
 @click.argument("importkey")
 def main(importkey):
-    pdb.set_trace()
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     helper_utils.setup_pid(pid_name)
     
