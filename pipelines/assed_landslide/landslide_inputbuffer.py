@@ -21,7 +21,7 @@ def main(logdir, exportkey):
 
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
     r=redis.Redis(connection_pool = pool)
-    
+    kafka_key = exportkey.replace(":","_")
     kafka_producer = kafka.KafkaProducer()
 
     # Get earliest file to parse...
