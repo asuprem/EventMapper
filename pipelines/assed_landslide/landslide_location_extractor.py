@@ -1,6 +1,6 @@
 import utils.AssedMessageProcessor
 import time, redis
-
+import pdb
 class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self):
         self.time = time.time()
@@ -11,7 +11,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.update_location_store()
 
     def process(self,message):
-        import pdb
+        
         pdb.set_trace()
 
 
