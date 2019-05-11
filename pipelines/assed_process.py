@@ -20,6 +20,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
     #helper_utils.setup_pid(pid_name, logdir=logdir)
 
     # Import processscript
+    import pipelines.assed_landslide.landslide_location_extractor
     moduleImport = __import__("pipelines.%s.%s"%(processscriptdir, processscript), fromlist=[processscript])
     MessageProcessor = getattr(moduleImport, processscript)
     pdb.set_trace()
