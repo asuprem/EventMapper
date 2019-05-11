@@ -90,7 +90,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     # TODO ADD TO MEMORY AS WELL
                     self.r.set(r_key, coordinates, ex=259200)
                 self.counter+=1
-                utils.helper_utils.std_flush(extractor_locations)
+                utils.helper_utils.std_flush(self.counter)
 
 
         return (True, message)
