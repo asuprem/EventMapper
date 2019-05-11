@@ -32,6 +32,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         if locations is None:
             # Attempt match...
             for sublocations in self.locations:
+                if sublocations == ""
                 if sublocations in cleaned_message:
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
@@ -70,10 +71,13 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         for _key in self.r.scan_iter(match="assed:sublocation:*", count=500):
             # keep only the first key location
             key_location = _key.decode("utf-8").split("assed:sublocation:")[1]
-            key_coords = self.r.get(_key).decode("utf-8").split(",")
-            latitude = float(key_coords[0])
-            longitude = float(key_coords[1])
-            self.locations[key_location] = (latitude, longitude)
+            if key_location.strip():
+                key_coords = self.r.get(_key).decode("utf-8").split(",")
+                latitude = float(key_coords[0])
+                longitude = float(key_coords[1])
+                self.locations[key_location] = (latitude, longitude)
+
+        pdb.set_trace()
 
     def extractLocations(self,temp_loc_tags):
         locations = []
