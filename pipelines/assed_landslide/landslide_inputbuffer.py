@@ -25,7 +25,7 @@ def main(logdir, exportkey):
     # Check if exportkey exists in kafka
     kafka_key = exportkey.replace(":","_")
     try:
-        admin.create_topics(new_topics=[kafka.admin.NewTopic(name=exportkey, num_partitions=1, replication_factor=1)], validate_only=False)
+        admin.create_topics(new_topics=[kafka.admin.NewTopic(name=kafka_key, num_partitions=1, replication_factor=1)], validate_only=False)
         helper_utils.std_flush("Created %s export key in kafka broker")
     except kafka.errors.TopicAlreadyExistsError:
         helper_utils.std_flush("%s exportkey already exists in Kafka broker")
