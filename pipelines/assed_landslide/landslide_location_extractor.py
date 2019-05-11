@@ -21,7 +21,6 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             self.update_location_store()
         
         # First location tagging to get locations...
-        pdb.set_trace()
         cleaned_message = str(message["text"].encode("utf-8"))[2:-2]
         cleaned_message = " ".join(nltk.tokenize.word_tokenize(cleaned_message))
         loc_tags = self.NER.get_entities(cleaned_message)

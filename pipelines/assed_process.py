@@ -51,7 +51,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
             pass
         else:
             helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, message["id_str"]))
-        pdb.set_trace()
+        
         
         """
         r.set(exportkey+":partition", message.partition)
