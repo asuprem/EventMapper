@@ -46,6 +46,7 @@ def main(logdir, exportkey):
         currentTime = datetime.now() - timedelta(days=90)
         foundflag = 0
         while foundflag == 0:
+            helper_utils.std_flush("Current time %s"%str(currentTime))
             filePath = getInputPath(currentTime)
             if os.path.exists(filePath):
                 #we found the most recent file, and increment our counter
