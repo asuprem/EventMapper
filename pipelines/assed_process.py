@@ -49,6 +49,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
         if processedMessage[0]:
             pass
         else:
+            pdb.set_trace()
             helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, message["id_str"]))
         
         
