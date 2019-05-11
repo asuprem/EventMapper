@@ -14,13 +14,14 @@ from datetime import datetime, timedelta
 @click.argument("importkey")
 @click.argument("exportkey")
 @click.argument("processscript")
-def main(logdir, importkey, exportkey, processscript):
+def main(logdir, importkey, exportkey, processscript, processscriptdir):
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     #helper_utils.setup_pid(pid_name, logdir=logdir)
 
     # Import processscript
+    moduleImport = __import__("pipelines.%s.%s"%(processscriptdir, processscript), fromlist=[processscript])
+    MessageProcessor = getattr(moduleImport, processscript)
     pdb.set_trace()
-
     
     kafka_import = importkey.replace(":","_")
     kafka_export = exportkey.replace(":","_")
