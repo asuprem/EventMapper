@@ -23,11 +23,25 @@ def main(logdir, importkey, exportkey, processscript):
     kafka_export = exportkey.replace(":","_")
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
     r=redis.Redis(connection_pool = pool)
+    
+    seek_partition = int(r.get(exportkey+":partition"))
+    seek_offset = int(r.get(exportkey+":offset"))
+    if seek_partition is None:
+        seek_partition = 0
+    if seek_offset is None:
+        seek_offset = 0
     kafka_producer = kafka.KafkaProducer()
     kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
-    TopicPartition = kafka.TopicPartition(kafka_import, 0)
+    TopicPartition = kafka.TopicPartition(kafka_import, seek_partition)
+    kafka_consumer.seek(TopicPartition, seek_offset)
+    
     for message in kafka_consumer:
         item = json.loads(message.value.decode())
+
+        r.set(exportkey+":partition", message.partition)
+        r.set(exportkey+":offset", message.offset)
+        r.set(exportkey+":timestamp", message.timestamp)
+
         pdb.set_trace()
     
 
