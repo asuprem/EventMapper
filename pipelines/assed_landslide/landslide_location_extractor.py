@@ -1,6 +1,7 @@
 import utils.AssedMessageProcessor
 import time, redis
 import pdb
+from sner import Ner
 class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self):
         self.time = time.time()
@@ -9,8 +10,15 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.timecheck = 7200
         self.locations = {}
         self.update_location_store()
+        self.NER =  Ner(host="localhost", port=9199)
 
     def process(self,message):
+        if time.time() - self.time > self.timecheck:
+            self.update_location_store()
+        
+        # First location tagging to get locations...
+        loc_tags = self.NER.get_entities(message["text"].encode("utf-8"))
+        desc_locations = self.extractLocations(loc_tags)
         
         pdb.set_trace()
 
@@ -24,4 +32,19 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             latitude = float(key_coords[0])
             longitude = float(key_coords[1])
             self.locations[key_location] = (latitude, longitude)
-        pdb.set_trace()
+
+    def extractLocations(self,temp_loc_tags):
+        locations = []
+        temp_loc=[]
+        if temp_loc_tags[0][1] == 'LOCATION':
+            temp_loc.append(temp_loc_tags[0][0])
+        for entry in temp_loc_tags[1:]:
+            if entry[1] == 'LOCATION':
+                temp_loc.append(entry[0])
+            else:
+                if temp_loc:
+                    locations.append(' '.join(temp_loc))
+                    temp_loc=[]
+        if temp_loc:
+            locations.append(' '.join(temp_loc))
+        return locations
