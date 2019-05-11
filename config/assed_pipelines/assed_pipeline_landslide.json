@@ -1,7 +1,8 @@
 {
     "configuration":{
         "script_dir":"assed_landslide", 
-        "log_dir":"assed_landslide"
+        "log_dir":"assed_landslide", 
+        "sh_dir":"assed_landslide"
     },
 
     "input_buffer":{
