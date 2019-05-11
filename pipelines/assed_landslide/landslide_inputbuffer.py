@@ -23,6 +23,7 @@ def main(logdir, exportkey):
     r=redis.Redis(connection_pool = pool)
     
     # Check if exportkey exists in kafka
+    kafka_key = exportkey.replace(":","_")
     try:
         admin.create_topics(new_topics=[kafka.admin.NewTopic(name=exportkey, num_partitions=1, replication_factor=1)], validate_only=False)
         helper_utils.std_flush("Created %s export key in kafka broker")
