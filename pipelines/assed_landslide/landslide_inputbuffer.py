@@ -122,8 +122,8 @@ def extractTweet(jsonVersion):
     write_version["id_str"] = jsonVersion["id_str"]
     write_version["text"] = jsonVersion["text"]
     write_version["location"] = jsonVersion["place"]["full_name"] if jsonVersion["place"] is not None else ""
-    write_version["latitude"] = jsonVersion["coordinates"]["coordinates"][0] if jsonVersion["place"] is not None else None
-    write_version["longitude"] = jsonVersion["coordinates"]["coordinates"][1] if jsonVersion["place"] is not None else None
+    write_version["latitude"] = jsonVersion["coordinates"]["coordinates"][0] if jsonVersion["coordinates"] is not None else None
+    write_version["longitude"] = jsonVersion["coordinates"]["coordinates"][1] if jsonVersion["coordinates"] is not None else None
     write_version["timestamp"] = jsonVersion["timestamp_ms"]
     return write_version
 
