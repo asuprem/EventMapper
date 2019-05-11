@@ -43,10 +43,11 @@ def main(logdir, importkey, exportkey, processscript):
 
         pdb.set_trace()
         
+        """
         r.set(exportkey+":partition", message.partition)
         r.set(exportkey+":offset", message.offset)
         r.set(exportkey+":timestamp", message.timestamp)
-
+        """
         
     
 
