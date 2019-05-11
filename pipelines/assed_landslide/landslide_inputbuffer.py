@@ -30,7 +30,7 @@ def main(logdir, exportkey):
         helper_utils.std_flush("Created %s export key in kafka broker"%kafka_key)
     except kafka.errors.TopicAlreadyExistsError:
         helper_utils.std_flush("%s exportkey already exists in Kafka broker")
-
+    kafka_producer = kafka.KafkaProducer()
 
     # Get earliest file to parse...
     helper_utils.std_flush("Searching for files")
@@ -43,8 +43,8 @@ def main(logdir, exportkey):
 
     if finishedUpToTime == 0:
         # TODO CHANGE TO 7 days after setup is complete...
-        helper_utils.std_flush("No value for previous stop. Starting from 90 days prior")
-        currentTime = datetime.now() - timedelta(days=90)
+        helper_utils.std_flush("No value for previous stop. Starting from 7 days prior")
+        currentTime = datetime.now() - timedelta(days=7)
         foundFlag = 0
         while foundFlag == 0:
             filePath = getInputPath(currentTime)
@@ -104,10 +104,10 @@ def main(logdir, exportkey):
                         else:
                             # Have not done this item yet...
                             # process
-                            pdb.set_trace()
-                            pass
+                            byted = bytes(json.dumps(extractTweet(jsonVersion)))
+                            kafka_producer.send(kafka_key, byted)
+                            kafka_producer.flush()
 
-                            
                             granularTime = int(jsonVersion["timestamp_ms"])
                             r.set(exportkey, granularTime)
                             if granularTime - prevGranular > 86400000:
@@ -117,8 +117,15 @@ def main(logdir, exportkey):
 
 
 
-
-
+def extractTweet(jsonVersion):
+    write_version = {}
+    write_version["id_str"] = jsonVersion["id_str"]
+    write_version["text"] = jsonVersion["text"]
+    write_version["location"] = jsonVersion["place"]["full_name"] if jsonVersion["place"] is not None else ""
+    write_version["latitude"] = jsonVersion["coordinates"]["coordinates"][0] if jsonVersion["place"] is not None else None
+    write_version["longitude"] = jsonVersion["coordinates"]["coordinates"][1] if jsonVersion["place"] is not None else None
+    write_version["timestamp"] = jsonVersion["timestamp_ms"]
+    return write_version
 
 
     """
