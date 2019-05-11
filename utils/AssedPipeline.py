@@ -31,20 +31,21 @@ class AssedPipeline():
         
     def createInputBufferScript(self):
         scriptname = self.config["input_buffer"]["script"]
+        inputbuffername = self.config["input_buffer"]["name"]
         exportkey = self.config["input_buffer"]["export-key"]
         bufferStr = \
         '''#!/bin/sh
 cd {homedir}
 if ps up `cat {logdir}/{inputbuffername}.pid ` > /dev/null
 then
-    printf "{inputbuffername}.py is aleady running\\n" >> {logdir}/{inputbuffername}.out
+    printf "{inputbuffersciptname}.py is aleady running\\n" >> {logdir}/{inputbuffername}.out
 else
     printf "{inputbuffername} is no longer running. Deleting PID file.\\n" >> {logdir}/{inputbuffername}.out
     rm  {logdir}/{inputbuffername}.pid >> {logdir}/{inputbuffername}.out
     printf "Deleted file\\n" >> {logdir}/{inputbuffername}.out
     printf "Starting {inputbuffername}.py\\n" >> {logdir}/{inputbuffername}.out
-    nohup ./assed_env/bin/python {scriptdir}/{inputbuffername}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbuffername = scriptname, scriptdir = self.script_dir, exportkey = exportkey)
+    nohup ./assed_env/bin/python {scriptdir}/{inputbuffersciptname}.py {logdir} {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptname = scriptname, inputbuffername = inputbuffername, scriptdir = self.script_dir, exportkey = exportkey)
         
 
         self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
