@@ -15,5 +15,5 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         pdb.set_trace()
 
 
-    def update_location_store(self,)
+    def update_location_store(self,):
         pdb.set_trace()
