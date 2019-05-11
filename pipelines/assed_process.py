@@ -30,7 +30,7 @@ def main(logdir, importkey, exportkey, processscript):
     seek_offset = 0 if seek_offset is None else int(seek_offset)
     
     kafka_producer = kafka.KafkaProducer()
-    kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
+    kafka_consumer = kafka.KafkaConsumer()
     TopicPartition = kafka.TopicPartition(kafka_import, seek_partition)
     kafka_consumer.assign(TopicPartition)
     kafka_consumer.seek(TopicPartition, seek_offset)
