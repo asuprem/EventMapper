@@ -44,9 +44,8 @@ def main(logdir, exportkey):
         # TODO CHANGE TO 7 days after setup is complete...
         helper_utils.std_flush("No value for previous stop. Starting from 90 days prior")
         currentTime = datetime.now() - timedelta(days=90)
-        foundflag = 0
-        while foundflag == 0:
-            helper_utils.std_flush("Current time %s"%str(currentTime))
+        foundFlag = 0
+        while foundFlag == 0:
             filePath = getInputPath(currentTime)
             if os.path.exists(filePath):
                 #we found the most recent file, and increment our counter
