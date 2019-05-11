@@ -32,7 +32,6 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         if locations is None:
             # Attempt match...
             for sublocations in self.locations:
-                if sublocations == ""
                 if sublocations in cleaned_message:
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
