@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 @click.argument("importkey")
 @click.argument("exportkey")
 @click.argument("processscript")
+@click.argument("processscriptdir")
 def main(logdir, importkey, exportkey, processscript, processscriptdir):
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     #helper_utils.setup_pid(pid_name, logdir=logdir)
