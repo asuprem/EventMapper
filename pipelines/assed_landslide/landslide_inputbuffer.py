@@ -108,7 +108,7 @@ def main(logdir, exportkey):
 
                             
                             granularTime = int(jsonVersion["timestamp_ms"])
-                            #r.set(exportkey, granularTime)
+                            r.set(exportkey, granularTime)
                             if granularTime - prevGranular > 86400000:
                                 helper_utils.std_flush("Finished with %s"%(str(datetime.fromtimestamp(granularTime/1000.0))))
                                 prevGranular = granularTime
