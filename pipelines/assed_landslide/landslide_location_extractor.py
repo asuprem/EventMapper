@@ -76,7 +76,6 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 longitude = float(key_coords[1])
                 self.locations[key_location] = (latitude, longitude)
 
-        pdb.set_trace()
 
     def extractLocations(self,temp_loc_tags):
         locations = []
