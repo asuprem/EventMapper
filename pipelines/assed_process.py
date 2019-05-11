@@ -18,6 +18,9 @@ def main(logdir, importkey, exportkey, processscript):
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     #helper_utils.setup_pid(pid_name, logdir=logdir)
 
+    # Import processscript
+    pdb.set_trace()
+
     
     kafka_import = importkey.replace(":","_")
     kafka_export = exportkey.replace(":","_")
