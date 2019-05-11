@@ -40,7 +40,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     break
         else:
             self.counter+=1
-            utils.helper_utils.std_flush(self.counter)
+            #utils.helper_utils.std_flush(self.counter)
                     
         if locations is None:
             return (False, message)
