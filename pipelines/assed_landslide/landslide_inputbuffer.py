@@ -19,17 +19,9 @@ def main(logdir, exportkey):
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     helper_utils.setup_pid(pid_name, logdir=logdir)
 
-    admin = kafka.admin.KafkaAdminClient()
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
     r=redis.Redis(connection_pool = pool)
     
-    # Check if exportkey exists in kafka
-    kafka_key = exportkey.replace(":","_")
-    try:
-        admin.create_topics(new_topics=[kafka.admin.NewTopic(name=kafka_key, num_partitions=1, replication_factor=1)], validate_only=False)
-        helper_utils.std_flush("Created %s export key in kafka broker"%kafka_key)
-    except kafka.errors.TopicAlreadyExistsError:
-        helper_utils.std_flush("%s exportkey already exists in Kafka broker")
     kafka_producer = kafka.KafkaProducer()
 
     # Get earliest file to parse...
@@ -137,9 +129,6 @@ def extractTweet(jsonVersion):
     ...     time.sleep(5)
     # export as exportkey:indexeditem
     """
-
-
-
 
 def getInputPath(_time):
     pathDir = os.path.join(DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('tweets', 'landslide','en', _time.year), '%02d' % _time.month,
