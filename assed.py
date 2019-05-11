@@ -23,7 +23,7 @@ def main(assedtopic):
     manager[assedtopic]["pipeline_configuration"] = file_utils.load_config("./config/assed_pipelines/"+ pipeline_config_name)
 
 
-    manager[assedtopic]["assed_pipeline"] = AssedPipeline.AssedPipeline(assed_config["home"], manager[assedtopic]["pipeline_configuration"])
+    manager[assedtopic]["assed_pipeline"] = AssedPipeline.AssedPipeline(assed_config["home"], manager[assedtopic]["pipeline_configuration"], mode="DEBUG")
     manager[assedtopic]["assed_pipeline"].run()
 
     helper_utils.std_flush("Finished")
