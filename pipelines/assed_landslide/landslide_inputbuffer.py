@@ -9,12 +9,13 @@ from datetime import datetime, timedelta
 
 TIME_DELTA_MINIMAL = timedelta(seconds=60)
 DOWNLOAD_PREPEND = './downloads/'
-TOP_OF_FILE_START = True
+
 
 @click.command()
 @click.argument("logdir")
 @click.argument("exportkey")
 def main(logdir, exportkey):
+    TOP_OF_FILE_START = True
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     helper_utils.setup_pid(pid_name, logdir=logdir)
 
