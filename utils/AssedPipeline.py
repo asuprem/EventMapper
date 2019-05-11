@@ -1,6 +1,6 @@
 import time, os, sys, traceback, redis
 import pdb
-
+import subprocess
 import utils.helper_utils as helper_utils
 
 class AssedPipeline():
@@ -19,8 +19,10 @@ class AssedPipeline():
         self.createIfNotExists(self.script_dir)
         self.createIfNotExists(self.sh_dir)
         
-
-        
+        # Script files
+        self.inputBufferScriptFile = None
+        self.outputBufferScriptFile = None
+        self.processScripts = []
 
         # Create Scripts
         self.createInputBufferScript()
@@ -45,9 +47,9 @@ else
 fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbuffername = scriptname, scriptdir = self.script_dir, exportkey = exportkey)
         
 
-        inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
-        self.writeScript(inputBufferScriptFile, bufferStr)
-        helper_utils.std_flush("Generated script for Input Buffer at %s"%inputBufferScriptFile)
+        self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
+        self.writeScript(self.inputBufferScriptFile, bufferStr)
+        helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
     def createProcessScripts(self):
         pass
@@ -68,11 +70,10 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbuffername = s
     def run(self,):
         # Initiate each of the config executables.
         # Assume they all require python and are executed through assed_env
-        pdb.set_trace()
-
-        # Launch Input Buffer
-
+        
+        # Launch Input Buffer -- run the input buffer script
+        subprocess.Popen(['sh', self.inputBufferScriptFile])
 
         # Launch Output Buffer
-
+        pdb.set_trace()
         # Launch Each Process
