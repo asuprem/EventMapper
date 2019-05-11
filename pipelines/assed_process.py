@@ -12,15 +12,13 @@ import time, pdb, json
 import kafka, redis
 from datetime import datetime, timedelta
 
-TIME_DELTA_MINIMAL = timedelta(seconds=60)
-DOWNLOAD_PREPEND = './downloads/'
-
 
 @click.command()
 @click.argument("logdir")
 @click.argument("importkey")
 @click.argument("exportkey")
-def main(logdir, importkey, exportkey):
+@click.argument("processscript")
+def main(logdir, importkey, exportkey, processscript):
     pdb.set_trace()
     kafka_import = importkey.replace(":","_")
     kafka_export = exportkey.replace(":","_")
@@ -30,7 +28,7 @@ def main(logdir, importkey, exportkey):
     kafka_consumer = kafka.KafkaConsumer(kafka_import, "auto_offset_reset"="earliest")
 
     for message in kafka_consumer:
-
+        pass
     
 
 
