@@ -13,6 +13,7 @@ class AssedPipeline():
         # Create Log directory TODO Sanitize
         self.log_dir = "./logfiles/" + self.config["configuration"]["log_dir"]
         self.script_dir = "./pipelines/" + self.config["configuration"]["script_dir"]
+        self.assed_sript_dir = "./pipelines"
         self.sh_dir = "./scripts/" + self.config["configuration"]["sh_dir"]
 
         self.createIfNotExists(self.log_dir)
@@ -92,8 +93,8 @@ else
     rm  {logdir}/{processname}.pid >> {logdir}/{processname}.out
     printf "Deleted file\\n" >> {logdir}/{processname}.out
     printf "Starting {processname}.py\\n" >> {logdir}/{processname}.out
-    nohup ./assed_env/bin/python {scriptdir}/{processscriptname}.py {logdir} {importkey} {exportkey} >> {logdir}/{processname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, scriptdir = self.script_dir, exportkey = exportkey, importkey = importkey)
+    nohup ./assed_env/bin/python {assedscript}/assed_process.py {logdir} {importkey} {exportkey} {processscriptname} >> {logdir}/{processname}.log 2>&1 &
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey)
         
 
             self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
