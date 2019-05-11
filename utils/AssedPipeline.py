@@ -73,7 +73,7 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptna
         # Assume they all require python and are executed through assed_env
         
         # Launch Input Buffer -- run the input buffer script
-        subprocess.Popen(['sh', self.inputBufferScriptFile])
+        #subprocess.Popen(['sh', self.inputBufferScriptFile])
 
         # Launch Output Buffer
         pdb.set_trace()
