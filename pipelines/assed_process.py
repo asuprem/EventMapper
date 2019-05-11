@@ -24,7 +24,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
     pdb.set_trace()
     moduleImport = __import__("pipelines.%s.%s"%(processscriptdir, processscript), fromlist=[processscript])
     MessageProcessor = getattr(moduleImport, processscript)
-    pdb.set_trace()
+    MessageProcessor = MessageProcessor()
     
     kafka_import = importkey.replace(":","_")
     kafka_export = exportkey.replace(":","_")
@@ -44,7 +44,10 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir):
     
     for message in kafka_consumer:
         item = json.loads(message.value.decode())
+        processedMessage = MessageProcessor.process(item)
 
+        # Push the message to kafka...
+        
         pdb.set_trace()
         
         """
