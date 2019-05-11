@@ -72,8 +72,8 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 pass
             else:
                 utils.helper_utils.std_flush(message["location"])
-                self.memory[message["location"]] == 1
-                
+                self.memory[message["location"]] = 1
+
 
 
 
