@@ -60,7 +60,7 @@ def main(logdir, exportkey):
                     foundFlag = -1
     else:
         # I.E. if we already have a timestmap from pervious execution, we will read files that are a minute behind, and catch up to the granular time
-        helper_utils.std_flush("Starting File tracking at %s"%str(datetime.fromtimestamp(granularTime/1000.0)))
+        helper_utils.std_flush("Starting File tracking at %s"%str(datetime.fromtimestamp(finishedUpToTime/1000.0)))
         granularTime = finishedUpToTime
         finishedUpToTime = datetime.fromtimestamp(granularTime/1000.0) - timedelta(seconds = 60)
         TOP_OF_FILE_START = False
