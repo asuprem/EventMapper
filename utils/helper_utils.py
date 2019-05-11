@@ -59,6 +59,9 @@ def high_confidence_streamer_key(key_val):
 def sublocation_key(key_val):
     return "assed:sublocation:"+key_val
 
+def extractor_sublocation_key(key_val):
+    return "assed:extractor:sublocation:" + key_val
+
 def lookup_address_only(address, API_KEY, redis_key = None):
     if redis_key is None:
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
