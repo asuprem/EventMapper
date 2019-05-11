@@ -76,11 +76,11 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbufferscriptna
         helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
     def createProcessScripts(self):
-        for _processcript in self.process_scripts:
-            scriptname = self.config[_processcript]["script"]
-            processname = self.config[_processcript]["name"]
-            importkey = self.config[_processcript]["import-key"]
-            exportkey = self.config[_processcript]["export-key"]
+        for _processscript in self.process_scripts:
+            scriptname = self.config[_processscript]["script"]
+            processname = self.config[_processscript]["name"]
+            importkey = self.config[_processscript]["import-key"]
+            exportkey = self.config[_processscript]["export-key"]
             bufferStr = \
             '''#!/bin/sh
 cd {homedir}
@@ -98,7 +98,7 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname =
 
             self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
             self.writeScript(self.inputBufferScriptFile, bufferStr)
-            helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
+            helper_utils.std_flush("Generated script for %s  at %s"%(_processscript, self.inputBufferScriptFile))
 
     def createOutputBufferScript(self):
         pass    
