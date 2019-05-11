@@ -14,9 +14,10 @@ DOWNLOAD_PREPEND = './downloads/'
 @click.command()
 @click.argument("logdir")
 @click.argument("exportkey")
-def main(logdir, exportkey):
+@click.argument("pidname")
+def main(logdir, exportkey, pidname):
     TOP_OF_FILE_START = True
-    pid_name = os.path.basename(sys.argv[0]).split('.')[0]
+    pid_name = pidname
     helper_utils.setup_pid(pid_name, logdir=logdir)
 
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
