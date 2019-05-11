@@ -57,14 +57,16 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     longitude = self.locations[sublocation][1]
             
         
-        message["locatioin"] = locations
+        message["location"] = locations
         if latitude is not None and longitude is not None:
             message["latitude"] = str(latitude)
             message["longitude"] = str(longitude)
         else:
-            pass
-            self.counter+=1
-            utils.helper_utils.std_flush(self.counter)
+            #pass
+            #self.counter+=1
+            #utils.helper_utils.std_flush(self.counter)
+            # Attempt geocoding...
+            utils.helper_utils.std_flush(message["location"])
 
 
         return (True, message)
