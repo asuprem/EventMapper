@@ -1,10 +1,6 @@
 import sys, os
 sys.path.append(os.getcwd())
 
-import pdb
-import redis, kafka
-import utils.helper_utils as helper_utils
-
 
 import click
 import utils.helper_utils as helper_utils
@@ -29,8 +25,9 @@ def main(logdir, importkey, exportkey, processscript):
     r=redis.Redis(connection_pool = pool)
     kafka_producer = kafka.KafkaProducer()
     kafka_consumer = kafka.KafkaConsumer(kafka_import, auto_offset_reset="earliest")
-
+    TopicPartition = kafka.TopicPartition(kafka_import, 0)
     for message in kafka_consumer:
+        item = json.loads(message.value.decode())
         pdb.set_trace()
     
 
