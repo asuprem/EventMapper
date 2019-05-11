@@ -13,11 +13,14 @@ class AssedPipeline():
         # Create Log directory TODO Sanitize
         self.log_dir = "./logfiles/" + self.config["configuration"]["log_dir"]
         self.script_dir = "./pipelines/" + self.config["configuration"]["script_dir"]
-        if not os.path.exists(self.log_dir):
-            helper_utils.std_flush("Log directory not created. Creating")
-            os.makedirs(self.log_dir)
+        self.sh_dir = "./scripts/" + self.config["configuration"]["sh_dir"]
 
-        helper_utils.std_flush("Finished verifying log directory %s"%self.log_dir)
+        self.createIfNotExists(self.log_dir)
+        self.createIfNotExists(self.script_dir)
+        self.createIfNotExists(self.sh_dir)
+        
+
+        
 
         # Create Scripts
         self.createInputBufferScript()
@@ -41,13 +44,26 @@ class AssedPipeline():
             nohup ./assed_env/bin/python {scriptdir}/{inputbuffername}.py {exportkey} >> {logdir}/{inputbuffername}.log 2>&1 &
         fi'''.format(homedir = self.home_dir, logdir = self.log_dir, inputbuffername = scriptname, scriptdir = self.script_dir, exportkey = exportkey)
         
-        pdb.set_trace()
+
+        inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
+        self.writeScript(inputBufferScriptFile, bufferStr)
+        helper_utils.std_flush("Generated script for Input Buffer at %s"%inputBufferScriptFile)
 
     def createProcessScripts(self):
         pass
 
-    def createOutputBufferSscript(self):
+    def createOutputBufferScript(self):
         pass    
+
+    def createIfNotExists(self,dir_):
+        if not os.path.exists(dir_):
+            helper_utils.std_flush("%s directory not created. Creating"%dir_)
+            os.makedirs(dir_)
+        helper_utils.std_flush("Finished verifying directory %s"%dir_)
+
+    def writeScript(self,filename, script_str):
+        with open(filename, 'w') as file_:
+            file_.write(script_str)
     
     def run(self,):
         # Initiate each of the config executables.
