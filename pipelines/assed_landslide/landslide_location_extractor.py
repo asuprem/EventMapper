@@ -36,7 +36,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
                     longitude = self.locations[sublocations][1]
-                    utils.helper_utils.std_flush(self.locations)
+                    utils.helper_utils.std_flush(locations)
                     break
         else:
             self.counter+=1
