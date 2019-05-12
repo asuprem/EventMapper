@@ -66,7 +66,7 @@ def lookup_address_only(address, API_KEY, redis_key = None):
     if redis_key is None:
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         redis_key=redis.Redis(connection_pool = pool) 
-
+    
     redis_get = redis_key.get("apiaccess:googlemaps:"+API_KEY)
     redis_time = redis_key.get("apiaccess:timestamp:googlemaps:"+API_KEY)
 
