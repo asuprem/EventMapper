@@ -17,7 +17,8 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
         self.cursor_refresh = 300
         self.MS_IN_DAYS = 86400000
-
+        self.true_counter = 0
+        self.unk = 0
 
     def process(self,message):
         if time.time() - self.cursor_timer > self.cursor_refresh:
@@ -26,8 +27,6 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         # Check 
 
         # Check item
-        apikey = self.config["APIKEYS"]["googlemaps"]
-        helper_utils.lookup_address_only_DEBUG(message["location"], apikey)
         message["cell"] = utils.helper_utils.generate_cell(float(message["latitude"]), float(message["longitude"]))
         _time_ = int(int(message["timestamp"])/1000)
         _time_minus = self.time_convert(_time_ -  6*self.MS_IN_DAYS)
@@ -37,7 +36,13 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         self.cursor.execute(select_s, params)
         results = self.cursor.fetchall()
         if len(results) > 0:
-            helper_utils.std_flush("True Event found for %s"%str(message["text"].encode("utf-8"))[2:-2])
+            #helper_utils.std_flush("True Event found for %s"%str(message["text"].encode("utf-8"))[2:-2])
+            self.true_counter+=1
+        else:
+            self.unk+=1
+        utils.helper_utils.std_flush("True Events: %5i\t\tUnk Events: %5i"%(self.true_counter, self.unk))
+        
+
 
 
         return (False,message)
