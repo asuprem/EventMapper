@@ -63,9 +63,9 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
             #helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, item["id_str"]))
             #helper_utils.std_flush(processedMessage[1]["id_str"],  processedMessage[1]["location"])
             
-            #byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
-            #kafka_producer.send(kafka_export, byted)
-            #kafka_producer.flush()
+            byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
+            kafka_producer.send(kafka_export, byted)
+            kafka_producer.flush()
         
         r.set(exportkey+":partition", message.partition)
         r.set(exportkey+":offset", message.offset)
