@@ -153,8 +153,7 @@ def lookup_address_only_DEBUG(address, API_KEY, redis_key = None):
     if redis_time is None:
         redis_time = datetime.fromtimestamp(time.time()-10800)
     else:
-        pdb.set_trace()
-        redis_time = datetime.fromtimestamp(int(redis_time)-10800)
+        redis_time = datetime.fromtimestamp(int(float(redis_time))-10800)
     crtime = datetime.fromtimestamp(time.time()-10800)
     if redis_time.day != crtime.day:
         redis_get = 0
