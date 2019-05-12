@@ -34,6 +34,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             # Attempt match...
             for sublocations in self.locations:
                 if sublocations in cleaned_message:
+                    pdb.set_trace()
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
                     longitude = self.locations[sublocations][1]
