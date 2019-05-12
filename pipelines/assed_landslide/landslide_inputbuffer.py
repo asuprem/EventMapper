@@ -18,6 +18,7 @@ DOWNLOAD_PREPEND = './downloads/'
 def main(logdir, exportkey, pidname):
     TOP_OF_FILE_START = True
     pid_name = pidname
+    pdb.set_trace()
     helper_utils.setup_pid(pid_name, logdir=logdir)
 
     pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
