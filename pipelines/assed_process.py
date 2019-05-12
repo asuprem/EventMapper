@@ -70,7 +70,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
         r.set(exportkey+":partition", message.partition)
         r.set(exportkey+":offset", message.offset)
         r.set(exportkey+":timestamp", message.timestamp)
-        time.sleep(3)
+        #time.sleep(3)
         
     
 
