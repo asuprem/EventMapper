@@ -8,7 +8,7 @@ from utils.db_utils import get_db_connection
 class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
     def __init__(self):
-        self.config = load_config("./config/assed_config")
+        self.config = load_config("./config/assed_config.json")
         self.DB_CONN = get_db_connection(self.config)
         self.cursor = self.DB_CONN.cursor()
         pass
