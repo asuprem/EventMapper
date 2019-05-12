@@ -12,3 +12,6 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
     def process(self,message):
         pass
         pdb.set_trace()
+
+
+        return (False,message)

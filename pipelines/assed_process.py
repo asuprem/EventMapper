@@ -58,6 +58,8 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
         item = json.loads(message.value.decode())
         processedMessage = MessageProcessor.process(item)
         # Push the message to kafka...if true
+        if type(processedMessage) != type(tuple()):
+            raise ValueError("Invalid type %s for processedMessage. MessageProcessor.process() must return tuple of (bool,message)."%str(type(processedMessage)))
         if not processedMessage[0]:
             message_fail_counter+=1
         else:
