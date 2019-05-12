@@ -4,6 +4,7 @@ import pdb
 from sner import Ner
 import nltk
 import utils.helper_utils
+from utils.file_utils import load_config
 
 class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self):
@@ -16,10 +17,13 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.NER =  Ner(host="localhost", port=9199)
         self.counter = 0
         self.memory={}
+        config = load_config("./config/assed_config.json")
+        self.APIKEY = config["APIKEYS"]["googlemaps"]
 
     def process(self,message):
         if time.time() - self.time > self.timecheck:
             self.update_location_store()
+            self.time = time.time()
         # Check if location exists
         latitude = None
         longitude = None
@@ -82,23 +86,24 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
                     coordinates = self.r.get(r_key)
                     if coordinates is not None:
+                        latlng = coordinates.decode("utf-8").split(",")
+                        latitude = float(latlng[0])
+                        longitude = float(latlng[1])
                         break
                 
                 if coordinates is None:
                     # no sublocation exists. We are gonna have to geocode
                     # TODO TODO TODO TODO -------------
-                    coordinates = "GEOCODE"
+                    latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
 
-                    self.counter+=1
-                    utils.helper_utils.std_flush(message["location"], self.counter)
-
-                    # if fails, return True with stuff...
-                    # return (True, message)
-                    # else
-                    for extractor_sublocation in extractor_locations.split(":"):
-                        r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
-                        # TODO ADD TO MEMORY AS WELL
-                        self.r.set(r_key, coordinates, ex=259200)
+                    #self.counter+=1
+                    #utils.helper_utils.std_flush(message["location"], self.counter)
+                    if latitude is not None and longitude is not None:
+                        coordinates = str(latitude) + "," + str(longitude)
+                        for extractor_sublocation in extractor_locations.split(":"):
+                            r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
+                            # TODO ADD TO MEMORY AS WELL
+                            self.r.set(r_key, coordinates, ex=259200)
                     
             if latitude is not None and longitude is not None:
                 message["latitude"] = str(latitude)
