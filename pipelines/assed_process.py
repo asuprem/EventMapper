@@ -54,7 +54,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
         item = json.loads(message.value.decode())
         processedMessage = MessageProcessor.process(item)
         # Push the message to kafka...if true
-        if processedMessage[0]:
+        if not processedMessage[0]:
             pass
             # Message failed to be encoded
         else:
