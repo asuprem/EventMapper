@@ -20,7 +20,10 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
     def process(self,message):
         if time.time() - self.time > self.timecheck:
             self.update_location_store()
-        
+        # Check if location exists
+        if message["location"] is not None:
+            pdb.set_trace()
+
         # First location tagging to get locations...
         cleaned_message = str(message["text"].encode("utf-8"))[2:-2]
         cleaned_message = " ".join(nltk.tokenize.word_tokenize(cleaned_message))
@@ -34,7 +37,6 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             # Attempt match...
             for sublocations in self.locations:
                 if sublocations in cleaned_message:
-                    pdb.set_trace()
                     locations = sublocations
                     latitude = self.locations[sublocations][0]
                     longitude = self.locations[sublocations][1]
