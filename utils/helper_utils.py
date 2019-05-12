@@ -124,8 +124,14 @@ def generate_cell(N, E, coef=0.04166666666667):
     if coef>1: coef = 1
     row = int(round((90.0+N)/coef))
     if row<0:
-        pdb.set_trace()
-        raise ValueError
+        swp = N
+        N = E
+        E = swp
+        row = int(round((90.0+N)/coef))
+        if row < 0:
+            # TODO remove this in a couple days...
+            raise RuntimeError()
+        
     col = int(round((180.0+E)/coef))
     key = str(row)+'_'+str(col)
     return key
@@ -135,8 +141,8 @@ def lookup_address_only_DEBUG(address, API_KEY, redis_key = None):
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         redis_key=redis.Redis(connection_pool = pool) 
     
-    redis_get = redis_key.get("apiaccess:googlemaps:"+API_KEY)
-    redis_time = redis_key.get("apiaccess:timestamp:googlemaps:"+API_KEY)
+    redis_get = redis_key.get("apiaccess:debug:googlemaps:"+API_KEY)
+    redis_time = redis_key.get("apiaccess:debug:timestamp:googlemaps:"+API_KEY)
 
     if redis_get is None:
         redis_get = 0
@@ -155,5 +161,6 @@ def lookup_address_only_DEBUG(address, API_KEY, redis_key = None):
     if redis_get > 2499:
         return False, False
     else:
-        redis_key.set("apiaccess:googlemaps"+API_KEY, redis_get+1)
-        redis_key.set("apiaccess:timestamp:googlemaps"+API_KEY, time.time())
+        redis_get += 1
+        redis_key.set("apiaccess:debug:googlemaps:"+API_KEY, redis_get)
+        redis_key.set("apiaccess:debug:timestamp:googlemaps:"+API_KEY, time.time())
