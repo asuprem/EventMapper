@@ -3,6 +3,7 @@ from datetime import datetime
 import sys, os
 import http.client as httplib, urllib.parse as urllib, json
 import re, redis
+import pdb
 
 # Checks if two dictionaries are equal
 # TODO optimize this
@@ -123,6 +124,7 @@ def generate_cell(N, E, coef=0.04166666666667):
     if coef>1: coef = 1
     row = int(round((90.0+N)/coef))
     if row<0:
+        pdb.set_trace()
         raise ValueError
     col = int(round((180.0+E)/coef))
     key = str(row)+'_'+str(col)
