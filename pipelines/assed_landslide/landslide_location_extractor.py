@@ -88,8 +88,9 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     # no sublocation exists. We are gonna have to geocode
                     # TODO TODO TODO TODO -------------
                     coordinates = "GEOCODE"
+
                     self.counter+=1
-                    utils.helper_utils.std_flush(self.counter)
+                    utils.helper_utils.std_flush(message["location"], self.counter)
 
                     # if fails, return True with stuff...
                     # return (True, message)
