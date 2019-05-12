@@ -22,6 +22,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
 
     def process(self,message):
         if time.time() - self.time > self.timecheck:
+            utils.helper_utils.std_flush("Updating news location store.")
             self.update_location_store()
             self.time = time.time()
         # Check if location exists
@@ -95,7 +96,8 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     # no sublocation exists. We are gonna have to geocode
                     # TODO TODO TODO TODO -------------
                     latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
-
+                    if latitude == False:
+                        raise RuntimeError("Maps API Expired for %s"%time.time())
                     #self.counter+=1
                     #utils.helper_utils.std_flush(message["location"], self.counter)
                     if latitude is not None and longitude is not None:
