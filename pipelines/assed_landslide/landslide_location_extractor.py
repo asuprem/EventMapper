@@ -21,7 +21,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         if time.time() - self.time > self.timecheck:
             self.update_location_store()
         # Check if location exists
-        if message["location"] is not None:
+        if "location" in message and message["location"] is not None and message["location"] > 0:
             pdb.set_trace()
 
         # First location tagging to get locations...
