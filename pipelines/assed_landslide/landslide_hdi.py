@@ -26,7 +26,8 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         # Check 
 
         # Check item
-        pdb.set_trace()
+        apikey = self.config["APIKEYS"]["googlemaps"]
+        helper_utils.lookup_address_only_DEBUG(message["location"], apikey)
         message["cell"] = utils.helper_utils.generate_cell(float(message["latitude"]), float(message["longitude"]))
         _time_ = int(int(message["timestamp"])/1000)
         _time_minus = self.time_convert(_time_ -  6*self.MS_IN_DAYS)
