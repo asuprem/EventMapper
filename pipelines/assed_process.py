@@ -50,38 +50,31 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
     kafka_consumer.seek(TopicPartition, seek_offset)
     helper_utils.std_flush("Set kafka consumer seek")
     
+    message_correct_counter = 0
+    message_fail_counter = 0
+    message_counter = 0
+
     for message in kafka_consumer:
         item = json.loads(message.value.decode())
         processedMessage = MessageProcessor.process(item)
         # Push the message to kafka...if true
         if not processedMessage[0]:
-            pass
-            # Message failed to be encoded
+            message_fail_counter+=1
         else:
-            pass
-            # Message succeeded. We will push to kafka.
-            #helper_utils.std_flush("%s failed to parse item with id: %s"%(processscript, item["id_str"]))
-            #helper_utils.std_flush(processedMessage[1]["id_str"],  processedMessage[1]["location"])
-            
             byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
             kafka_producer.send(kafka_export, byted)
             kafka_producer.flush()
+            message_correct_counter+=1
+        message_counter += 1
         
         r.set(exportkey+":partition", message.partition)
         r.set(exportkey+":offset", message.offset)
         r.set(exportkey+":timestamp", message.timestamp)
-        #time.sleep(3)
+        
+        if message_counter%1000 == 0:
+            helper_utils.std_flush("Processed %i messages with %i failures and %i successes"%(message_counter, message_fail_counter, message_correct_counter))
         
     
-
-
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
     main() #pylint: disable=no-value-for-parameter
