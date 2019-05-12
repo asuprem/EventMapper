@@ -80,7 +80,7 @@ def lookup_address_only(address, API_KEY, redis_key = None):
     if redis_time is None:
         redis_time = datetime.fromtimestamp(time.time()-10800)
     else:
-        redis_time = datetime.fromtimestamp(int(redis_time)-10800)
+        redis_time = datetime.fromtimestamp(int(float(redis_time))-10800)
     crtime = datetime.fromtimestamp(time.time()-10800)
     if redis_time.day != crtime.day:
         redis_get = 0
@@ -88,8 +88,8 @@ def lookup_address_only(address, API_KEY, redis_key = None):
     if redis_get > 2499:
         return False, False
     else:
-        redis_key.set("apiaccess:googlemaps"+API_KEY, redis_get+1)
-        redis_key.set("apiaccess:timestamp:googlemaps"+API_KEY, time.time())
+        redis_key.set("apiaccess:googlemaps:"+API_KEY, redis_get+1)
+        redis_key.set("apiaccess:timestamp:googlemaps:"+API_KEY, time.time())
 
     # So first we need to check if the location is in our database...
     host = 'maps.googleapis.com'
@@ -136,31 +136,3 @@ def generate_cell(N, E, coef=0.04166666666667):
     key = str(row)+'_'+str(col)
     return key
 
-def lookup_address_only_DEBUG(address, API_KEY, redis_key = None):
-    if redis_key is None:
-        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
-        redis_key=redis.Redis(connection_pool = pool) 
-    
-    redis_get = redis_key.get("apiaccess:debug:googlemaps:"+API_KEY)
-    redis_time = redis_key.get("apiaccess:debug:timestamp:googlemaps:"+API_KEY)
-
-    if redis_get is None:
-        redis_get = 0
-    else:
-        redis_get = int(redis_get)
-    #10800 is to convert from EST to PST time in reverse, i.e. only midnight in PST is the rollover period...
-    # TODO convert this more gracefully...
-    if redis_time is None:
-        redis_time = datetime.fromtimestamp(time.time()-10800)
-    else:
-        redis_time = datetime.fromtimestamp(int(float(redis_time))-10800)
-    crtime = datetime.fromtimestamp(time.time()-10800)
-    if redis_time.day != crtime.day:
-        redis_get = 0
-    #pdb.set_trace()
-    if redis_get > 2499:
-        return False, False
-    else:
-        redis_get += 1
-        redis_key.set("apiaccess:debug:googlemaps:"+API_KEY, redis_get)
-        redis_key.set("apiaccess:debug:timestamp:googlemaps:"+API_KEY, time.time())
