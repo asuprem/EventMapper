@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 @click.argument("pidname")
 def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname):
     pid_name = pidname
-    #helper_utils.setup_pid(pid_name, logdir=logdir)
+    helper_utils.setup_pid(pid_name, logdir=logdir)
 
     # Import processscript
     helper_utils.std_flush("Initializing ASSED-Process %s"%pidname)
