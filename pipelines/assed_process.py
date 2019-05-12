@@ -53,7 +53,7 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
     for message in kafka_consumer:
         item = json.loads(message.value.decode())
         processedMessage = MessageProcessor.process(item)
-
+        pdb.set_trace()
         # Push the message to kafka...if true
         if processedMessage[0]:
             pass
