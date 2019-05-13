@@ -25,6 +25,12 @@ def main(logdir, exportkey, pidname):
     kafka_key = exportkey.replace(":","_")
     kafka_producer = kafka.KafkaProducer()
 
+    message_refresh = 7200
+    skip_count = 0
+    process_count = 0
+    time_slept = 0
+    message_timer = time.time()
+
     # Get earliest file to parse...
     helper_utils.std_flush("Searching for files")
     finishedUpToTime = r.get(exportkey)
@@ -66,9 +72,16 @@ def main(logdir, exportkey, pidname):
 
     helper_utils.std_flush("Starting Stream Tracking for %s"%exportkey)
     while True:
+        if time.time() - message_timer > message_refresh:
+            message_timer = time.time()
+            helper_utils.std_flush("Processed %i items, with %i items skipped and %i seconds slept in the last %i seconds"%(process_count, skip_count, time_slept, message_refresh))
+            process_count, skip_count, time_slept = 0, 0, 0
+            
+            
         if (datetime.now() - finishedUpToTime).total_seconds() < 60:
             waitTime = 120 -  (datetime.now() - finishedUpToTime).seconds
             time.sleep(waitTime)
+            time_slept+=waitTime
         else:
             filePath = getInputPath(finishedUpToTime)
             if not os.path.exists(filePath):
@@ -77,6 +90,7 @@ def main(logdir, exportkey, pidname):
                 if waitTime < 120:
                     waitTime = 120 - waitTime
                     time.sleep(waitTime)
+                    time_slept+=waitTime
                 else:
                     # Difference is more than two minutes - we can increment the the by one minute for the next ones
                     finishedUpToTime += TIME_DELTA_MINIMAL
@@ -92,6 +106,7 @@ def main(logdir, exportkey, pidname):
                         
                         if granularTime > int(jsonVersion["timestamp_ms"]):
                             # skip already finished this...
+                            skip_count+=1
                             continue
 
                         else:
@@ -100,9 +115,11 @@ def main(logdir, exportkey, pidname):
                             byted = bytes(json.dumps(extractTweet(jsonVersion)), encoding="utf-8")
                             kafka_producer.send(kafka_key, byted)
                             kafka_producer.flush()
+                            
 
                             granularTime = int(jsonVersion["timestamp_ms"])
                             r.set(exportkey, granularTime)
+                            process_count += 1
                             if granularTime - prevGranular > 86400000:
                                 helper_utils.std_flush("Finished with %s"%(str(datetime.fromtimestamp(granularTime/1000.0))))
                                 prevGranular = granularTime
