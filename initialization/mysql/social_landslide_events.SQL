@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `link` mediumtext,
   `text` mediumtext NOT NULL,
   `timestamp` datetime NOT NULL,
-  `topic_name` mediumtext NOT NULL
+  `topic_name` mediumtext NOT NULL,
   PRIMARY KEY (`db_id`)
 );
