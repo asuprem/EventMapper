@@ -83,7 +83,7 @@ if __name__ == '__main__':
                         HCS_configuration[hcs_type]['timestamp'] = time.time()
                     except Exception as e:
                         traceback.print_exc()
-                        std_flush("Failed to launch %s with error %s"%(hcs_type, repr(e)))
+                        std_flush("Failed to perform scheduled launch %s with error %s"%(hcs_type, repr(e)))
                     
         
         while not errorQueue.empty():
