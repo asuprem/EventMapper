@@ -6,6 +6,6 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `latitude` double NOT NULL,
   `link` mediumtext NOT NULL,
   `text` mediumtext NOT NULL,
-  `timestamp` datetime NOT NULL
+  `timestamp` datetime NOT NULL,
   PRIMARY KEY (`db_id`)
 );
