@@ -76,6 +76,10 @@ if __name__ == '__main__':
                     kwargs = {}
                     if "config" in HCS_configuration[hcs_type]:
                         kwargs["config"] = HCS_configuration[hcs_type]["config"]
+                    # Now we have stuff setup. We will launch the thingamajigs here
+                    # Perform the import, then execute
+                    moduleImport = __import__("HighConfidenceStreamerSrc.%s"%HCS_configuration[hcs_type]["source_file"], fromlist=[HCS_configuration[hcs_type]["source_file"]])
+                    Executor = getattr(moduleImport, HCS_configuration[hcs_type]["source_file"])
                     try:
                         HCS_configuration[hcs_type]['processor'] = Executor(assed_config, root_name=hcs_type, errorQueue=errorQueue, messageQueue=messageQueue, **kwargs)
                         HCS_configuration[hcs_type]['processor'].start()
