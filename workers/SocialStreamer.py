@@ -165,18 +165,21 @@ if __name__ == '__main__':
                     
         while not errorQueue.empty():
             
-            _type, _error = errorQueue.get()
-            std_flush( " ".join([_type, "crashed with error "]), _error)
-            std_flush( "        at ", readable_time())
-            APIKeys = keyServer.refresh_key(APIKeys[0])
-            try:
-                tweetStreamer.terminate()
-            except:
-                pass
-            tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
-            tweetStreamer.start()
-    
-            std_flush( " ".join(["Restarted", _type, "at" , readable_time()]))
+            _type, _details, _error = errorQueue.get()
+            if _type == "unstructured":
+                std_flush("UnstructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))
+
+                APIKeys = keyServer.refresh_key(APIKeys[0])
+                try:
+                    tweetStreamer.terminate()
+                except:
+                    pass
+                tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
+                tweetStreamer.start()
+                std_flush( " ".join(["Restarted", _type, "at" , readable_time()]))
+            elif _type == "structured":
+                std_flush("StructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))
+            
         while not messageQueue.empty():
             std_flush( messageQueue.get())
         #time.sleep(5)

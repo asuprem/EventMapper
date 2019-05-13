@@ -45,10 +45,10 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             # Push into landslide events...
             insert = 'INSERT INTO ASSED_Social_Events ( \
                         social_id, cell, \
-                        latitude, longitude, timestamp, link, text, location, topic_name) \
+                        latitude, longitude, timestamp, link, text, location, topic_name, stream_type) \
                         VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s)'
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide")
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", message["streamtype"])
 
             #helper_utils.std_flush(insert%params)
             
