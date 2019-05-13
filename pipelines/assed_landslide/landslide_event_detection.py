@@ -34,6 +34,8 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
         self.cursor_refresh = 300
         self.true_counter = 0
         self.false_counter = 0
+        self.tseliot = open("positive.txt","w")
+        self.poe = open("negative.txt","w")
 
     def process(self,message):
         if time.time() - self.cursor_timer > self.cursor_refresh:
@@ -51,11 +53,13 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
 
         if prediction == 1:
             # push to db
-            self.true_counter+=1
+            #self.true_counter+=1
+            self.tseliot.write(cleaned_message+"\n")
 
         elif prediction == 0:
             # push to db, with false? push to different db?
-            self.false_counter+=1
+            self.poe.write(cleaned_message+"\n")
+            #self.false_counter+=1
         
         helper_utils.std_flush("TRUE: %i\t\tFALSE: %i"%(self.true_counter, self.false_counter))
         
