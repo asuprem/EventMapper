@@ -140,16 +140,7 @@ def extractTweet(jsonVersion):
     return write_version
 
 
-    """
-    producer.send("topic1", bytes("value312312324", encoding="utf-8"))
-    consumer.close()
-    >>> consumer=KafkaConsumer("topic1")
-    >>> for msg in consumer:
-    ...     print(msg.value)
-    ...     time.sleep(5)
-    # export as exportkey:indexeditem
-    """
-
+    
 def getInputPath(_time):
     pathDir = os.path.join(DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('tweets', 'landslide','en', _time.year), '%02d' % _time.month,
                                         '%02d' % _time.day, '%02d' % _time.hour)
