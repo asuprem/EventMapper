@@ -2,36 +2,37 @@ import MySQLdb as mysql
 
 
 def get_db_connection(config,db=None):
-    if db==None:
-        return mysql.connect(   host=config['database']['db_host'], 
-                                port=config['database']['db_port'], 
-                                user=config['database']['db_user'], 
-                                passwd=config['database']['db_passwd'], 
-                                db=config['database']['db_db'], 
-                                charset='utf8')
-    else:
-        return mysql.connect(   host=config['database']['db_host'], 
-                                port=config['database']['db_port'], 
-                                user=config['database']['db_user'], 
-                                passwd=config['database']['db_passwd'], 
-                                db=db, 
-                                charset='utf8')
+    try:
+        if db==None:
+            return mysql.connect(   host=config['database']['db_host'], 
+                                    port=config['database']['db_port'], 
+                                    user=config['database']['db_user'], 
+                                    passwd=config['database']['db_passwd'], 
+                                    db=config['database']['db_db'], 
+                                    charset='utf8')
+        else:
+            return mysql.connect(   host=config['database']['db_host'], 
+                                    port=config['database']['db_port'], 
+                                    user=config['database']['db_user'], 
+                                    passwd=config['database']['db_passwd'], 
+                                    db=db, 
+                                    charset='utf8')
+    except mysql._exceptions.OperationalError:
+        if db==None:
+            return mysql.connect(   host="localhost", 
+                                    port=config['database']['db_port'], 
+                                    user=config['database']['db_user'], 
+                                    passwd=config['database']['db_passwd'], 
+                                    db=config['database']['db_db'], 
+                                    charset='utf8')
+        else:
+            return mysql.connect(   host="localhost", 
+                                    port=config['database']['db_port'], 
+                                    user=config['database']['db_user'], 
+                                    passwd=config['database']['db_passwd'], 
+                                    db=db, 
+                                    charset='utf8')
 
-def get_db_connection_alternate(config,db=None):
-    if db==None:
-        return mysql.connect(   host="localhost", 
-                                port=config['database']['db_port'], 
-                                user=config['database']['db_user'], 
-                                passwd=config['database']['db_passwd'], 
-                                db=config['database']['db_db'], 
-                                charset='utf8')
-    else:
-        return mysql.connect(   host="localhost", 
-                                port=config['database']['db_port'], 
-                                user=config['database']['db_user'], 
-                                passwd=config['database']['db_passwd'], 
-                                db=db, 
-                                charset='utf8')
 
 def run_sql_file(filename, connection):
     '''
