@@ -10,5 +10,7 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `text` mediumtext NOT NULL,
   `timestamp` datetime NOT NULL,
   `topic_name` mediumtext NOT NULL,
+  `source` varchar(10) Not NULL default 'hdi',
+  `valid` boolean not null default 1,
   PRIMARY KEY (`db_id`)
 );
