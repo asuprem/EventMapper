@@ -34,14 +34,20 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
         self.cursor_refresh = 300
         self.true_counter = 0
         self.false_counter = 0
-        self.tseliot = open("positive.txt","w")
-        self.poe = open("negative.txt","w")
+        self.total_counter = 0
+
+        self.db_insert = 'INSERT INTO ASSED_Social_Events ( \
+        social_id, cell, \
+        latitude, longitude, timestamp, link, text, location, topic_name, source, valid) \
+        VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s)'
 
     def process(self,message):
         if time.time() - self.cursor_timer > self.cursor_refresh:
             self.cursor.close()
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
+            helper_utils.std_flush("TRUE: %i\t\tFALSE: %i out of total of %i"%(self.true_counter, self.false_counter, self.total_counter))
+            self.total_counter, self.true_counter, self.false_counter = 0, 0, 0
         
         # Get message text
         cleaned_message = str(message["text"].encode("utf-8"))[2:-2]
@@ -53,42 +59,27 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
 
         if prediction == 1:
             # push to db
-            #self.true_counter+=1
-            self.tseliot.write(cleaned_message+"\n")
+            self.true_counter+=1
+            params = (message["id_str"], message["cell"], str(message['latitude']), \
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "1")
 
         elif prediction == 0:
             # push to db, with false? push to different db?
-            self.poe.write(cleaned_message+"\n")
-            #self.false_counter+=1
-        
-        helper_utils.std_flush("TRUE: %i\t\tFALSE: %i"%(self.true_counter, self.false_counter))
-        
-        results = []
-        if len(results) > 0:
-            #helper_utils.std_flush("True Event found for %s"%str(message["text"].encode("utf-8"))[2:-2])
-            self.true_counter+=1
-            # Push into landslide events...
-            insert = 'INSERT INTO ASSED_Social_Events ( \
-                        social_id, cell, \
-                        latitude, longitude, timestamp, link, text, location, topic_name) \
-                        VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s)'
+            self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide")
-
-            #helper_utils.std_flush(insert%params)
-            
-            try:
-                self.cursor.execute(insert, params)
-                self.DB_CONN.commit()
-                helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
-            except Exception as e:
-                traceback.print_exc()
-                helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
-                return (False, message)
-        else:
-            pass
-
-
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0")
+        """
+        try:
+            self.cursor.execute(self.db_insert, params)
+            self.DB_CONN.commit()
+        except Exception as e:
+            traceback.print_exc()
+            helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
+            return (False, message)
+        """
+        self.total_counter += 1
+        helper_utils.std_flush("would have inserted a %s"%(str(prediction)))
+        time.sleep(10)
         return (False,message)
 
     def time_convert(self,timestamp):
