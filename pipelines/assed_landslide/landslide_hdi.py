@@ -59,7 +59,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             except Exception as e:
                 traceback.print_exc()
                 helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
-            
+                return (False, message)
         else:
             pass
             
@@ -71,7 +71,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
 
 
-        return (False,message)
+        return (True,message)
 
     def time_convert(self,timestamp):
         return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
