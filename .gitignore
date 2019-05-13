@@ -21,3 +21,6 @@ assed_env/*
 venv/*
 redis/*
 workers/utils
+
+**.bin
+**.h5
