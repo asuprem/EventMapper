@@ -50,22 +50,18 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             params = (message["id_str"], message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide")
 
-            helper_utils.std_flush(insert%params)
-            """
+            #helper_utils.std_flush(insert%params)
+            
             try:
                 self.cursor.execute(insert, params)
                 self.DB_CONN.commit()
             except Exception as e:
                 traceback.print_exc()
                 helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
-            """
             
         else:
             pass
-            # return this with the cell alue for classification...
-
-        
-
+            
         """
         tODO
         also perform event detection on other data (just news data (already exists), combination of earthquake AND TRMM (???))
@@ -74,7 +70,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
 
 
-        return (False,message)
+        return (True,message)
 
     def time_convert(self,timestamp):
         return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
