@@ -48,7 +48,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                         latitude, longitude, timestamp, link, text, location, topic_name) \
                         VALUES (%s,%s,%s,%s,%s,%s, %s,%s)'
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], landslide")
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide")
 
             helper_utils.std_flush(insert%params)
             """
