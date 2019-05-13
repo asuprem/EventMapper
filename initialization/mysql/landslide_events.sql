@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `longitude` double NOT NULL,
   `latitude` double NOT NULL,
   `link` mediumtext NOT NULL,
-  `text` mediumtext 'geotag - usually city and country',
+  `text` mediumtext NOT NULL,
   `timestamp` datetime NOT NULL
   PRIMARY KEY (`db_id`)
 );
