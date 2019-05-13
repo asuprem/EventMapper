@@ -70,7 +70,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
 
 
-        return (True,message)
+        return (False,message)
 
     def time_convert(self,timestamp):
         return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
