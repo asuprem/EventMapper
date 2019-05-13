@@ -134,7 +134,7 @@ def extractTweet(jsonVersion):
     write_version["location"] = jsonVersion["place"]["full_name"] if jsonVersion["place"] is not None else ""
     write_version["latitude"] = jsonVersion["coordinates"]["coordinates"][1] if jsonVersion["coordinates"] is not None else None
     write_version["longitude"] = jsonVersion["coordinates"]["coordinates"][0] if jsonVersion["coordinates"] is not None else None
-    write_version["streamtype"] = jsonVersion["twitter"]
+    write_version["streamtype"] = "twitter"
     write_version["timestamp"] = jsonVersion["timestamp"]
     write_version["link"] = "https://twitter.com/statuses/"+jsonVersion["id_str"]
     return write_version
