@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `cell` mediumtext NOT NULL,
   `longitude` double NOT NULL,
   `latitude` double NOT NULL,
-  `location` mediumtext NOT NULL
+  `location` mediumtext NOT NULL,
   `link` mediumtext NOT NULL,
   `text` mediumtext NOT NULL,
   `timestamp` datetime NOT NULL,
