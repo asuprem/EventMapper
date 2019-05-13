@@ -33,6 +33,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
 
         self.cursor_refresh = 300
         self.true_counter = 0
+        self.false_counter = 0
 
     def process(self,message):
         if time.time() - self.cursor_timer > self.cursor_refresh:
@@ -44,12 +45,19 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
         cleaned_message = str(message["text"].encode("utf-8"))[2:-2]
         encoded_message = self.encode(cleaned_message)
 
-        pdb.set_trace()
+        #pdb.set_trace()
         
-        prediction = self.model.predict(np.array([encoded_message]))[0]
+        prediction = np.argmax(self.model.predict(np.array([encoded_message]))[0])
 
-        pdb.set_trace()
+        if prediction == 1:
+            # push to db
+            self.true_counter+=1
+
+        elif prediction == 0:
+            # push to db, with false? push to different db?
+            self.false_counter+=1
         
+        helper_utils.std_flush("TRUE: %i\t\tFALSE: %i"%(self.true_counter, self.false_counter))
         
         results = []
         if len(results) > 0:
