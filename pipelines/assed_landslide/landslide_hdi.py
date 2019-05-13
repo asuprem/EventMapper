@@ -55,6 +55,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             try:
                 self.cursor.execute(insert, params)
                 self.DB_CONN.commit()
+                helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
             except Exception as e:
                 traceback.print_exc()
                 helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
