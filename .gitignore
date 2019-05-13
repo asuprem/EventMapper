@@ -24,3 +24,5 @@ workers/utils
 
 **.bin
 **.h5
+
+web/*
