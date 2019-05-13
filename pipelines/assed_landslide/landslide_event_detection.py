@@ -68,7 +68,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0")
-        
+        """
         try:
             self.cursor.execute(self.db_insert, params)
             self.DB_CONN.commit()
@@ -76,10 +76,9 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             traceback.print_exc()
             helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
             return (False, message)
-        
+        """
         self.total_counter += 1
         helper_utils.std_flush("inserted a %s"%(str(prediction)))
-        time.sleep(10)
         return (False,message)
 
     def time_convert(self,timestamp):
