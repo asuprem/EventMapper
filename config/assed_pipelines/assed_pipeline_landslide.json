@@ -2,7 +2,10 @@
     "configuration":{
         "script_dir":"assed_landslide", 
         "log_dir":"assed_landslide", 
-        "sh_dir":"assed_landslide"
+        "sh_dir":"assed_landslide",
+        "vars":{
+            "mldir":"TODO"
+        }
     },
 
     "input_buffer":{
