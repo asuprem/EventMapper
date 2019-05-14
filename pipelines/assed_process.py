@@ -17,9 +17,12 @@ from datetime import datetime, timedelta
 @click.argument("processscriptdir")
 @click.argument("pidname")
 @click.option("--debug", type=int)
-def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname, debug):
+@click.option("--seekval", type=int)
+def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname, debug, seekval):
     if debug is None:
         debug = 0
+    if debug:
+        helper_utils.std_flush("DEBUG_MODE -- Active")
     pid_name = pidname
     if not debug:
         helper_utils.setup_pid(pid_name, logdir=logdir)
@@ -45,6 +48,13 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
     seek_partition = 0 if seek_partition is None else int(seek_partition)
     seek_offset = 0 if seek_offset is None else int(seek_offset)+1
     helper_utils.std_flush("Obtained seek partition for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))
+
+    # replace seek value
+    if debug:
+        if seekval is not None:
+            seek_offset = seekval
+            helper_utils.std_flush("DEBUG_MODE -- Replaced seek offset for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))
+
     
     kafka_producer = kafka.KafkaProducer()
     helper_utils.std_flush("Generated kafka producer")
