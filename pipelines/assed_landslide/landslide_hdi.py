@@ -74,7 +74,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         """
         
         if self.debug:
-            helper_utils.std_flush("No HDI detected for %s - %s - %s"%(str(message["id_str"],str(message["text"].encode("utf-8"))[2:-2], message["cell"] )))
+            helper_utils.std_flush("No HDI detected for %s - %s - %s"%(str(message["id_str"]),str(message["text"].encode("utf-8"))[2:-2], message["cell"] ))
 
 
         return (True,message)
