@@ -12,7 +12,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.time = time.time()
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         self.r=redis.Redis(connection_pool = pool)
-        self.timecheck = 7200
+        self.timecheck = 600
         self.locations = {}
         self.update_location_store()
         self.NER =  Ner(host="localhost", port=9199)
