@@ -24,7 +24,7 @@
 
     "input_buffer":{
         "name":"input_buffer_twitter",
-        "script":"landslide_inputbuffer",
+        "script":"assed_inputbuffer",
         "export-key":"assed:landslide:social:buffer:stream"
     },
 
