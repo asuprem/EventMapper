@@ -22,12 +22,25 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         self.MS_IN_DAYS = 86400000
         self.true_counter = 0
         self.unk = 0
+        self.stream_tracker = {}
 
     def process(self,message):
+        if message["streamtype"] not in self.stream_tracker:
+            self.stream_tracker[message["streamtype"]] = {}
+            self.stream_tracker[message["streamtype"]]["hdi"] = 0
+            self.stream_tracker[message["streamtype"]]["non_hdi"] = 0
+            self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
+        self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
+
+
         if time.time() - self.cursor_timer > self.cursor_refresh:
             self.cursor.close()
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
+            for _streamtype in self.stream_tracker:
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI  and %i NONHDI"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["hdi"], self.stream_tracker[message["streamtype"]]["non_hdi"]))
+        if self.debug:
+            utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["hdi"], self.stream_tracker[message["streamtype"]]["non_hdi"]))
         # Check 
 
         # Check item
@@ -58,13 +71,16 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                     self.cursor.execute(insert, params)
                     self.DB_CONN.commit()
                 else:
-                    helper_utils.std_flush(insert%params)
+                    #helper_utils.std_flush(insert%params)
+                    pass
                 helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
+                self.stream_tracker[message["streamtype"]]["non_hdi"] += 1
+                return (False, message)
             except Exception as e:
                 traceback.print_exc()
                 helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
-                return (False, message)
         else:
+            # No matching HDI
             pass
             
         """
@@ -74,9 +90,9 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         """
         
         if self.debug:
-            helper_utils.std_flush("No HDI detected for %s - %s - %s"%(str(message["id_str"]),str(message["text"].encode("utf-8"))[2:-2], message["cell"] ))
-
-
+            #helper_utils.std_flush("No HDI detected for %s - %s - %s"%(str(message["id_str"]),str(message["text"].encode("utf-8"))[2:-2], message["cell"] ))
+            pass
+        self.stream_tracker[message["streamtype"]]["non_hdi"] += 1
         return (True,message)
 
     def time_convert(self,timestamp):
