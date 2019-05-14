@@ -8,7 +8,8 @@ import utils.helper_utils as helper_utils
 @click.command()
 @click.argument("importkey")
 @click.argument("exportkey")
-def main(importkey, exportkey):
+@click.option("--seekval", type=int)
+def main(importkey, exportkey, seekval):
 
     kafka_import = importkey.replace(":","_")
     helper_utils.std_flush("Generated kafka import key %s"%kafka_import)
@@ -22,6 +23,7 @@ def main(importkey, exportkey):
     seek_offset = r.get(exportkey+":offset")
     seek_partition = 0 if seek_partition is None else int(seek_partition)
     #seek_offset = 0 if seek_offset is None else int(seek_offset)+1
+    pdb.set_trace()
     seek_offset = 0
     helper_utils.std_flush("Obtained seek partition for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))
 
