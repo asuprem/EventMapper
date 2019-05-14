@@ -39,7 +39,8 @@ def main(importkey, exportkey, seekval):
     helper_utils.std_flush("Set kafka consumer seek")
 
     for message in kafka_consumer:
-        pdb.set_trace()
+        #pdb.set_trace()
+        helper_utils.std_flush(message["streamtype"])
 
 
 if __name__ == "__main__":
