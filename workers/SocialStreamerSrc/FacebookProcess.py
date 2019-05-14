@@ -45,7 +45,7 @@ class FacebookProcess(multiprocessing.Process):
         except:
             pass
         #Create write path
-        self.output = open(self.path, 'w')
+        self.output = open(self.path, 'a')
 
         self.TIMER = 60
         self.timer = time.time()
@@ -76,7 +76,7 @@ class FacebookProcess(multiprocessing.Process):
             except:
                 pass
             self.output.close()
-            self.output = open(self.path, 'w')
+            self.output = open(self.path, 'a')
 
     def run(self):
         """Run - Launches the sreamer itself.
