@@ -127,7 +127,7 @@ class FacebookProcess(multiprocessing.Process):
                             _data_["latitude"] = None
                             _data_["longitude"] = None
                             _data_["streamtype"] = "facebook"
-                            _data_["timestamp"] = time.time()*1000
+                            _data_["timestamp_ms"] = int(time.time()*1000)
                             _data_["link"] = _item_["link"]
                             self.output.write(json.dumps(_data_)+"\n")
 
