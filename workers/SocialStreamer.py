@@ -44,8 +44,6 @@ if __name__ == '__main__':
         else:
             raise ValueError("Invalid streamer type %s for SocialStreamer. Must be one of: unstructured | structured"%StreamerManager[_streamer_]["type"])
 
-    
-    pdb.set_trace()
 
     '''Error queue - This is the queue for errors; Each time process crashes, it will inform this queue'''
     errorQueue = multiprocessing.Queue()
@@ -90,7 +88,6 @@ if __name__ == '__main__':
 
     # Now we have a StreamerManager with empty instances for each streamer we are going to launch.
     # We will launch all of them, and go on from there...
-    pdb.set_trace()
     for _streamer_ in StreamerManager:
         if StreamerManager[_streamer_]["type"] == "unstructured":
             #launch single unstructured streamer...
