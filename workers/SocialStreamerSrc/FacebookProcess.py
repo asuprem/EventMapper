@@ -89,11 +89,13 @@ class FacebookProcess(multiprocessing.Process):
             previousApiAccesses = self.r.get("social:streamer:facebook:%s:%s:count"%(self.event, self.lang))
             if previousApiAccesses is None:
                 previousApiAccesses = 0
-            if previousTimestamp is not None:
-                previousTimestamp = int(previousTimestamp)
             else:
+                previousApiAccesses = int(previousApiAccesses)
+            if previousTimestamp is None:
                 previousTimestamp = time.time()
                 time_reset = True
+            else:
+                previousTimestamp = int(previousTimestamp)
             if time_reset or datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
                 self.messageQueue.put("Initiating facebook download of %s-%s at %s"%(self.event, self.lang, readable_time()))
                 max_results = 10
