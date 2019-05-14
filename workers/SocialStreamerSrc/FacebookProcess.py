@@ -94,7 +94,7 @@ class FacebookProcess(multiprocessing.Process):
             else:
                 previousTimestamp = time.time()
                 time_reset = True
-            if not time_reset or datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
+            if time_reset or datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
                 self.messageQueue.put("Initiating facebook download of %s-%s at %s"%(self.event, self.lang, readable_time()))
                 max_results = 10
                 for page_get in range(5):
@@ -136,7 +136,7 @@ class FacebookProcess(multiprocessing.Process):
 
             else:
                 # we already done...
-                self.messageQueue.put("Facebook download of %s-%s at is already complete for day %s"%(self.event, self.lang, str(datetime.fromtimestamp(time.time()).day)))
+                self.messageQueue.put("Facebook download of %s-%s at %s is already complete for day %s"%(self.event, self.lang, readable_time(), str(datetime.fromtimestamp(time.time()).day)))
                 # Perform sleep for four hours until next check.
                 time.sleep(14400)
         
