@@ -88,7 +88,8 @@ def lookup_address_only(address, API_KEY, redis_key = None):
     if redis_get > 2499:
         return False, False
     else:
-        redis_key.set("apiaccess:googlemaps:"+API_KEY, redis_get+1)
+        redis_get+=1
+        redis_key.set("apiaccess:googlemaps:"+API_KEY, redis_get)
         redis_key.set("apiaccess:timestamp:googlemaps:"+API_KEY, time.time())
 
     # So first we need to check if the location is in our database...
