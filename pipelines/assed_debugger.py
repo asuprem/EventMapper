@@ -34,3 +34,7 @@ def main(importkey, exportkey):
 
     for message in kafka_consumer:
         pdb.set_trace()
+
+
+if __name__ == "__main__":
+    main()
