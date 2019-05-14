@@ -1,5 +1,4 @@
-
-
+import warnings
 
 class KeyServer():
 
@@ -51,6 +50,11 @@ class KeyServer():
                 return (_key, self.keyserver[_key]["key"])
         raise(IndexError("Not enough keys available in KeyServer for key_mode='%s'"%self.key_mode))
 
+    def abandon_key(self,_key):
+        """ An application is no longer using a key. It's freed now for other usages """
+        self.keyserver[_key]["count"]-=1
+        self.verify()
+
     def refresh_key(self,_key):
         """ Refresh an existing key (i.e. if it has been changed, etc etc)
         
@@ -75,12 +79,11 @@ class KeyServer():
         """ Verify -- remove invalid keys with zero count """
         for _key in self.keyserver:
             if not self.keyserver[_key]["valid"]:
-                if self.keyserver[_key]["count"] == 0:
+                if self.keyserver[_key]["count"] < 0:
+                    warnings.warn("Key count for %s is less than zero"%_key)
+                if self.keyserver[_key]["count"] <= 0:
                     del self.keyserver[_key]
-                elif self.keyserver[_key]["count"] < 0:
-                    raise ValueError("Key count is less than 0.")
-                else:
-                    pass
+                
 
     def invalidate(self,_key):
         """ Invalidate a key and schedule it for deletion. """
