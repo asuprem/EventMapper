@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.getcwd())
 
 import kafka, redis
-import pdb, click
+import pdb, click, json
 import utils.helper_utils as helper_utils
 
 @click.command()
@@ -40,7 +40,8 @@ def main(importkey, exportkey, seekval):
 
     for message in kafka_consumer:
         #pdb.set_trace()
-        helper_utils.std_flush(message["streamtype"])
+        jsval = json.loads(message.value.decode())
+        helper_utils.std_flush(jsval["streamtype"])
 
 
 if __name__ == "__main__":
