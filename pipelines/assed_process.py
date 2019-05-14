@@ -32,7 +32,10 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
     helper_utils.std_flush("Initializing ASSED-Process %s"%pidname)
     moduleImport = __import__("pipelines.%s.%s"%(processscriptdir, processscript), fromlist=[processscript])
     MessageProcessor = getattr(moduleImport, processscript)
-    MessageProcessor = MessageProcessor()
+    if debug:
+        MessageProcessor = MessageProcessor(debug=True)
+    else:
+        MessageProcessor = MessageProcessor()
     helper_utils.std_flush("Imported Module %s"%processscript)
     
     kafka_import = importkey.replace(":","_")
