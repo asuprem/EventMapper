@@ -10,6 +10,7 @@ import traceback
 class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
     def __init__(self,debug=False):
+        self.debug = debug
         self.config = load_config("./config/assed_config.json")
         self.DB_CONN = get_db_connection(self.config)
         self.cursor = self.DB_CONN.cursor()
@@ -53,8 +54,11 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             #helper_utils.std_flush(insert%params)
             
             try:
-                self.cursor.execute(insert, params)
-                self.DB_CONN.commit()
+                if not self.debug:
+                    self.cursor.execute(insert, params)
+                    self.DB_CONN.commit()
+                else:
+                    helper_utils.std_flush(insert%params)
                 helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
             except Exception as e:
                 traceback.print_exc()
