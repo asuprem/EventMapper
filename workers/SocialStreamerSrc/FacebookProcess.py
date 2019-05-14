@@ -82,14 +82,17 @@ class FacebookProcess(multiprocessing.Process):
         """Run - Launches the sreamer itself.
 
         """
-        # Perform work ONLY if it hasn't been performed today...
-        previousTimestamp = self.r.get("social:streamer:facebook:timestamp")
-        previousApiAccesses = self.r.get("social:streamer:facebook:count")
-        if previousApiAccesses is None:
-            previousApiAccesses = 0
-        if previousTimestamp is not None:
-            previousTimestamp = int(previousTimestamp)
-            if datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()):
+        while True:
+            # Perform work ONLY if it hasn't been performed today...
+            previousTimestamp = self.r.get("social:streamer:facebook:%s:%s:timestamp"%(self.event, self.lang))
+            previousApiAccesses = self.r.get("social:streamer:facebook:%s:%s:count"%(self.event, self.lang))
+            if previousApiAccesses is None:
+                previousApiAccesses = 0
+            if previousTimestamp is not None:
+                previousTimestamp = int(previousTimestamp)
+            else:
+                previousTimestamp = time.time()
+            if datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
                 self.messageQueue.put("Initiating facebook download of %s-%s at %s"%(self.event, self.lang, readable_time()))
                 max_results = 10
                 for page_get in range(9):
@@ -98,10 +101,14 @@ class FacebookProcess(multiprocessing.Process):
                         continue
                     #results = self.service.cse().list(q=self.keywords,cx=self.cx,dateRestrict='d1',siteSearch='www.facebook.com',siteSearchFilter='i', start=start_param).execute()
                     results = {'searchInformation': {'searchTime': 0.438406, 'formattedSearchTime': '0.44', 'totalResults': '359', 'formattedTotalResults': '359'}, 'items': [{'kind': 'customsearch#result', 'title': 'Dost_pagasa - 24-HOUR PUBLIC WEATHER FORECAST Issued at ...', 'htmlTitle': 'Dost_pagasa - 24-HOUR PUBLIC WEATHER FORECAST Issued at ...', 'link': 'https://www.facebook.com/PAGASA.DOST.GOV.PH/photos/a.302759263167323/2109827015793863/?type=3', 'displayLink': 'www.facebook.com', 'snippet': 'Caused by: Southwesterlies Impacts: Possible flash floods or landslides due to \nscattered light to moderate rains. Place: Metro Manila and the rest of the country', 'htmlSnippet': 'Caused by: Southwesterlies Impacts: Possible flash floods or <b>landslides</b> due to <br>\nscattered light to moderate rains. Place: Metro Manila and the rest of the country', 'cacheId': 'U61GxJQyR4QJ', 'formattedUrl': 'https://www.facebook.com/PAGASA.../a.../2109827015793863/?...', 'htmlFormattedUrl': 'https://www.facebook.com/PAGASA.../a.../2109827015793863/?...', 'pagemap': {'cse_thumbnail': [{'width': '255', 'height': '197', 'src': 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSmvRenMdLrIaVlcJZQhA9lPWht0i9M50eSKoYjUCgjlN5yEKdHrPENUM2m'}], 'metatags': [{'referrer': 'default', 'og:title': 'Dost_pagasa', 'og:description': '24-HOUR PUBLIC WEATHER FORECAST\nIssued at 4:00 PM Monday, 13 May 2019 \n\nSynopsis: Ridge of High Pressure Area affecting the eastern sections of Northern and Central Luzon, and Southern Luzon....', 'og:image': 'https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=2109827015793863', 'og:url': 'https://www.facebook.com/PAGASA.DOST.GOV.PH/posts/2109827262460505'}], 'cse_image': [{'src': 'https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=2109827015793863'}]}}, {'kind': 'customsearch#result', 'title': 'Persistent rainfall + floods +... - Severe Weather Europe | Facebook', 'htmlTitle': 'Persistent rainfall + floods +... - Severe Weather Europe | Facebook', 'link': 'https://www.facebook.com/severeweatherEU/posts/persistent-rainfall-floods-landslides-for-parts-of-the-western-balkans-next-week/2515360518687034/', 'displayLink': 'www.facebook.com', 'snippet': 'Persistent rainfall + floods + landslides for parts of the western Balkans next week\n! #Croatia and #Bosnia and Herzegovina will see the most problems....', 'htmlSnippet': 'Persistent rainfall + floods + <b>landslides</b> for parts of the western Balkans next week<br>\n! #Croatia and #Bosnia and Herzegovina will see the most problems....', 'cacheId': 'axcWNRhPvZ8J', 'formattedUrl': 'https://www.facebook.com/...landslides.../2515360518687034/', 'htmlFormattedUrl': 'https://www.facebook.com/...<b>landslides</b>.../2515360518687034/', 'pagemap': {'cse_thumbnail': [{'width': '225', 'height': '225', 'src': 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQMzGKR0k2IELVUTyc9UD443A5nzGE2PDqO1rSLG6xCajL8xpYI26zXvm4'}], 'metatags': [{'referrer': 'default', 'og:title': 'Severe Weather Europe', 'og:description': 'Persistent rainfall + floods + landslides for parts of the western Balkans next week! #Croatia and #Bosnia and Herzegovina will see the most problems....', 'og:image': 'https://external-atl3-1.xx.fbcdn.net/safe_image.php?d=AQAQHIR0RhEZxrkq&w=400&h=400&url=http%3A%2F%2Fwww.severe-weather.eu%2Fwp-content%2Fuploads%2F2019%2F05%2F500h_anom.eu_Tuesday.png&cfs=1&_nc_hash=AQD2C7pYBAE_Wgq_', 'og:url': 'https://www.facebook.com/severeweatherEU/posts/2515360518687034'}], 'cse_image': [{'src': 'https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=157048324896449'}]}}]}
+                    currentTimeStamp = time.time()
+                    self.r.set("social:streamer:facebook:%s:%s:timestamp"%(self.event, self.lang), currentTimeStamp)
+                    previousApiAccesses+=1
+                    self.r.set("social:streamer:facebook:%s:%s:count"%(self.event, self.lang), previousApiAccesses)
+
                     max_results = results["searchInformation"]["totalResults"]
 
-                    previousApiAccesses+=1
-                    self.r.set("social:streamer:facebook:count", previousApiAccesses)
+                    
 
                     try:
                         if time.time() - self.local_time > self.TIMER:
@@ -122,13 +129,15 @@ class FacebookProcess(multiprocessing.Process):
 
                     except Exception as e:
                         self.errorQueue.put(("structured",("facebook", self.event, self.lang), str(e)))
-
                     self.messageQueue.put("Completed facebook download of %s-%s part %i of 10 at %s"%(self.event, self.lang, page_get+1, readable_time()))
-
+                self.messageQueue.put("Completed facebook download of %s-%s at time %s"%(self.event, self.lang, readable_time()))
 
             else:
                 # we already done...
-                self.messageQueue.put("facebook download of %s-%s at is already complete for day %s"%(self.event, self.lang, str(datetime.fromtimestamp(time.time()).day)))
-            self.messageQueue.put("Completed facebook download of %s-%s at time %s"%(self.event, self.lang, readable_time()))
+                self.messageQueue.put("Facebook download of %s-%s at is already complete for day %s"%(self.event, self.lang, str(datetime.fromtimestamp(time.time()).day)))
+                # Perform sleep for four hours until next check.
+                time.sleep(14400)
+        
+        
 
 
