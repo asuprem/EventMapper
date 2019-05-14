@@ -19,12 +19,22 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.memory={}
         config = load_config("./config/assed_config.json")
         self.APIKEY = config["APIKEYS"]["googlemaps"]
+        self.stream_tracker = {}
 
     def process(self,message):
         if time.time() - self.time > self.timecheck:
             utils.helper_utils.std_flush("Updating news location store.")
             self.update_location_store()
             self.time = time.time()
+            for _streamtype in self.stream_tracker:
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
+        
+        if message["streamtype"] not in self.stream_tracker:
+            self.stream_tracker[message["streamtype"]] = {}
+            self.stream_tracker[message["streamtype"]]["bad_location"] = 0
+            self.stream_tracker[message["streamtype"]]["good_location"] = 0
+            self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
+        self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
         # Check if location exists
         latitude = None
         longitude = None
@@ -54,6 +64,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 #utils.helper_utils.std_flush(self.counter)
                         
             if locations is None:
+                self.stream_tracker[message["streamtype"]]["bad_location"] += 1
                 return (False, message)
 
             # location is there, we will attempt geocoding right here... right now... right on this ship
@@ -111,7 +122,9 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 message["latitude"] = str(latitude)
                 message["longitude"] = str(longitude)
             else:
+                self.stream_tracker[message["streamtype"]]["bad_location"] += 1
                 return (False, message)
+        self.stream_tracker[message["streamtype"]]["good_location"] += 1
         return (True, message)
         
 
