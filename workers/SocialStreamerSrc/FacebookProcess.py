@@ -95,7 +95,7 @@ class FacebookProcess(multiprocessing.Process):
                 previousTimestamp = time.time()
                 time_reset = True
             else:
-                previousTimestamp = int(previousTimestamp)
+                previousTimestamp = int(float(previousTimestamp))
             if time_reset or datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
                 self.messageQueue.put("Initiating facebook download of %s-%s at %s"%(self.event, self.lang, readable_time()))
                 max_results = 10
