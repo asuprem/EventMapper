@@ -12,7 +12,7 @@ import redis
 from apiclient.discovery import build
 from utils.helper_utils import readable_time
 
-class TweetProcess(multiprocessing.Process):
+class FacebookProcess(multiprocessing.Process):
     """A Class for a process for a multiprocessing application.
 
     Args:
