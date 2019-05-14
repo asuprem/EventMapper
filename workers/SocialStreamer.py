@@ -19,7 +19,7 @@ SOCIAL_STREAMER_FIRST_FILE_CHECK = True
 
 if __name__ == '__main__':
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
-    setup_pid(pid_name)
+    #setup_pid(pid_name)
     #Set up configOriginal dict
     configOriginal = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
     StreamerManager = {}
