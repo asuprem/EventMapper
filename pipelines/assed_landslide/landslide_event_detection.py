@@ -43,13 +43,26 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
         latitude, longitude, timestamp, link, text, location, topic_name, source, valid, streamtype) \
         VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s, %s)'
 
+        self.stream_tracker = {}
+
     def process(self,message):
+        if message["streamtype"] not in self.stream_tracker:
+            self.stream_tracker[message["streamtype"]] = {}
+            self.stream_tracker[message["streamtype"]]["positive"] = 0
+            self.stream_tracker[message["streamtype"]]["negative"] = 0
+            self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
+        self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
+
         if time.time() - self.cursor_timer > self.cursor_refresh:
             self.cursor.close()
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
             helper_utils.std_flush("TRUE: %i\t\tFALSE: %i out of total of %i"%(self.true_counter, self.false_counter, self.total_counter))
             self.total_counter, self.true_counter, self.false_counter = 0, 0, 0
+            for _streamtype in self.stream_tracker:
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i positive  and %i negative"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["positive"], self.stream_tracker[message["streamtype"]]["negative"]))
+        if self.debug:
+            utils.helper_utils.std_flush("Processed %i elements from %s with %i positive and %i negative"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["positive"], self.stream_tracker[message["streamtype"]]["negative"]))
         
         # Get message text
         cleaned_message = str(message["text"].encode("utf-8"))[2:-2]
@@ -63,12 +76,13 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             self.true_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "1", message["streamtype"])
-
+            self.stream_tracker[message["streamtype"]]["positive"] += 1
         elif prediction == 0:
             # push to db, with false? push to different db?
             self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0", message["streamtype"])
+            self.stream_tracker[message["streamtype"]]["neagtive"] += 1
         else:
             warnings.warn("WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%prediction)
         try:
