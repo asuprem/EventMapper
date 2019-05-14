@@ -60,7 +60,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             helper_utils.std_flush("TRUE: %i\t\tFALSE: %i out of total of %i"%(self.true_counter, self.false_counter, self.total_counter))
             self.total_counter, self.true_counter, self.false_counter = 0, 0, 0
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i positive  and %i negative"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["positive"], self.stream_tracker[message["streamtype"]]["negative"]))
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i positive  and %i negative"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["positive"], self.stream_tracker[_streamtype]["negative"]))
         if self.debug:
             utils.helper_utils.std_flush("Processed %i elements from %s with %i positive and %i negative"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["positive"], self.stream_tracker[message["streamtype"]]["negative"]))
         

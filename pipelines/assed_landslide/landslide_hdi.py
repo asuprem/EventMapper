@@ -38,7 +38,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI  and %i NONHDI"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["hdi"], self.stream_tracker[message["streamtype"]]["non_hdi"]))
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI  and %i NONHDI"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["hdi"], self.stream_tracker[_streamtype]["non_hdi"]))
         if self.debug:
             utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI and %i NONHDI"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["hdi"], self.stream_tracker[message["streamtype"]]["non_hdi"]))
         # Check 
