@@ -92,8 +92,8 @@ class AssedPipeline():
                 importkey = self.config["configuration"]["input-streams"][_inputsource]["import-key"]
 
             
-            bufferStr = \
-            '''#!/bin/sh
+                bufferStr = \
+                '''#!/bin/sh
 cd {homedir}
 if ps up `cat {logdir}/{bufferlogname}.pid ` > /dev/null
 then
@@ -107,9 +107,9 @@ else
 fi'''.format(homedir = self.home_dir, logdir = self.log_dir, bufferscriptname = bufferscriptname, bufferlogname = bufferlogname, assedscript = self.assed_sript_dir, importkey = importkey, exportkey = exportkey, dataprocessor = dataprocessor, dataprocessorscriptdir = self.script_dir_importname, pidname=bufferlogname)
         
 
-        self.inputBufferScriptFile = os.path.join(self.sh_dir, bufferlogname + ".sh")
-        self.writeScript(self.inputBufferScriptFile, bufferStr)
-        helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
+                self.inputBufferScriptFile = os.path.join(self.sh_dir, bufferlogname + ".sh")
+                self.writeScript(self.inputBufferScriptFile, bufferStr)
+                helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
     def createProcessScripts(self):
         for _processscript in self.process_scripts:
