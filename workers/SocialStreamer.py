@@ -22,6 +22,20 @@ if __name__ == '__main__':
     setup_pid(pid_name)
     #Set up configOriginal dict
     configOriginal = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
+    Streamers = {}
+    for _streamer_ in configOriginal["SocialStreamers"]:
+        Streamers[_streamer_] = {}
+        Streamers[_streamer_]["name"] = configOriginal["SocialStreamers"][_streamer_]["name"]
+        Streamers[_streamer_]["type"] = configOriginal["SocialStreamers"][_streamer_]["type"]
+        Streamers[_streamer_]["apikey"] = configOriginal["SocialStreamers"][_streamer_]["apikey"]
+        Streamers[_streamer_]["apimax"] = configOriginal["SocialStreamers"][_streamer_]["apimax"]
+        _scriptname = configOriginal["SocialStreamers"][_streamer_]["script"]
+        moduleImport = __import__("SocialStreamerSrc.%s"%_scriptname, fromlist=[_scriptname])
+        Streamers[_streamer_]["executor"] = getattr(moduleImport, _scriptname)
+        Streamers[_streamer_]["keyserver"] = KeyServer(load_config(CONSTANTS.ASSED_CONFIG), key_mode=Streamers[_streamer_]["apikey"], key_max=Streamers[_streamer_]["apimax"])
+
+    
+    pdb.set_trace()
 
     '''Error queue - This is the queue for errors; Each time process crashes, it will inform this queue'''
     errorQueue = multiprocessing.Queue()
