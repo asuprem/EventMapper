@@ -109,6 +109,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 if coordinates is None:
                     # no sublocation exists. We are gonna have to geocode
                     # TODO TODO TODO TODO -------------
+                    utils.helper_utils.std_flush("Performing geolocation for %s using googlemaps"%message["location"])
                     latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
                     if latitude == False:
                         raise RuntimeError("Maps API Expired for %s"%time.time())
