@@ -38,10 +38,13 @@ def main(importkey, exportkey, seekval):
     kafka_consumer.seek(TopicPartition, seek_offset)
     helper_utils.std_flush("Set kafka consumer seek")
 
+    count = 0
     for message in kafka_consumer:
         #pdb.set_trace()
+        count+=1
         jsval = json.loads(message.value.decode())
-        helper_utils.std_flush(jsval["streamtype"])
+        helper_utils.std_flush(jsval["streamtype"], str(count))
+        
 
 
 if __name__ == "__main__":
