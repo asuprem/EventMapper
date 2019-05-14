@@ -27,18 +27,18 @@ if __name__ == '__main__':
         StreamerManager[_streamer_] = {}
         StreamerManager[_streamer_]["name"] = configOriginal["SocialStreamers"][_streamer_]["name"]
         StreamerManager[_streamer_]["type"] = configOriginal["SocialStreamers"][_streamer_]["type"]
-        StreamerManager[_streamer_]["apikey"] = configOriginal["SocialStreamers"][_streamer_]["apikey"]
+        StreamerManager[_streamer_]["apikey_name"] = configOriginal["SocialStreamers"][_streamer_]["apikey"]
         StreamerManager[_streamer_]["apimax"] = configOriginal["SocialStreamers"][_streamer_]["apimax"]
         _scriptname = configOriginal["SocialStreamers"][_streamer_]["script"]
         moduleImport = __import__("SocialStreamerSrc.%s"%_scriptname, fromlist=[_scriptname])
         StreamerManager[_streamer_]["executor"] = getattr(moduleImport, _scriptname)
-        StreamerManager[_streamer_]["keyserver"] = KeyServer(load_config(CONSTANTS.ASSED_CONFIG), key_mode=StreamerManager[_streamer_]["apikey"], key_max=StreamerManager[_streamer_]["apimax"])
-
+        StreamerManager[_streamer_]["keyserver"] = KeyServer(load_config(CONSTANTS.ASSED_CONFIG), key_mode=StreamerManager[_streamer_]["apikey_name"], key_max=StreamerManager[_streamer_]["apimax"])
         # Streamer specific instances
         if StreamerManager[_streamer_]["type"] == "unstructured":
             # Only single instance, with all keywords
             StreamerManager[_streamer_]["instance"] = None
             StreamerManager[_streamer_]["keywords"] = []
+            StreamerManager[_streamer_]["apikey"] = None
         elif StreamerManager[_streamer_]["type"] == "structured":
             StreamerManager[_streamer_]["instances"] = {}
         else:
@@ -82,16 +82,38 @@ if __name__ == '__main__':
                         StreamerManager[_allowed_streamer]["instances"][eventLangTuple] = {}
                         StreamerManager[_allowed_streamer]["instances"][eventLangTuple]["keywords"] = streamerConfig[eventLangTuple]["keywords"]
                         StreamerManager[_allowed_streamer]["instances"][eventLangTuple]["instance"] = None
+                        StreamerManager[_allowed_streamer]["instances"][eventLangTuple]["apikey"] = None
                     else:
                         pass
+            else:
+                raise ValueError("Invalid streamer type %s for SocialStreamer. Must be one of: unstructured | structured"%StreamerManager[_allowed_streamer]["type"])
 
     # Now we have a StreamerManager with empty instances for each streamer we are going to launch.
     # We will launch all of them, and go on from there...
     pdb.set_trace()
-    
-    tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
-    tweetStreamer.start()
-    std_flush(" ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]]))
+    for _streamer_ in StreamerManager:
+        if StreamerManager[_streamer_]["type"] == "unstructured":
+            #launch single unstructured streamer...
+            StreamerManager[_streamer_]["apikey"] = StreamerManager[_streamer_]["keyserver"].get_key()
+            StreamerManager[_streamer_]["instance"] = StreamerManager[_streamer_]["executor"](StreamerManager[_streamer_]["keywords"], StreamerManager[_streamer_]["apikey"][1], errorQueue, messageQueue)
+            StreamerManager[_streamer_]["instance"].start()
+            std_flush("Deployed unstructured streamer : %s\tat %s\twith key %s"%(StreamerManager[_streamer_]["name"], readable_time(), StreamerManager[_streamer_]["apikey"][0]))
+        elif StreamerManager[_streamer_]["type"] == "structured":
+            # Launch each instance (eventlangtuple)...
+            for _instance_ in StreamerManager[_streamer_]["instances"]:
+                StreamerManager[_streamer_]["instances"][_instance_]["apikey"] = StreamerManager[_streamer_]["keyserver"].get_key()
+                StreamerManager[_streamer_]["instances"][_instance_]["instance"] = StreamerManager[_streamer_]["executor"](
+                    _instance_[0],
+                    _instance_[1],
+                    StreamerManager[_streamer_]["instances"][_instance_]["keywords"],
+                    StreamerManager[_streamer_]["instances"][_instance_]["apikey"][1], 
+                    errorQueue, 
+                    messageQueue)
+                StreamerManager[_streamer_]["instances"][_instance_]["instance"].start()
+                std_flush("Deployed structured streamer : %s for %s-%s\tat %s\twith key %s"%(StreamerManager[_streamer_]["name"], _instance_[0], _instance_[1], readable_time(), StreamerManager[_streamer_]["instances"][_instance_]["apikey"][0]))
+        else:
+            raise ValueError("Invalid streamer type %s for SocialStreamer. Must be one of: unstructured | structured"%StreamerManager[_streamer_]["type"])
+
     configCheckTimer = time.time()
     fileCheckTimer = time.time()
     crashCheckInfoDumpTimer = time.time()
@@ -103,7 +125,10 @@ if __name__ == '__main__':
             configReload = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
-            keyServer.update(load_config(CONSTANTS.ASSED_CONFIG))
+            # Update all keyservers...
+            for _streamer_ in StreamerManager:
+                StreamerManager[_streamer_]["keyserver"].update(load_config(CONSTANTS.ASSED_CONFIG))
+
             #First we check reloaded and for each changed, we replace
             for physicalEvent in configReload['topic_names'].keys():
                 for language in configReload['topic_names'][physicalEvent]["languages"]:
@@ -119,6 +144,39 @@ if __name__ == '__main__':
                             configChangeFlag = True
                         std_flush( "New event-language pair added: ", str(eventLangTuple))
                         std_flush( "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
+                        
+                        # TODO add instance to StreamerManager() structured
+                        if language == "en":
+                            for _all_streamers_ in StreamerManager:
+                                if StreamerManager[_all_streamers_]["type"] == "structured":
+                                    # Pass because I don't want an extra level here for tasks. It's going on below in a 
+                                    # couple lines after the continue
+                                    pass
+                                else:
+                                    continue
+                                # all_streamer_ is a structured streamer. we will add the instances...
+                                if eventLangTuple not in StreamerManager[_all_streamers_]["instances"]:    
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple] = {}
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["keywords"] = streamerConfig[eventLangTuple]["keywords"]
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"] = None
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"] = None
+
+                                    # Now start the process here.
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"] = StreamerManager[_all_streamers_]["keyserver"].get_key()
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"] = StreamerManager[_all_streamers_]["executor"](
+                                        eventLangTuple[0],
+                                        eventLangTuple[1],
+                                        StreamerManager[_all_streamers_]["instances"][eventLangTuple]["keywords"],
+                                        StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][1], 
+                                        errorQueue, 
+                                        messageQueue)
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"].start()
+                                    std_flush("Deployed structured streamer : %s for %s-%s\tat %s\twith key %s"%(StreamerManager[_streamer_]["name"], eventLangTuple[0], eventLangTuple[1], readable_time(), StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][0]))
+                                else:
+                                    # TODO handle weird situation if a new eventlangtuple is added but already exists in StreamerManager. 
+                                    # Need to shut it down cleanly.
+                                    pass
+
                     else:
                         if streamerConfig[eventLangTuple]['keywords'] != configReload['topic_names'][physicalEvent]["languages"][language]:
                             if not configChangeFlag:
@@ -128,6 +186,51 @@ if __name__ == '__main__':
                             std_flush( "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                             streamerConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                             std_flush( "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
+                            # TODO TODO ChangeStreamerManagerInstance()... structured
+
+                            if language == "en":
+                                for _all_streamers_ in StreamerManager:
+                                    if StreamerManager[_all_streamers_]["type"] == "structured":
+                                        # Pass because I don't want an extra level here for tasks. It's going on below in a 
+                                        # couple lines after the continue
+                                        pass
+                                    else:
+                                        continue
+                                    # all_streamer_ is a structured streamer. we will add the instances...
+                                    # First delete the eventlangtuple if it exists
+
+                                    if eventLangTuple in StreamerManager[_all_streamers_]["instances"]:    
+                                        try:
+                                            StreamerManager[_all_streamers_]["instances"][eventLangTuple].terminate()
+                                            std_flush("Shutdown structured streamer %s for deleted event-language pair %s-%s "%(_all_streamers_, eventLangTuple[0], eventLangTuple[1]))
+                                        except:
+                                            std_flush("Structured streamer %s for deleted event-language pair %s-%s is already shut down"%(_all_streamers_, eventLangTuple[0], eventLangTuple[1]))
+                                        # TODO TODO TODO reemove keyserver
+                                        StreamerManager[_all_streamers_]["keyserver"].abandon_key(StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][0])
+                                        del StreamerManager[_all_streamers_]["instances"][eventLangTuple]
+                                        std_flush( "Removed structured streamer configuration for deleted event-language pair %s-%s "%(eventLangTuple[0], eventLangTuple[1]))
+                                        # Not it no longer is in the StreamerManager...
+                                    
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple] = {}
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["keywords"] = streamerConfig[eventLangTuple]["keywords"]
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"] = None
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"] = None
+
+                                    # Now start the process here.
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"] = StreamerManager[_all_streamers_]["keyserver"].get_key()
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"] = StreamerManager[_all_streamers_]["executor"](
+                                        eventLangTuple[0],
+                                        eventLangTuple[1],
+                                        StreamerManager[_all_streamers_]["instances"][eventLangTuple]["keywords"],
+                                        StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][1], 
+                                        errorQueue, 
+                                        messageQueue)
+                                    StreamerManager[_all_streamers_]["instances"][eventLangTuple]["instance"].start()
+                                    std_flush("Deployed structured streamer : %s for %s-%s\tat %s\twith key %s"%(StreamerManager[_streamer_]["name"], eventLangTuple[0], eventLangTuple[1], readable_time(), StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][0]))
+                                    
+                                    
+                            # Terminate the existing process and restart...
+                            # Hopefully this won't cause issues with the key access per day...
 
             deleteEventLangTuples = []
             for eventLangTuple in streamerConfig:
@@ -145,19 +248,39 @@ if __name__ == '__main__':
                     configChangeFlag = True
                 std_flush( "Deleted event-language pair: ", str(eventLangTuple))
 
+                # Shutdown structured streamer that matched this eventLangTuple
+                for _streamer_ in StreamerManager:
+                    if StreamerManager[_streamer_]["type"] == "structured":
+                        if eventLangTuple in StreamerManager[_streamer_]["instances"]:
+                            try:
+                                StreamerManager[_streamer_]["instances"][eventLangTuple].terminate()
+                                std_flush("Shutdown structured streamer %s for deleted event-language pair %s-%s "%(_streamer_, eventLangTuple[0], eventLangTuple[1]))
+                            except:
+                                std_flush("Structured streamer %s for deleted event-language pair %s-%s is already shut down"%(_streamer_, eventLangTuple[0], eventLangTuple[1]))
+                            # TODO TODO TODO reemove keyserver
+                            StreamerManager[_streamer_]["keyserver"].abandon_key(StreamerManager[_streamer_]["instances"][eventLangTuple]["apikey"][0])
+                            del StreamerManager[_streamer_]["instances"][eventLangTuple]
+                            std_flush( "Removed structured streamer configuration for deleted event-language pair %s-%s "%(eventLangTuple[0], eventLangTuple[1]))
+                            
+
+
             if configChangeFlag:
-                keywords = []
-                for eventLangTuple in streamerConfig:
-                    keywords += streamerConfig[eventLangTuple]['keywords']
-                #relaunch
-                try:
-                    tweetStreamer.terminate()
-                except:
-                    pass
-                APIKeys = keyServer.refresh_key(APIKeys[0])
-                tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
-                tweetStreamer.start()
-                std_flush( " ".join(["Deployed",'unstructured streamer', "at", readable_time(),"with key", APIKeys[0]]))
+                # reset keywords for unstructured streamer
+                for _allowed_streamer_ in StreamerManager:
+                    if StreamerManager[_allowed_streamer_]["type"] == "unstructured":
+                        StreamerManager[_allowed_streamer_]["keywords"] = []
+                        for eventLangTuple in streamerConfig:
+                            StreamerManager[_allowed_streamer_]["keywords"] += streamerConfig[eventLangTuple]['keywords']
+
+                        #relaunch the unstructured streamer...
+                        try:
+                            StreamerManager[_allowed_streamer_]["instance"].terminate()
+                        except:
+                            pass
+                        #APIKeys = keyServer.refresh_key(APIKeys[0])
+                        StreamerManager[_allowed_streamer_]["instance"] = StreamerManager[_allowed_streamer_]["executor"](StreamerManager[_allowed_streamer_]["keywords"], StreamerManager[_allowed_streamer_]["apikey"][1], errorQueue, messageQueue)
+                        StreamerManager[_allowed_streamer_]["instance"].start()
+                        std_flush("Deployed unstructured streamer : %s\tat %s\twith key %s"%(StreamerManager[_allowed_streamer_]["name"], readable_time(), StreamerManager[_allowed_streamer_]["apikey"][0]))
             else:
                 std_flush( "No changes have been made to Multiprocessing config file")
 
@@ -167,7 +290,7 @@ if __name__ == '__main__':
             std_flush( " ".join(["No crashes at", readable_time()]))
 
 
-        #File write checks
+        #File write checks for unstructured streamer...
         if time.time() - fileCheckTimer > CONSTANTS.SOCIAL_STREAMER_FILE_TIME_CHECK:
             fileCheckTimer = time.time()
             fileCheckCounter = 0
@@ -186,6 +309,7 @@ if __name__ == '__main__':
                 fileName = os.path.join(pathDir, '%02d.json' % _minute)
                 if not os.path.exists(fileName):
                     fileCheckCounter+=1
+            
             if SOCIAL_STREAMER_FIRST_FILE_CHECK:
                 #wait for next check
                 std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
