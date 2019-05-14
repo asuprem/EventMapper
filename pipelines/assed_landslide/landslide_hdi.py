@@ -48,7 +48,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                         social_id, cell, \
                         latitude, longitude, timestamp, link, text, location, topic_name, source, valid, stream_type) \
                         VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s, %s)'
-            params = (message["id_str"], message["cell"], str(message['latitude']), \
+            params = (str(message["id_str"]), message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "hdi", "1", message["streamtype"])
 
             #helper_utils.std_flush(insert%params)
@@ -72,7 +72,9 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         also perform event detection on other data (just news data (already exists), combination of earthquake AND TRMM (???))
 
         """
-
+        
+        if self.debug:
+            helper_utils.std_flush("No HDI detected for %s - %s - %s"%(str(message["id_str"],str(message["text"].encode("utf-8"))[2:-2], message["cell"] )))
 
 
         return (True,message)
