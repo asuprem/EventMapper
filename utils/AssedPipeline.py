@@ -27,7 +27,7 @@ class AssedPipeline():
         # Identify input buffer scripts
         self.inverted_buffer_index = {}
         for stream_input_source in self.config["configuration"]["input-streams"]:
-            _bufferscript = self.config["input-streams"][stream_input_source]["buffer-script-name"]
+            _bufferscript = self.config["configuration"]["input-streams"][stream_input_source]["buffer-script-name"]
             if _bufferscript not in self.inverted_buffer_index:
                 self.inverted_buffer_index[_bufferscript] = []
             self.inverted_buffer_index[_bufferscript].append(stream_input_source)
