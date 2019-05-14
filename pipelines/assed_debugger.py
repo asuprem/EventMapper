@@ -22,10 +22,14 @@ def main(importkey, exportkey, seekval):
     seek_partition = r.get(exportkey+":partition")
     seek_offset = r.get(exportkey+":offset")
     seek_partition = 0 if seek_partition is None else int(seek_partition)
-    #seek_offset = 0 if seek_offset is None else int(seek_offset)+1
-    pdb.set_trace()
-    seek_offset = 0
+    seek_offset = 0 if seek_offset is None else int(seek_offset)+1
     helper_utils.std_flush("Obtained seek partition for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))
+
+    if seekval is not None:
+        seek_offset = seekval
+        helper_utils.std_flush("Replaced seek offset for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))
+    helper_utils.std_flush("\n\n")
+
 
     kafka_consumer = kafka.KafkaConsumer()
     helper_utils.std_flush("Generated kafka consumer")
