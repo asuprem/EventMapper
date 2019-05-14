@@ -104,7 +104,7 @@ else
     printf "Deleted file\\n" >> {logdir}/{bufferlogname}.out
     printf "Starting {bufferscriptname}.py\\n" >> {logdir}/{bufferlogname}.out
     nohup ./assed_env/bin/python {assedscript}/{bufferscriptname}.py {logdir} {importkey} {exportkey} {dataprocessor} {dataprocessorscriptdir} {pidname} >> {logdir}/{bufferlogname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, bufferscriptname = bufferscriptname, bufferlogname = bufferlogname, assedscript = self.assed_sript_dir, importkey = importkey, exportkey = exportkey, dataprocessor = dataprocessor, pidname=bufferlogname)
+fi'''.format(homedir = self.home_dir, logdir = self.log_dir, bufferscriptname = bufferscriptname, bufferlogname = bufferlogname, assedscript = self.assed_sript_dir, importkey = importkey, exportkey = exportkey, dataprocessor = dataprocessor, dataprocessorscriptdir = self.script_dir_importname, pidname=bufferlogname)
         
 
         self.inputBufferScriptFile = os.path.join(self.sh_dir, bufferlogname + ".sh")
