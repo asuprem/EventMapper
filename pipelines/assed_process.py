@@ -16,9 +16,14 @@ from datetime import datetime, timedelta
 @click.argument("processscript")
 @click.argument("processscriptdir")
 @click.argument("pidname")
-def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname):
+@click.option("--debug", type=int)
+def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname, debug):
+    if debug is None:
+        debug = 0
     pid_name = pidname
-    helper_utils.setup_pid(pid_name, logdir=logdir)
+    if not debug:
+        helper_utils.setup_pid(pid_name, logdir=logdir)
+    
 
     # Import processscript
     helper_utils.std_flush("Initializing ASSED-Process %s"%pidname)
@@ -63,20 +68,21 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname)
         if not processedMessage[0]:
             message_fail_counter+=1
         else:
-            byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
-            kafka_producer.send(kafka_export, byted)
-            kafka_producer.flush()
+            if not debug:
+                byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
+                kafka_producer.send(kafka_export, byted)
+                kafka_producer.flush()
             message_correct_counter+=1
         message_counter += 1
         
-        r.set(exportkey+":partition", message.partition)
-        r.set(exportkey+":offset", message.offset)
-        r.set(exportkey+":timestamp", message.timestamp)
+        if not debug:
+            r.set(exportkey+":partition", message.partition)
+            r.set(exportkey+":offset", message.offset)
+            r.set(exportkey+":timestamp", message.timestamp)
         
         if message_counter%1000 == 0:
             helper_utils.std_flush("Processed %i messages with %i failures and %i successes"%(message_counter, message_fail_counter, message_correct_counter))
         
     
-
 if __name__ == "__main__":
     main() #pylint: disable=no-value-for-parameter
