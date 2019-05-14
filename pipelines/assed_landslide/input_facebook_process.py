@@ -1,7 +1,7 @@
 import utils.AssedDataProcessor
 import os
 
-class AssedMessageProcessor(utils.AssedDataProcessor.AssedMessageProcessor):
+class input_facebook_process(utils.AssedDataProcessor.AssedMessageProcessor):
     def __init__(self):
         self.DOWNLOAD_PREPEND = './downloads/'
 
