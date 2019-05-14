@@ -74,7 +74,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                     #helper_utils.std_flush(insert%params)
                     pass
                 helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
-                self.stream_tracker[message["streamtype"]]["non_hdi"] += 1
+                self.stream_tracker[message["streamtype"]]["hdi"] += 1
                 return (False, message)
             except Exception as e:
                 traceback.print_exc()
