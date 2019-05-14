@@ -108,7 +108,7 @@ class FacebookProcess(multiprocessing.Process):
                     previousApiAccesses+=1
                     self.r.set("social:streamer:facebook:%s:%s:count"%(self.event, self.lang), previousApiAccesses)
 
-                    max_results = results["searchInformation"]["totalResults"]
+                    max_results = int(results["searchInformation"]["totalResults"])
 
                     
 
