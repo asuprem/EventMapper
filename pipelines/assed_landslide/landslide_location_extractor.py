@@ -21,6 +21,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.APIKEY = config["APIKEYS"]["googlemaps"]
 
     def process(self,message):
+        pdb.set_trace()
         if time.time() - self.time > self.timecheck:
             utils.helper_utils.std_flush("Updating news location store.")
             self.update_location_store()
