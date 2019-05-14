@@ -23,6 +23,11 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.stream_tracker = {}
 
     def process(self,message):
+        if message["streamtype"] not in self.stream_tracker:
+            self.stream_tracker[message["streamtype"]] = {}
+            self.stream_tracker[message["streamtype"]]["bad_location"] = 0
+            self.stream_tracker[message["streamtype"]]["good_location"] = 0
+            self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
         if time.time() - self.time > self.timecheck:
             utils.helper_utils.std_flush("Updating news location store.")
             self.update_location_store()
@@ -31,12 +36,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
         if self.debug:
             utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
-        
-        if message["streamtype"] not in self.stream_tracker:
-            self.stream_tracker[message["streamtype"]] = {}
-            self.stream_tracker[message["streamtype"]]["bad_location"] = 0
-            self.stream_tracker[message["streamtype"]]["good_location"] = 0
-            self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
+
         self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
         # Check if location exists
         latitude = None
