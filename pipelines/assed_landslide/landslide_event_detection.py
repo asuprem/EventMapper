@@ -82,7 +82,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0", message["streamtype"])
-            self.stream_tracker[message["streamtype"]]["neagtive"] += 1
+            self.stream_tracker[message["streamtype"]]["negative"] += 1
         else:
             warnings.warn("WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%prediction)
         try:
