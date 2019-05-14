@@ -22,17 +22,27 @@ if __name__ == '__main__':
     setup_pid(pid_name)
     #Set up configOriginal dict
     configOriginal = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
-    Streamers = {}
+    StreamerManager = {}
     for _streamer_ in configOriginal["SocialStreamers"]:
-        Streamers[_streamer_] = {}
-        Streamers[_streamer_]["name"] = configOriginal["SocialStreamers"][_streamer_]["name"]
-        Streamers[_streamer_]["type"] = configOriginal["SocialStreamers"][_streamer_]["type"]
-        Streamers[_streamer_]["apikey"] = configOriginal["SocialStreamers"][_streamer_]["apikey"]
-        Streamers[_streamer_]["apimax"] = configOriginal["SocialStreamers"][_streamer_]["apimax"]
+        StreamerManager[_streamer_] = {}
+        StreamerManager[_streamer_]["name"] = configOriginal["SocialStreamers"][_streamer_]["name"]
+        StreamerManager[_streamer_]["type"] = configOriginal["SocialStreamers"][_streamer_]["type"]
+        StreamerManager[_streamer_]["apikey"] = configOriginal["SocialStreamers"][_streamer_]["apikey"]
+        StreamerManager[_streamer_]["apimax"] = configOriginal["SocialStreamers"][_streamer_]["apimax"]
         _scriptname = configOriginal["SocialStreamers"][_streamer_]["script"]
         moduleImport = __import__("SocialStreamerSrc.%s"%_scriptname, fromlist=[_scriptname])
-        Streamers[_streamer_]["executor"] = getattr(moduleImport, _scriptname)
-        Streamers[_streamer_]["keyserver"] = KeyServer(load_config(CONSTANTS.ASSED_CONFIG), key_mode=Streamers[_streamer_]["apikey"], key_max=Streamers[_streamer_]["apimax"])
+        StreamerManager[_streamer_]["executor"] = getattr(moduleImport, _scriptname)
+        StreamerManager[_streamer_]["keyserver"] = KeyServer(load_config(CONSTANTS.ASSED_CONFIG), key_mode=StreamerManager[_streamer_]["apikey"], key_max=StreamerManager[_streamer_]["apimax"])
+
+        # Streamer specific instances
+        if StreamerManager[_streamer_]["type"] == "unstructured":
+            # Only single instance, with all keywords
+            StreamerManager[_streamer_]["instance"] = None
+            StreamerManager[_streamer_]["keywords"] = []
+        elif StreamerManager[_streamer_]["type"] == "structured":
+            StreamerManager[_streamer_]["instances"] = {}
+        else:
+            raise ValueError("Invalid streamer type %s for SocialStreamer. Must be one of: unstructured | structured"%StreamerManager[_streamer_]["type"])
 
     
     pdb.set_trace()
@@ -42,13 +52,10 @@ if __name__ == '__main__':
     messageQueue = multiprocessing.Queue()
     '''streamerConfig - streamerConfig'''
     streamerConfig = {}
-    '''keyServer - determines which keys are assigned'''
-    keyServer = KeyServer(load_config(CONSTANTS.ASSED_CONFIG))
 
     
     '''Launch the Streamer with all keywords'''
     keywords = []
-    APIKeys = keyServer.get_key()
     for physicalEvent in configOriginal['topic_names'].keys():
         for language in configOriginal['topic_names'][physicalEvent]["languages"]:
             eventLangTuple = (physicalEvent,language)
@@ -56,8 +63,31 @@ if __name__ == '__main__':
             streamerConfig[eventLangTuple]['name'] = physicalEvent
             streamerConfig[eventLangTuple]['keywords'] = configOriginal['topic_names'][physicalEvent]["languages"][language]
             streamerConfig[eventLangTuple]['lang'] = language
+
             keywords += streamerConfig[eventLangTuple]['keywords']
 
+        # for each allowed streamer, add the keywords
+        for _allowed_streamer in configOriginal['topic_names'][physicalEvent]["social_source"]:
+            # _allowed_streamer -- >twitter, facebook
+            if not configOriginal['topic_names'][physicalEvent]["social_source"][_allowed_streamer]:
+                continue
+            # Streamer is valid...
+            if StreamerManager[_allowed_streamer]["type"] == "unstructured":
+                StreamerManager[_allowed_streamer]["keywords"] += keywords
+            elif StreamerManager[_allowed_streamer]["type"] == "structured":
+                #add an instance for each event lang tuple pair (but for our purposes, just english is enough for now...)
+                for language in configOriginal['topic_names'][physicalEvent]["languages"]:
+                    if language == "en":
+                        eventLangTuple = (physicalEvent, language)
+                        StreamerManager[_allowed_streamer]["instances"][eventLangTuple] = {}
+                        StreamerManager[_allowed_streamer]["instances"][eventLangTuple]["keywords"] = streamerConfig[eventLangTuple]["keywords"]
+                        StreamerManager[_allowed_streamer]["instances"][eventLangTuple]["instance"] = None
+                    else:
+                        pass
+
+    # Now we have a StreamerManager with empty instances for each streamer we are going to launch.
+    # We will launch all of them, and go on from there...
+    pdb.set_trace()
     
     tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
     tweetStreamer.start()
