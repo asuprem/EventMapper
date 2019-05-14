@@ -90,7 +90,8 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
                 self.cursor.execute(self.db_insert, params)
                 self.DB_CONN.commit()
             else:
-                helper_utils.std_flush(self.db_insert%params)
+                #helper_utils.std_flush(self.db_insert%params)
+                pass
         except Exception as e:
             traceback.print_exc()
             helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
