@@ -7,7 +7,8 @@ import utils.helper_utils
 from utils.file_utils import load_config
 
 class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         self.time = time.time()
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         self.r=redis.Redis(connection_pool = pool)
@@ -28,6 +29,8 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             self.time = time.time()
             for _streamtype in self.stream_tracker:
                 utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
+        if self.debug:
+            utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
         
         if message["streamtype"] not in self.stream_tracker:
             self.stream_tracker[message["streamtype"]] = {}

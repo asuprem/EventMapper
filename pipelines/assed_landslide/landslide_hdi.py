@@ -9,7 +9,7 @@ import traceback
 
 class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
-    def __init__(self):
+    def __init__(self,debug=False):
         self.config = load_config("./config/assed_config.json")
         self.DB_CONN = get_db_connection(self.config)
         self.cursor = self.DB_CONN.cursor()

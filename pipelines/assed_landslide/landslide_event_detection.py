@@ -18,7 +18,7 @@ import traceback
 
 class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor):
 
-    def __init__(self):
+    def __init__(self,debug=False):
         self.config = load_config("./config/assed_config.json")
 
         self._encoder = KeyedVectors.load_word2vec_format('./pipelines/assed_landslide/ml/encoders/GoogleNews-vectors-negative300.bin', binary=True, unicode_errors='ignore', limit=100000)
