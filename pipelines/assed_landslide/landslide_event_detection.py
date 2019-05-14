@@ -9,6 +9,7 @@ import keras
 from numpy import zeros
 import numpy as np
 
+import warnings
 
 import utils.helper_utils as helper_utils
 from utils.file_utils import load_config
@@ -19,6 +20,7 @@ import traceback
 class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor):
 
     def __init__(self,debug=False):
+        self.debug = debug
         self.config = load_config("./config/assed_config.json")
 
         self._encoder = KeyedVectors.load_word2vec_format('./pipelines/assed_landslide/ml/encoders/GoogleNews-vectors-negative300.bin', binary=True, unicode_errors='ignore', limit=100000)
@@ -38,8 +40,8 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
 
         self.db_insert = 'INSERT INTO ASSED_Social_Events ( \
         social_id, cell, \
-        latitude, longitude, timestamp, link, text, location, topic_name, source, valid) \
-        VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s)'
+        latitude, longitude, timestamp, link, text, location, topic_name, source, valid, stream_type) \
+        VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s, %s)'
 
     def process(self,message):
         if time.time() - self.cursor_timer > self.cursor_refresh:
@@ -55,22 +57,26 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
 
         
         prediction = np.argmax(self.model.predict(np.array([encoded_message]))[0])
-
+        params = None
         if prediction == 1:
             # push to db
             self.true_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "1")
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "1", message["streamtype"])
 
         elif prediction == 0:
             # push to db, with false? push to different db?
             self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0")
-        
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0", message["streamtype"])
+        else:
+            warnings.warn("WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%prediction)
         try:
-            self.cursor.execute(self.db_insert, params)
-            self.DB_CONN.commit()
+            if not self.debug:
+                self.cursor.execute(self.db_insert, params)
+                self.DB_CONN.commit()
+            else:
+                helper_utils.std_flush(self.db_insert%params)
         except Exception as e:
             traceback.print_exc()
             helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
