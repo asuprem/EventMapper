@@ -289,7 +289,8 @@ if __name__ == '__main__':
             crashCheckInfoDumpTimer = time.time()
             std_flush( " ".join(["No crashes at", readable_time()]))
 
-
+        # TODO TODO TODO move file checker inside the Streamer itself
+        """
         #File write checks for unstructured streamer...
         if time.time() - fileCheckTimer > CONSTANTS.SOCIAL_STREAMER_FILE_TIME_CHECK:
             fileCheckTimer = time.time()
@@ -310,6 +311,7 @@ if __name__ == '__main__':
                 if not os.path.exists(fileName):
                     fileCheckCounter+=1
             
+            
             if SOCIAL_STREAMER_FIRST_FILE_CHECK:
                 #wait for next check
                 std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
@@ -328,25 +330,47 @@ if __name__ == '__main__':
                     std_flush( " ".join(["Restarted unstructured streamer at" , readable_time()]))
                 else:
                     std_flush( " ".join(["Unstructured downloader is creating files normally at",readable_time()]))
-            
+        """
 
                     
         while not errorQueue.empty():
             
             _type, _details, _error = errorQueue.get()
             if _type == "unstructured":
-                std_flush("UnstructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))
-
-                APIKeys = keyServer.refresh_key(APIKeys[0])
+                std_flush("UnstructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))                
+                # Releaunch... 
                 try:
-                    tweetStreamer.terminate()
+                    StreamerManager[_details[0]]["instance"].terminate()
+                    std_flush("Terminated possible zombie unstructured streamer : %s\tat %s"%(StreamerManager[_details[0]]["name"], readable_time()))
                 except:
-                    pass
-                tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
-                tweetStreamer.start()
-                std_flush( " ".join(["Restarted", _type, "at" , readable_time()]))
+                    std_flush("Termination of possible zombie unstructured streamer : %s\t FAILED at %s. Possibly already dead."%(StreamerManager[_details[0]]["name"], readable_time()))
+                #APIKeys = keyServer.refresh_key(APIKeys[0])
+                StreamerManager[_details[0]]["instance"] = StreamerManager[_details[0]]["executor"](StreamerManager[_details[0]]["keywords"], StreamerManager[_details[0]]["apikey"][1], errorQueue, messageQueue)
+                StreamerManager[_details[0]]["instance"].start()
+                std_flush("Restarted unstructured streamer : %s\tat %s\twith key %s"%(StreamerManager[_details[0]]["name"], readable_time(), StreamerManager[_details[0]]["apikey"][0]))
+                
+
+
             elif _type == "structured":
-                std_flush("StructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))
+                eventLangTuple = (_details[1], _details[2])
+                std_flush("Structured Streamer Crash: %s streamer for %s-%s crashed with error %s at %s"%(_details[0], _details[1], _details[2], _error, readable_time()))
+                # Releaunch... 
+                try:
+                    StreamerManager[_details[0]]["instances"][eventLangTuple]["instance"].terminate()
+                    std_flush("Terminated possible zombie structured streamer : %s for %s-%s \tat %s"%(_details[0],_details[1], _details[2], readable_time()))
+                except:
+                    std_flush("Termination of possible zombie structured streamer : %s for %s-%s FAILED \tat %s"%(_details[0],_details[1], _details[2], readable_time()))
+
+                #APIKeys = keyServer.refresh_key(APIKeys[0])
+                StreamerManager[_details[0]]["instances"][eventLangTuple]["instance"] = StreamerManager[_details[0]]["executor"](
+                                        _details[1],
+                                        _details[2],
+                                        StreamerManager[_details[0]]["instances"][eventLangTuple]["keywords"],
+                                        StreamerManager[_details[0]]["instances"][eventLangTuple]["apikey"][1], 
+                                        errorQueue, 
+                                        messageQueue)
+                StreamerManager[_details[0]]["instances"][eventLangTuple]["instance"].start()
+                std_flush("Restarted structured streamer : %s for %s-%s\tat %s\twith key %s"%(StreamerManager[_details[0]]["name"], _details[1], _details[2], readable_time(), StreamerManager[_details[0]]["instances"][eventLangTuple]["apikey"][0]))
             
         while not messageQueue.empty():
             std_flush( messageQueue.get())
