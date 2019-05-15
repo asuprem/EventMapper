@@ -1,8 +1,9 @@
 import time
 from datetime import datetime
-import sys
+import sys, os
 import http.client as httplib, urllib.parse as urllib, json
-import re
+import re, redis
+import pdb
 
 # Checks if two dictionaries are equal
 # TODO optimize this
@@ -20,11 +21,14 @@ def dict_equal(d1, d2):
 
 
 #setu up PID for recurrence checks
-def setup_pid(pid_name):
+def setup_pid(pid_name, logdir=None):
     import os, sys
     #pid_name will be application name -- '/path/app.py'
     pid = str(os.getpid())
-    pidFile = './logfiles/' + pid_name + '.pid'
+    if logdir is None:
+        pidFile = './logfiles/' + pid_name + '.pid'
+    else:
+        pidFile = os.path.join(logdir, pid_name + '.pid')
 
     if os.path.isfile(pidFile):
         print("pidfile already exists. exiting")
@@ -42,7 +46,7 @@ def location_standardize(location):
     """ Standardize by removing special characters and location stopwords. """
     temp_str = location_normalize(location)
     temp_lst = temp_str.split(" ")
-    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern"]
+    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern", "junction", "station", "little", "central", "republic", "region", "western", "eastern", "general", "center", "ground"]
     temp_lst = [item for item in temp_lst if (item not in location_stopwords and len(item) > 5)]
 
     return ":".join(temp_lst)
@@ -56,7 +60,38 @@ def high_confidence_streamer_key(key_val):
 def sublocation_key(key_val):
     return "assed:sublocation:"+key_val
 
-def lookup_address_only(address, API_KEY):
+def extractor_sublocation_key(key_val):
+    return "assed:extractor:sublocation:" + key_val
+
+def lookup_address_only(address, API_KEY, redis_key = None):
+    if redis_key is None:
+        pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
+        redis_key=redis.Redis(connection_pool = pool) 
+    
+    redis_get = redis_key.get("apiaccess:googlemaps:"+API_KEY)
+    redis_time = redis_key.get("apiaccess:timestamp:googlemaps:"+API_KEY)
+
+    if redis_get is None:
+        redis_get = 0
+    else:
+        redis_get = int(redis_get)
+    #10800 is to convert from EST to PST time in reverse, i.e. only midnight in PST is the rollover period...
+    # TODO convert this more gracefully...
+    if redis_time is None:
+        redis_time = datetime.fromtimestamp(time.time()-10800)
+    else:
+        redis_time = datetime.fromtimestamp(int(float(redis_time))-10800)
+    crtime = datetime.fromtimestamp(time.time()-10800)
+    if redis_time.day != crtime.day:
+        redis_get = 0
+
+    if redis_get > 2499:
+        return False, False
+    else:
+        redis_get+=1
+        redis_key.set("apiaccess:googlemaps:"+API_KEY, redis_get)
+        redis_key.set("apiaccess:timestamp:googlemaps:"+API_KEY, time.time())
+
     # So first we need to check if the location is in our database...
     host = 'maps.googleapis.com'
     params = {'address': address, 'key': API_KEY}
@@ -84,12 +119,21 @@ def lookup_address_only(address, API_KEY):
         return None, None
     return lat, lng
 
+
 def generate_cell(N, E, coef=0.04166666666667):
     if coef<0.04166666666667: coef = 0.04166666666667
     if coef>1: coef = 1
     row = int(round((90.0+N)/coef))
     if row<0:
-        raise ValueError
+        swp = N
+        N = E
+        E = swp
+        row = int(round((90.0+N)/coef))
+        if row < 0:
+            # TODO remove this in a couple days...
+            raise RuntimeError()
+        
     col = int(round((180.0+E)/coef))
     key = str(row)+'_'+str(col)
     return key
+

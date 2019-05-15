@@ -1,0 +1,59 @@
+{
+    "configuration":{
+        "script_dir":"assed_landslide", 
+        "log_dir":"assed_landslide", 
+        "sh_dir":"assed_landslide",
+        "vars":{
+            "mldir":"TODO"
+        },
+        "input-streams":{
+            "twitter":{
+                "name":"input_buffer_twitter",
+                "processor_script":"input_tweet_process",
+                "import-key":"assed:landslide:twitter:import",
+                "buffer-script-name":"input_buffer"
+            },
+            "facebook":{
+                "name":"input_buffer_facebook",
+                "processor_script":"input_facebook_process",
+                "import-key":"assed:landslide:facebook:import",
+                "buffer-script-name":"input_buffer"
+            }
+        }
+    },
+
+    "input_buffer":{
+        "name":"input_buffer_twitter",
+        "script":"assed_inputbuffer",
+        "export-key":"assed:landslide:social:buffer:stream"
+    },
+
+    "output_buffer":{
+        "name":"output_buffer",
+        "script":"landslide_outputbuffer",
+        "import-key":"assed:landslide:events" ,
+        "export-key":"assed:landslide:output:buffer"
+    },
+
+    "location_extractor":{
+        "name":"location_extractor",
+        "script":"landslide_location_extractor",
+        "import-key":"assed:landslide:social:buffer:stream",
+        "export-key":"assed:landslide:location:extractor"
+    },
+
+    "hdi":{
+        "name":"hdi",
+        "script":"landslide_hdi",
+        "import-key":"assed:landslide:location:extractor", 
+        "export-key":"assed:landslide:hdi"
+    },
+
+    "event_detection":{
+        "name":"event_detection", 
+        "script":"landslide_event_detection",
+        "import-key":"assed:landslide:hdi",
+        "export-key":"assed:landslide:events"
+    }
+
+}

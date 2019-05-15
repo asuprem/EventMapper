@@ -76,15 +76,20 @@ if __name__ == '__main__':
                     kwargs = {}
                     if "config" in HCS_configuration[hcs_type]:
                         kwargs["config"] = HCS_configuration[hcs_type]["config"]
+                    # Now we have stuff setup. We will launch the thingamajigs here
+                    # Perform the import, then execute
+                    moduleImport = __import__("HighConfidenceStreamerSrc.%s"%HCS_configuration[hcs_type]["source_file"], fromlist=[HCS_configuration[hcs_type]["source_file"]])
+                    Executor = getattr(moduleImport, HCS_configuration[hcs_type]["source_file"])
                     try:
                         HCS_configuration[hcs_type]['processor'] = Executor(assed_config, root_name=hcs_type, errorQueue=errorQueue, messageQueue=messageQueue, **kwargs)
+                        HCS_configuration[hcs_type]['processor'].start()
+                        std_flush("Scheduled launch complete for ", hcs_type, "HighConfigurationStreamer at ",readable_time())
+                        HCS_configuration[hcs_type]['timestamp'] = time.time()
                     except Exception as e:
-                        std_flush("Failed to launch %s with error %s"%(hcs_type, repr(e)))
-                    HCS_configuration[hcs_type]['processor'].start()
-                    std_flush("Scheduled launch complete for ", hcs_type, "HighConfigurationStreamer at ",readable_time())
-                    HCS_configuration[hcs_type]['timestamp'] = time.time()
+                        traceback.print_exc()
+                        std_flush("Failed to perform scheduled launch %s with error %s"%(hcs_type, repr(e)))
+                    
         
-
         while not errorQueue.empty():
             #TODO get error, time, restart
             _rootName, _error = errorQueue.get()

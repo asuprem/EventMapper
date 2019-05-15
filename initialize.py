@@ -16,7 +16,7 @@ assed_config = load_config('config/assed_config.json')
 
 if argums['env'] == 'dirs':
     import os
-    dirs = ['downloads','logfiles', 'config', 'redis']
+    dirs = ['downloads','logfiles', 'config', 'redis', 'ml', 'ml/models', 'ml/encoders']
     for directory in dirs:
         if not os.path.exists(directory):
             os.makedirs(directory)
