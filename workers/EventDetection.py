@@ -100,7 +100,7 @@ def main():
             cell_cache[_cell_][_streamer_+"-hdi"]=tuple_cell_[1]
             #if _streamer_+"-ml" not in cell_cache[_cell_]:
             #cell_cache[_cell_][_streamer_+"-hdi"] = 0
-            cell_cache[_cell_][_streamer_+"-ml"]+=tuple_cell_[2]
+            cell_cache[_cell_][_streamer_+"-ml"]=tuple_cell_[2]
 
     for tuple_cell_ in trmm_results:
         _cell_ = tuple_cell_[0]
