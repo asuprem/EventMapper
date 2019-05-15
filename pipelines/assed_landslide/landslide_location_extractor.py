@@ -33,9 +33,9 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             self.update_location_store()
             self.time = time.time()
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
         if self.debug:
-            utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[message["streamtype"]]["totalcounter"],message["streamtype"], self.stream_tracker[message["streamtype"]]["good_location"], self.stream_tracker[message["streamtype"]]["bad_location"]))
+            utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
 
         self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
         # Check if location exists
