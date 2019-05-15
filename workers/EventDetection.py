@@ -64,6 +64,7 @@ def generate_news_query():
 
 
 def main():
+    cell_cache = {}
 
     assed_config = file_utils.load_config("./config/assed_config.json")
     DB_CONN = db_utils.get_db_connection(assed_config)
@@ -87,6 +88,40 @@ def main():
     cursor.execute(_query_)
     news_results = cursor.fetchall()
     cursor.close()
+
+    pdb.set_trace()
+
+    for _streamer_ in streamer_results:
+        for _cell_ in streamer_results[_streamer_]:
+            if _cell_ not in cell_cache:
+                cell_cache[_cell_] = {}
+            if _streamer_ not in cell_cache[_cell_]:
+                cell_cache[_cell_][_streamer_] = 0
+            cell_cache[_streamer_]+=1
+
+    for _cell_ in trmm_results:
+        if _cell_ not in cell_cache:
+            cell_cache[_cell_] = {}
+        if 'TRMM' not in cell_cache[_cell_]:
+            cell_cache[_cell_]["TRMM"] = 0
+        cell_cache[_cell_]["TRMM"] += 1
+    
+    for _cell_ in usgs_results:
+        if _cell_ not in cell_cache:
+            cell_cache[_cell_] = {}
+        if 'USGS' not in cell_cache[_cell_]:
+            cell_cache[_cell_]["USGS"] = 0
+        cell_cache[_cell_]["USGS"] += 1
+
+    for _cell_ in trmm_results:
+        if _cell_ not in cell_cache:
+            cell_cache[_cell_] = {}
+        if 'News' not in cell_cache[_cell_]:
+            cell_cache[_cell_]["News"] = 0
+        cell_cache[_cell_]["News"] += 1
+
+    for _cell_ in cell_cache:
+        cell_cache[_cell_]["total"] = sum([cell_cache[_cell_][item] for item in cell_cache[_cell_]])
 
     pdb.set_trace()
 
