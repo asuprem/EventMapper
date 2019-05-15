@@ -97,17 +97,17 @@ def main():
                 cell_cache[_cell_] = {}
             #if _streamer_+"-hdi" not in cell_cache[_cell_]:
             #cell_cache[_cell_][_streamer_+"-hdi"] = 0
-            cell_cache[_cell_][_streamer_+"-hdi"]=tuple_cell_[1]
+            cell_cache[_cell_][_streamer_+"-hdi"]=float(tuple_cell_[1])
             #if _streamer_+"-ml" not in cell_cache[_cell_]:
             #cell_cache[_cell_][_streamer_+"-hdi"] = 0
-            cell_cache[_cell_][_streamer_+"-ml"]=tuple_cell_[2]
+            cell_cache[_cell_][_streamer_+"-ml"]=float(tuple_cell_[2])
 
     for tuple_cell_ in trmm_results:
         _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
         #if 'TRMM' not in cell_cache[_cell_]:
-        cell_cache[_cell_]["TRMM"] = tuple_cell_[1]*1   # 1 <-- TRMM score
+        cell_cache[_cell_]["TRMM"] = float(tuple_cell_[1]*1)   # 1 <-- TRMM score
     
     for tuple_cell_ in usgs_results:
         _cell_ = tuple_cell_[0]
@@ -115,7 +115,7 @@ def main():
             cell_cache[_cell_] = {}
         #if 'USGS' not in cell_cache[_cell_]:
         #cell_cache[_cell_]["USGS"] = 0
-        cell_cache[_cell_]["USGS"] = tuple_cell_[1]*5
+        cell_cache[_cell_]["USGS"] = float(tuple_cell_[1]*5)
 
     for tuple_cell_ in news_results:
         _cell_ = tuple_cell_[0]
@@ -123,7 +123,7 @@ def main():
             cell_cache[_cell_] = {}
         #if 'News' not in cell_cache[_cell_]:
         #    cell_cache[_cell_]["News"] = 0
-        cell_cache[_cell_]["News"] = tuple_cell_[1]*3
+        cell_cache[_cell_]["News"] = float(tuple_cell_[1]*3)
 
     for _cell_ in cell_cache:
         cell_cache[_cell_]["total"] = sum([cell_cache[_cell_][item] for item in cell_cache[_cell_]])
