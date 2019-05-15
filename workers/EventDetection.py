@@ -89,31 +89,34 @@ def main():
     news_results = cursor.fetchall()
     cursor.close()
 
-    pdb.set_trace()
 
     for _streamer_ in streamer_results:
-        for _cell_ in streamer_results[_streamer_]:
+        for tuple_cell_ in streamer_results[_streamer_]:
+            _cell_ = tuple_cell_[0]
             if _cell_ not in cell_cache:
                 cell_cache[_cell_] = {}
             if _streamer_ not in cell_cache[_cell_]:
                 cell_cache[_cell_][_streamer_] = 0
-            cell_cache[_streamer_]+=1
+            cell_cache[_cell_][_streamer_]+=1
 
-    for _cell_ in trmm_results:
+    for tuple_cell_ in trmm_results:
+        _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
         if 'TRMM' not in cell_cache[_cell_]:
             cell_cache[_cell_]["TRMM"] = 0
         cell_cache[_cell_]["TRMM"] += 1
     
-    for _cell_ in usgs_results:
+    for tuple_cell_ in usgs_results:
+        _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
         if 'USGS' not in cell_cache[_cell_]:
             cell_cache[_cell_]["USGS"] = 0
         cell_cache[_cell_]["USGS"] += 1
 
-    for _cell_ in trmm_results:
+    for tuple_cell_ in trmm_results:
+        _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
         if 'News' not in cell_cache[_cell_]:
