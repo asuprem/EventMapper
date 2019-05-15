@@ -120,8 +120,8 @@ def main():
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_][_streamer_+"-hdi"]=(float(tuple_cell_[1]), float(tuple_cell_[1]))
-                cell_cache[_cell_][_streamer_+"-ml"]=(float(tuple_cell_[2]), float(tuple_cell_[2]))
+                cell_cache[_cell_][_streamer_+"-hdi"]=(float(tuple_cell_[1])*10, float(tuple_cell_[1]))
+                cell_cache[_cell_][_streamer_+"-ml"]=(float(tuple_cell_[2])*10, float(tuple_cell_[2]))
 
         helper_utils.std_flush("Local caching for %s"%"TRMM")
         for tuple_cell_ in trmm_results:
