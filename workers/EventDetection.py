@@ -53,7 +53,7 @@ def generate_trmm_query():
 
 def generate_usgs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_USGS where time >= {timestamp} and mag > 4 group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_USGS where time >= {timestamp} and mag >= 5 group by cell""".format(timestamp=time_start)
 
 def generate_news_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
@@ -89,39 +89,41 @@ def main():
     news_results = cursor.fetchall()
     cursor.close()
 
-
+    # Scoring -- Twitter-Social: 0.3    Twitter-HDI - 1     News:       3       USGS:   5       TRMM:   1
     for _streamer_ in streamer_results:
         for tuple_cell_ in streamer_results[_streamer_]:
             _cell_ = tuple_cell_[0]
             if _cell_ not in cell_cache:
                 cell_cache[_cell_] = {}
-            if _streamer_ not in cell_cache[_cell_]:
-                cell_cache[_cell_][_streamer_] = 0
-            cell_cache[_cell_][_streamer_]+=1
+            #if _streamer_+"-hdi" not in cell_cache[_cell_]:
+            #cell_cache[_cell_][_streamer_+"-hdi"] = 0
+            cell_cache[_cell_][_streamer_+"-hdi"]=tuple_cell_[1]
+            #if _streamer_+"-ml" not in cell_cache[_cell_]:
+            #cell_cache[_cell_][_streamer_+"-hdi"] = 0
+            cell_cache[_cell_][_streamer_+"-ml"]+=tuple_cell_[2]
 
     for tuple_cell_ in trmm_results:
         _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
-        if 'TRMM' not in cell_cache[_cell_]:
-            cell_cache[_cell_]["TRMM"] = 0
-        cell_cache[_cell_]["TRMM"] += 1
+        #if 'TRMM' not in cell_cache[_cell_]:
+        cell_cache[_cell_]["TRMM"] = tuple_cell_[1]*1   # 1 <-- TRMM score
     
     for tuple_cell_ in usgs_results:
         _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
-        if 'USGS' not in cell_cache[_cell_]:
-            cell_cache[_cell_]["USGS"] = 0
-        cell_cache[_cell_]["USGS"] += 1
+        #if 'USGS' not in cell_cache[_cell_]:
+        #cell_cache[_cell_]["USGS"] = 0
+        cell_cache[_cell_]["USGS"] = tuple_cell_[1]*5
 
-    for tuple_cell_ in trmm_results:
+    for tuple_cell_ in news_results:
         _cell_ = tuple_cell_[0]
         if _cell_ not in cell_cache:
             cell_cache[_cell_] = {}
-        if 'News' not in cell_cache[_cell_]:
-            cell_cache[_cell_]["News"] = 0
-        cell_cache[_cell_]["News"] += 1
+        #if 'News' not in cell_cache[_cell_]:
+        #    cell_cache[_cell_]["News"] = 0
+        cell_cache[_cell_]["News"] = tuple_cell_[1]*3
 
     for _cell_ in cell_cache:
         cell_cache[_cell_]["total"] = sum([cell_cache[_cell_][item] for item in cell_cache[_cell_]])
