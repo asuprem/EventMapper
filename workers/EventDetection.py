@@ -120,7 +120,9 @@ def main():
                     _cell_ = tuple_cell_[0]
                     if _cell_ not in cell_cache:
                         cell_cache[_cell_] = {}
-                    cell_cache[_cell_][_streamer_+"-hdi"]=(int(float(tuple_cell_[1])/0.34), float(tuple_cell_[1]))
+                    if int(float(tuple_cell_[1])) > 0:
+                        cell_cache[_cell_][_streamer_+"-hdi"]=(int(float(tuple_cell_[1])), float(tuple_cell_[1]))
+                    if int(float(tuple_cell_[2])/0.34) > 0:
                     cell_cache[_cell_][_streamer_+"-ml"]=(int(float(tuple_cell_[2])/0.34), float(tuple_cell_[2]))
 
             helper_utils.std_flush("Local caching for %s"%"TRMM")
