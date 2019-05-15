@@ -72,17 +72,21 @@ def main():
     streamer_results = {}
     for _streamer_ in available_streamers:
         _query_ = generate_social_query(_streamer_=_streamer_, _topic_="landslide")
-        t_result = cursor.execute(_query_)
-        streamer_results[_streamer_] = t_result.fetchall()
+        cursor.execute(_query_)
+        streamer_results[_streamer_] = cursor.fetchall()
 
     _query_ = generate_trmm_query()
-    trmm_results = cursor.execute(_query_)
+    cursor.execute(_query_)
+    trmm_results = cursor.fetchall()
 
     _query_ = generate_usgs_query()
-    usgs_results = cursor.execute(_query_)
+    cursor.execute(_query_)
+    usgs_results = cursor.fetchall()
     
     _query_ = generate_news_query()
-    news_results = cursor.execute(_query_)
+    cursor.execute(_query_)
+    news_results = cursor.fetchall()
+    cursor.close()
 
     pdb.set_trace()
 
