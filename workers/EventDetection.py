@@ -158,13 +158,13 @@ def main():
     for _cell_ in cell_cache:
         cell_push_contents = json.dumps({item:cell_cache[_cell_][item][0] for item in cell_cache[_cell_] if item != "total"})
         cell_specific_suffix = ":".join(_cell_.split("_"))
-        cell_push_key = ":".join([list_info_key, cell_specific_suffix, key_version])
+        cell_push_key = ":".join([list_info_key, cell_specific_suffix, push_key])
         print(cell_push_key)
         #r.set(cell_push_key, cell_push_contents)
 
     #r.set(list_tracker_key, push_key)
 
-    
+    pdb.set_trace()
 
         
 
