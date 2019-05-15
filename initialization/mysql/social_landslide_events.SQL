@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `link` mediumtext NOT NULL,
   `text` mediumtext NOT NULL,
   `timestamp` datetime NOT NULL,
-  `topic_name` mediumtext NOT NULL,
+  `topic_name` varchar(20) NOT NULL,
   `source` varchar(10) Not NULL default 'hdi',
   `valid` boolean not null default 1,
   `streamtype` varchar not null default 'twitter',
