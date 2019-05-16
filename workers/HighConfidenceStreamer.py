@@ -103,6 +103,8 @@ if __name__ == '__main__':
         # if vs while -- prevents locking here if a process keeps sending messages... but what about overfill? handle that later... TODO
         if not messageQueue.empty():
             std_flush(messageQueue.get())
+
+        time.sleep(5)
                         
 
 

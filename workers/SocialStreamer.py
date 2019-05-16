@@ -114,7 +114,7 @@ if __name__ == '__main__':
     configCheckTimer = time.time()
     fileCheckTimer = time.time()
     crashCheckInfoDumpTimer = time.time()
-    while True:
+    while   True:
         if time.time() - configCheckTimer > CONSTANTS.SOCIAL_STREAMER_CONFIG_TIME_CHECK:
 
             configCheckTimer = time.time()
@@ -371,7 +371,7 @@ if __name__ == '__main__':
             
         while not messageQueue.empty():
             std_flush( messageQueue.get())
-        #time.sleep(5)
+        time.sleep(5)
 
 
 
