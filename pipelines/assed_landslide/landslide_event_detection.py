@@ -16,6 +16,7 @@ from utils.file_utils import load_config
 from utils.db_utils import get_db_connection
 
 import traceback
+import MySQLdb as mdb
 
 class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor):
 
@@ -92,8 +93,11 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             else:
                 #helper_utils.std_flush(self.db_insert%params)
                 pass
-        except Exception as e:
+        except mdb._exceptions.Error as mdb_error:
             traceback.print_exc()
+            true_mdb_error = eval(str(mdb_error))
+            if true_mdb_error[0] == 2013:   # This is database connection error
+                raise RuntimeError("Cannot connect to MySQL Database. Shutting down at %s"%helper_utils.readable_time())    
             helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
             return (False, message)
         
