@@ -6,6 +6,7 @@ from utils.file_utils import load_config
 from utils.db_utils import get_db_connection
 
 import traceback
+import MySQLdb as mdb
 
 class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
@@ -76,9 +77,12 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                 helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
                 self.stream_tracker[message["streamtype"]]["hdi"] += 1
                 return (False, message)
-            except Exception as e:
+            except mdb._exceptions.Error as mdb_error:
                 traceback.print_exc()
-                helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
+                true_mdb_error = eval(str(mdb_error))
+                if true_mdb_error[0] == 2013:   # This is database connection error
+                    raise RuntimeError("Cannot connect to MySQL Database. Shutting down at %s"%helper_utils.readable_time())    
+                helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(mdb_error)))
         else:
             # No matching HDI
             pass

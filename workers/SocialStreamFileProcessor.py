@@ -207,5 +207,7 @@ if __name__ == "__main__":
         while not messageQueue.empty():
             std_flush(messageQueue.get())
 
+        time.sleep(5)
+
 
 

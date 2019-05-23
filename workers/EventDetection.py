@@ -18,13 +18,13 @@ from
 (select coalesce(hdi_twitter_cell, ml_twitter_cell) as twitter_cell, hdi_twitter_cell_count, ifnull(ml_twitter_cell_count, 0) as ml_twitter_cell_count from
 
 (select cell as hdi_twitter_cell, count(*) as hdi_twitter_cell_count
-from ASSED_Social_Events where streamtype='{streamer}' and source = 'hdi' and topic_name='{topic}' and timestamp >= {timestamp}
+from ASSED_Social_Events where streamtype='{streamer}' and source = 'hdi' and topic_name='{topic}' and timestamp >= {timestamp} and valid=1
 group by cell having hdi_twitter_cell_count > 5)  twitter_hdi 
 
 left join 
 
 (select cell as ml_twitter_cell, count(*)*0.34 as ml_twitter_cell_count
-from ASSED_Social_Events where streamtype='{streamer}' and source = 'ml' and topic_name='{topic}' and timestamp >= {timestamp}
+from ASSED_Social_Events where streamtype='{streamer}' and source = 'ml' and topic_name='{topic}' and timestamp >= {timestamp} and valid=1
 group by cell having ml_twitter_cell_count > 1)  twitter_ml
 
 on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell) left_join
@@ -34,13 +34,13 @@ union
 select coalesce(hdi_twitter_cell, ml_twitter_cell) as twitter_cell, ifnull(hdi_twitter_cell_count, 0) as hdi_twitter_cell_count, ml_twitter_cell_count from
 
 (select cell as hdi_twitter_cell, count(*) as hdi_twitter_cell_count
-from ASSED_Social_Events where streamtype='{streamer}' and source = 'hdi' and topic_name='{topic}' and timestamp >= {timestamp}
+from ASSED_Social_Events where streamtype='{streamer}' and source = 'hdi' and topic_name='{topic}' and timestamp >= {timestamp} and valid=1
 group by cell having hdi_twitter_cell_count > 5)  twitter_hdi 
 
 right join 
 
 (select cell as ml_twitter_cell, count(*)*0.34 as ml_twitter_cell_count
-from ASSED_Social_Events where streamtype='{streamer}' and source = 'ml' and topic_name='{topic}' and timestamp >= {timestamp}
+from ASSED_Social_Events where streamtype='{streamer}' and source = 'ml' and topic_name='{topic}' and timestamp >= {timestamp} and valid=1
 group by cell having ml_twitter_cell_count > 1)  twitter_ml
 
 on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell;""".format(streamer=_streamer_, topic= _topic_, timestamp=time_start)
