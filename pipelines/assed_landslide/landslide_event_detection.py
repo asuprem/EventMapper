@@ -96,9 +96,9 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
         except mdb._exceptions.Error as mdb_error:
             traceback.print_exc()
             true_mdb_error = eval(str(mdb_error))
-            if true_mdb_error[0] == 2013:   # This is database connection error
+            if true_mdb_error[0] == 2013 or true_mdb_error[0] == 2006:   # This is database connection error
                 raise RuntimeError("Cannot connect to MySQL Database. Shutting down at %s"%helper_utils.readable_time())    
-            helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(e)))
+            helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(mdb_error)))
             return (False, message)
         
         self.total_counter += 1
