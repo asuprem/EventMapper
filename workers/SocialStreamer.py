@@ -286,55 +286,13 @@ if __name__ == '__main__':
             crashCheckInfoDumpTimer = time.time()
             std_flush( " ".join(["No crashes at", readable_time()]))
 
-        # TODO TODO TODO move file checker inside the Streamer itself
-        """
-        #File write checks for unstructured streamer...
-        if time.time() - fileCheckTimer > CONSTANTS.SOCIAL_STREAMER_FILE_TIME_CHECK:
-            fileCheckTimer = time.time()
-            fileCheckCounter = 0
-            
-            pathPrepend = './downloads/'
-            #we check last three files
-            nowTime = datetime.now()
-            if nowTime.minute < 4:
-                #easiest error avoidance for backstop
-                continue
-            #range of minute files to check
-            nowTimeMinute = [nowTime.minute - item for item in range(1,4)]
-            pathDir = os.path.join(pathPrepend + '%s_%s_%s' % ('tweets', 'unstructured', nowTime.year), '%02d' % nowTime.month,
-                                    '%02d' % nowTime.day, '%02d' % (nowTime.hour))
-            for _minute in nowTimeMinute:
-                fileName = os.path.join(pathDir, '%02d.json' % _minute)
-                if not os.path.exists(fileName):
-                    fileCheckCounter+=1
-            
-            
-            if SOCIAL_STREAMER_FIRST_FILE_CHECK:
-                #wait for next check
-                std_flush( " ".join(["Unstructured downloader may not be creating files at",readable_time(), ". Waiting for next check."]))
-                SOCIAL_STREAMER_FIRST_FILE_CHECK = False
-            else:
-                #Restart
-                if fileCheckCounter == CONSTANTS.SOCIAL_STREAMER_FILE_CHECK_COUNT:
-                    std_flush( " ".join(["Unstructured downloader no longer creating files at",readable_time()]))
-                    APIKeys = keyServer.refresh_key(APIKeys[0])
-                    try:
-                        tweetStreamer.terminate()
-                    except:
-                        pass
-                    tweetStreamer = TweetProcess(keywords,APIKeys[1],errorQueue, messageQueue)
-                    tweetStreamer.start()
-                    std_flush( " ".join(["Restarted unstructured streamer at" , readable_time()]))
-                else:
-                    std_flush( " ".join(["Unstructured downloader is creating files normally at",readable_time()]))
-        """
-
                     
         while not errorQueue.empty():
             
             _type, _details, _error = errorQueue.get()
             if _type == "unstructured":
                 std_flush("UnstructuredStreamer Crash: %s crashed with error %s at %s"%(_details[0], _error, readable_time()))                
+                std_flush("Attempting relaunch of UnstructuredStreamer at %s"%readable_time())
                 # Releaunch... 
                 try:
                     StreamerManager[_details[0]]["instance"].terminate()

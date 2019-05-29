@@ -46,13 +46,13 @@ def location_standardize(location):
     """ Standardize by removing special characters and location stopwords. """
     temp_str = location_normalize(location)
     temp_lst = temp_str.split(" ")
-    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern", "junction", "station", "little", "central", "republic", "region", "western", "eastern", "general", "center", "ground"]
+    location_stopwords = ["island", "islands", "volcano", "de", "new", "northern", "southern", "junction", "station", "little", "central", "republic", "region", "western", "eastern", "general", "center", "ground", "city", "town", "point"]
     temp_lst = [item for item in temp_lst if (item not in location_stopwords and len(item) > 5)]
 
     return ":".join(temp_lst)
 
 def location_normalize(location):
-    return re.sub('[^a-zA-Z0-9\n\.]', ' ',location.strip().lower())
+    return re.sub('[^a-zA-Z0-9\n\.]', ' ',location.strip().lower()) # pylint: disable=anomalous-backslash-in-string 
 
 def high_confidence_streamer_key(key_val):
     return "assed:hcs:" + key_val
