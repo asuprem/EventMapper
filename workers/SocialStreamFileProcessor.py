@@ -44,7 +44,6 @@ if __name__ == "__main__":
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                 keyStreamConfig[eventLangTuple]['postpone'] = True
             keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
-            #TODO launch the File Processor
 
             if not keyStreamConfig[eventLangTuple]['postpone']:
                 keyStreamConfig[eventLangTuple]['processor'].start()
@@ -110,10 +109,9 @@ if __name__ == "__main__":
                     std_flush( "Changes have been made to Multiprocessing config file")
                     configChangeFlag = True
                 std_flush( "Deleted event-language pair: ", str(eventLangTuple))
-            # TODO CHECK IF THIS IS WORKING
             for eventLangTupleStatus in configChangeSet:
                 eventLangTuple = eventLangTupleStatus[0]
-                #TODO Relaunch
+                
                 if eventLangTupleStatus[1] == 'change':
                     try:
                         keyStreamConfig[eventLangTuple]['processor'].terminate()
@@ -121,7 +119,6 @@ if __name__ == "__main__":
                         pass
 
                     std_flush(" ".join(["Shutdown",str(eventLangTuple), "at", readable_time()]))
-                #if eventLangTupleStatus[1] == 'change':
                 if eventLangTupleStatus[1] == 'change':
                     std_flush(" ".join(["Redeploying",str(eventLangTuple), "due to configChange at", readable_time()]))
                 elif eventLangTupleStatus[1] == 'new':
@@ -138,7 +135,6 @@ if __name__ == "__main__":
                     std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                     keyStreamConfig[eventLangTuple]['postpone'] = True
                 keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
-                #TODO launch the File Processor
 
                 if not keyStreamConfig[eventLangTuple]['postpone']:
                     keyStreamConfig[eventLangTuple]['processor'].start()
@@ -147,7 +143,6 @@ if __name__ == "__main__":
 
 
         while not errorQueue.empty():
-            #TODO get error, time, restart
             _rootName, _error = errorQueue.get()
             std_flush(" ".join([_rootName, "crashed with error: ", str(_error)]))
             
@@ -170,7 +165,6 @@ if __name__ == "__main__":
                 std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch 2 hr at", readable_time()]))
                 keyStreamConfig[eventLangTuple]['postpone'] = True
             keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
-            #TODO launch the File Processor
 
             if not keyStreamConfig[eventLangTuple]['postpone']:
                 keyStreamConfig[eventLangTuple]['processor'].start()
@@ -197,7 +191,6 @@ if __name__ == "__main__":
                         std_flush(" ".join([str(eventLangTuple), " does not have files to start. Posponing launch for 1 hour at", readable_time()]))
                         keyStreamConfig[eventLangTuple]['postpone'] = True
                     keyStreamConfig[eventLangTuple]['launchTime'] = datetime.now()
-                    #TODO launch the File Processor
 
                     if not keyStreamConfig[eventLangTuple]['postpone']:
                         keyStreamConfig[eventLangTuple]['processor'].start()

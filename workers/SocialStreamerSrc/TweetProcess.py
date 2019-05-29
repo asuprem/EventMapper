@@ -44,10 +44,9 @@ class TweetProcess(multiprocessing.Process):
 
 
         """ The next four are API keys.
-            TODO --> Change to streamer specific
 
-            self.auth are the OAuth Handlers for API keys for Tweepy; TODO --> Modify to be streamer specific
-            self.stream is the Stream function. TODO --> Modify to be streamer specific
+            self.auth are the OAuth Handlers for API keys for Tweepy
+            self.stream is the Stream function. 
 
             self.time - current time
         """            
@@ -65,17 +64,12 @@ class TweetProcess(multiprocessing.Process):
         """Run - Launches the sreamer itself.
 
         """
-        # TODO change print to logging; use logging function/API
         try:
             self.stream.filter(track=self.keywords)
             self.messageQueue.put(" ".join(["Running unstructured streamer", "with PID", str(os.getpid()), "at", readable_time()]))
-            pid = str(os.getpid())
         except Exception as e:
             self.messageQueue.put(" ".join(["Crashed unstructured stream", "at", readable_time(), "with error", str(e)]))
-            #TODO TODO TODO CHECK THIS
             self.errorQueue.put(('unstructured',("twitter"), str(e)))
-
-
 
     class tweetStreamer(StreamListener):
         """A Class for a Streamer for a multiprocess application.

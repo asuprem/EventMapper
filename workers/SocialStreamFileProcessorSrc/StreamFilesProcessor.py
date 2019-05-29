@@ -69,20 +69,18 @@ class StreamFilesProcessor(multiprocessing.Process):
         
         if startTime is None:
             self.fishedUpToTime = None
-            #First attempt to get most recent output file
+            # First attempt to get most recent output file
             currentTime = datetime.now()
             foundFlag = 0
             while foundFlag == 0:
                 filePath = self.getOutputPath(currentTime)
                 if os.path.exists(filePath):
-                    #we found the most recent file, and increment our counter
+                    # We found the most recent file, and increment our counter
                     self.finishedUpToTime = currentTime+self.timeDelta
-                    #self.messageQueue.put(" ".join(["Found input file at",(str(self.finishedUpToTime))]))
                     std_flush(" ".join([self.rootName, "Found output-stream file at",(str(filePath))]))
                     foundFlag = 1
                 else:
                     #if our search is too broad - i.e. we are a month behind, ignore
-                    #TODO need better checks here
                     currentTime-=self.timeDelta
                     if (datetime.now() - currentTime).days > self.BACK_CHECK_FILES_DAYS:
                         foundFlag = -1
@@ -102,7 +100,6 @@ class StreamFilesProcessor(multiprocessing.Process):
                         foundFlag = 1
                     else:
                         #if our search is too broad - i.e. we are a month behind, ignore
-                        #TODO need better checks here
                         currentTime+=self.timeDelta
                         timeDeltaOutputStream = (datetime.now() - currentTime)
                         if timeDeltaOutputStream.days  == 0 and timeDeltaOutputStream.seconds  <= 1:

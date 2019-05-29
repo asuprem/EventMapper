@@ -142,7 +142,7 @@ if __name__ == '__main__':
                         std_flush( "New event-language pair added: ", str(eventLangTuple))
                         std_flush( "   with keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                         
-                        # TODO add instance to StreamerManager() structured
+                        # Add instance to StreamerManager() structured
                         if language == "en":
                             for _all_streamers_ in StreamerManager:
                                 if StreamerManager[_all_streamers_]["type"] == "structured":
@@ -183,7 +183,6 @@ if __name__ == '__main__':
                             std_flush( "    Old keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
                             streamerConfig[eventLangTuple]['keywords'] = configReload['topic_names'][physicalEvent]["languages"][language]
                             std_flush( "    New keywords: ", str(streamerConfig[eventLangTuple]['keywords']))
-                            # TODO TODO ChangeStreamerManagerInstance()... structured
 
                             if language == "en":
                                 for _all_streamers_ in StreamerManager:
@@ -202,7 +201,6 @@ if __name__ == '__main__':
                                             std_flush("Shutdown structured streamer %s for deleted event-language pair %s-%s "%(_all_streamers_, eventLangTuple[0], eventLangTuple[1]))
                                         except:
                                             std_flush("Structured streamer %s for deleted event-language pair %s-%s is already shut down"%(_all_streamers_, eventLangTuple[0], eventLangTuple[1]))
-                                        # TODO TODO TODO reemove keyserver
                                         StreamerManager[_all_streamers_]["keyserver"].abandon_key(StreamerManager[_all_streamers_]["instances"][eventLangTuple]["apikey"][0])
                                         del StreamerManager[_all_streamers_]["instances"][eventLangTuple]
                                         std_flush( "Removed structured streamer configuration for deleted event-language pair %s-%s "%(eventLangTuple[0], eventLangTuple[1]))
@@ -254,7 +252,6 @@ if __name__ == '__main__':
                                 std_flush("Shutdown structured streamer %s for deleted event-language pair %s-%s "%(_streamer_, eventLangTuple[0], eventLangTuple[1]))
                             except:
                                 std_flush("Structured streamer %s for deleted event-language pair %s-%s is already shut down"%(_streamer_, eventLangTuple[0], eventLangTuple[1]))
-                            # TODO TODO TODO reemove keyserver
                             StreamerManager[_streamer_]["keyserver"].abandon_key(StreamerManager[_streamer_]["instances"][eventLangTuple]["apikey"][0])
                             del StreamerManager[_streamer_]["instances"][eventLangTuple]
                             std_flush( "Removed structured streamer configuration for deleted event-language pair %s-%s "%(eventLangTuple[0], eventLangTuple[1]))
