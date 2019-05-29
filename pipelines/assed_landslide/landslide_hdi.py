@@ -40,7 +40,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             self.cursor_timer = time.time()
             for _streamtype in self.stream_tracker:
                 utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI  and %i NONHDI"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["hdi"], self.stream_tracker[_streamtype]["non_hdi"]))
-                self.stream_tracker[_streamtype]["totalcounter"]
+                self.stream_tracker[_streamtype]["totalcounter"] = 0
                 self.stream_tracker[_streamtype]["non_hdi"] = 0
                 self.stream_tracker[_streamtype]["hdi"] = 0
         if self.debug:
