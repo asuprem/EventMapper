@@ -32,7 +32,7 @@ def main(logdir, exportkey, pidname):
     message_timer = time.time()
 
     # Get earliest file to parse...
-    helper_utils.std_flush("Searching for files")
+    helper_utils.std_flush("[%s] -- Searching for files"%helper_utils.readable_time())
     finishedUpToTime = r.get(exportkey)
     granularTime = 0
     if finishedUpToTime is None:
@@ -42,7 +42,7 @@ def main(logdir, exportkey, pidname):
 
     if finishedUpToTime == 0:
         # TODO CHANGE TO 7 days after setup is complete...
-        helper_utils.std_flush("No value for previous stop. Starting from 7 days prior")
+        helper_utils.std_flush("[%s] -- No value for previous stop. Starting from 7 days prior"%helper_utils.readable_time())
         currentTime = datetime.now() - timedelta(days=7)
         foundFlag = 0
         while foundFlag == 0:
@@ -59,7 +59,7 @@ def main(logdir, exportkey, pidname):
                     foundFlag = -1
     else:
         # I.E. if we already have a timestmap from pervious execution, we will read files that are a minute behind, and catch up to the granular time
-        helper_utils.std_flush("Starting File tracking at %s"%str(datetime.fromtimestamp(finishedUpToTime/1000.0)))
+        helper_utils.std_flush("[%s] -- Starting File tracking at %s"%(helper_utils.readable_time(), str(datetime.fromtimestamp(finishedUpToTime/1000.0))))
         granularTime = finishedUpToTime
         finishedUpToTime = datetime.fromtimestamp(granularTime/1000.0) - timedelta(seconds = 60)
         TOP_OF_FILE_START = False
@@ -70,11 +70,11 @@ def main(logdir, exportkey, pidname):
     
     prevGranular = granularTime
 
-    helper_utils.std_flush("Starting Stream Tracking for %s"%exportkey)
+    helper_utils.std_flush("[%s] -- Starting Stream Tracking for %s"%(helper_utils.readable_time(), exportkey))
     while True:
         if time.time() - message_timer > message_refresh:
             message_timer = time.time()
-            helper_utils.std_flush("Processed %i items, with %i items skipped and %i seconds slept in the last %i seconds"%(process_count, skip_count, time_slept, message_refresh))
+            helper_utils.std_flush("[%s] -- Processed %i items, with %i items skipped and %i seconds slept in the last %i seconds"%(helper_utils.readable_time(), process_count, skip_count, time_slept, message_refresh))
             process_count, skip_count, time_slept = 0, 0, 0
             
             
@@ -101,7 +101,7 @@ def main(logdir, exportkey, pidname):
                         try:
                             jsonVersion = json.loads(line)        
                         except ValueError as e:
-                            helper_utils.std_flush("Possible warning for %s file for %s with error %s"%(filePath, exportkey, str(e)))
+                            helper_utils.std_flush("[%s] -- WARNING -- Possible warning for %s file for %s with error %s"%(helper_utils.readable_time() , filePath, exportkey, str(e)))
                             continue
                         
                         if granularTime > int(jsonVersion["timestamp_ms"]):
@@ -121,7 +121,7 @@ def main(logdir, exportkey, pidname):
                             r.set(exportkey, granularTime)
                             process_count += 1
                             if granularTime - prevGranular > 86400000:
-                                helper_utils.std_flush("Finished with %s"%(str(datetime.fromtimestamp(granularTime/1000.0))))
+                                helper_utils.std_flush("[%s] -- Finished with %s"%(helper_utils.readable_time(), str(datetime.fromtimestamp(granularTime/1000.0))))
                                 prevGranular = granularTime
                 finishedUpToTime += TIME_DELTA_MINIMAL
 

@@ -29,11 +29,11 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             self.stream_tracker[message["streamtype"]]["good_location"] = 0
             self.stream_tracker[message["streamtype"]]["totalcounter"] = 0
         if time.time() - self.time > self.timecheck:
-            utils.helper_utils.std_flush("Updating news location store.")
+            utils.helper_utils.std_flush("[%s] -- Updating news location store."%utils.helper_utils.readable_time())
             self.update_location_store()
             self.time = time.time()
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
+                utils.helper_utils.std_flush("[%s] -- Processed %i elements from %s with %i good locations and %i bad locations"%(utils.helper_utils.readable_time(), self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
                 self.stream_tracker[_streamtype]["totalcounter"] = 0
                 self.stream_tracker[_streamtype]["good_location"] = 0
                 self.stream_tracker[_streamtype]["bad_location"] = 0
@@ -111,12 +111,11 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 
                 if coordinates is None:
                     # no sublocation exists. We are gonna have to geocode
-                    utils.helper_utils.std_flush("Performing geolocation for %s using googlemaps"%message["location"])
+                    utils.helper_utils.std_flush("[%s] -- Performing geolocation for %s using googlemaps"%(utils.helper_utils.readable_time(), message["location"]))
                     latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
                     if latitude == False:
-                        raise RuntimeError("Maps API Expired for %s"%time.time())
-                    #self.counter+=1
-                    #utils.helper_utils.std_flush(message["location"], self.counter)
+                        raise RuntimeError("[%s] -- ERROR -- Maps API Expired for %s"%(utils.helper_utils.readable_time(), time.time()))
+
                     if latitude is not None and longitude is not None:
                         coordinates = str(latitude) + "," + str(longitude)
                         for extractor_sublocation in extractor_locations.split(":"):

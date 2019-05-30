@@ -39,7 +39,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i HDI  and %i NONHDI"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["hdi"], self.stream_tracker[_streamtype]["non_hdi"]))
+                utils.helper_utils.std_flush("[%s] -- Processed %i elements from %s with %i HDI  and %i NONHDI"%(helper_utils.readable_time(), self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["hdi"], self.stream_tracker[_streamtype]["non_hdi"]))
                 self.stream_tracker[_streamtype]["totalcounter"] = 0
                 self.stream_tracker[_streamtype]["non_hdi"] = 0
                 self.stream_tracker[_streamtype]["hdi"] = 0
@@ -77,15 +77,15 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                 else:
                     #helper_utils.std_flush(insert%params)
                     pass
-                helper_utils.std_flush("Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
+                helper_utils.std_flush("[%s] -- Possible landslide event at %s detected at time %s using HDI (current time: %s)"%(helper_utils.readable_time(), message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
                 self.stream_tracker[message["streamtype"]]["hdi"] += 1
                 return (False, message)
             except mdb._exceptions.Error as mdb_error:
                 traceback.print_exc()
                 true_mdb_error = eval(str(mdb_error))
                 if true_mdb_error[0] == 2013 or true_mdb_error[0] == 2006:   # This is database connection error
-                    raise RuntimeError("Cannot connect to MySQL Database. Shutting down at %s"%helper_utils.readable_time())    
-                helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(mdb_error)))
+                    raise RuntimeError("[%s] -- ERROR -- Cannot connect to MySQL Database. Shutting down."%helper_utils.readable_time())    
+                helper_utils.std_flush('[%s] -- ERROR -- Failed to insert %s with error %s' % (helper_utils.readable_time(), message["id_str"], repr(mdb_error)))
         else:
             # No matching HDI
             pass

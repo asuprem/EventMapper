@@ -58,10 +58,10 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             self.cursor.close()
             self.cursor = self.DB_CONN.cursor()
             self.cursor_timer = time.time()
-            helper_utils.std_flush("TRUE: %i\t\tFALSE: %i out of total of %i"%(self.true_counter, self.false_counter, self.total_counter))
+            #helper_utils.std_flush("TRUE: %i\t\tFALSE: %i out of total of %i"%(self.true_counter, self.false_counter, self.total_counter))
             self.total_counter, self.true_counter, self.false_counter = 0, 0, 0
             for _streamtype in self.stream_tracker:
-                utils.helper_utils.std_flush("Processed %i elements from %s with %i positive  and %i negative"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["positive"], self.stream_tracker[_streamtype]["negative"]))
+                utils.helper_utils.std_flush("[%s] -- Processed %i elements from %s with %i positive  and %i negative"%(helper_utils.readable_time(), self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["positive"], self.stream_tracker[_streamtype]["negative"]))
                 self.stream_tracker[_streamtype]["totalcounter"] = 0
                 self.stream_tracker[_streamtype]["positive"] = 0
                 self.stream_tracker[_streamtype]["negative"] = 0
@@ -88,7 +88,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
                     str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "landslide", "ml", "0", message["streamtype"])
             self.stream_tracker[message["streamtype"]]["negative"] += 1
         else:
-            warnings.warn("WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%prediction)
+            warnings.warn("[%s] -- WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%(helper_utils.readable_time(), prediction))
         try:
             if not self.debug:
                 self.cursor.execute(self.db_insert, params)
@@ -100,8 +100,8 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             traceback.print_exc()
             true_mdb_error = eval(str(mdb_error))
             if true_mdb_error[0] == 2013 or true_mdb_error[0] == 2006:   # This is database connection error
-                raise RuntimeError("Cannot connect to MySQL Database. Shutting down at %s"%helper_utils.readable_time())    
-            helper_utils.std_flush('Failed to insert %s with error %s' % (message["id_str"], repr(mdb_error)))
+                raise RuntimeError("[%s] -- ERROR -- Cannot connect to MySQL Database. Shutting down"%helper_utils.readable_time())    
+            helper_utils.std_flush('[%s] -- ERROR -- Failed to insert %s with error %s' % (helper_utils.readable_time(), message["id_str"], repr(mdb_error)))
             return (False, message)
         
         self.total_counter += 1
