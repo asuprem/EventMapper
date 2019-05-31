@@ -69,7 +69,7 @@ class TweetProcess(multiprocessing.Process):
             self.messageQueue.put(" ".join(["Running unstructured streamer", "with PID", str(os.getpid()), "at", readable_time()]))
         except Exception as e:
             self.messageQueue.put(" ".join(["Crashed unstructured stream", "at", readable_time(), "with error", str(e)]))
-            self.errorQueue.put(('unstructured',("twitter"), str(e)))
+            self.errorQueue.put(('unstructured',("twitter",), str(e)))
 
     class tweetStreamer(StreamListener):
         """A Class for a Streamer for a multiprocess application.
