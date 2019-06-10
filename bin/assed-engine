@@ -14,6 +14,7 @@ def main(port, host):
 
 
 app=Flask(__name__)
+
 @app.route("/verify")
 def verify():
     """This is to verify whether ASSED is set up properly"""
