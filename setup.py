@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 def readme():
     with open('README.rst') as f:
         return f.read()
@@ -8,6 +7,7 @@ def readme():
 setup(name='assed',
       version='0.1',
       description='ASSED - Adaptive Social Sensor Event Detection',
+      long_description=readme(),
       url='http://github.com/asuprem/ASSED',
       author='Abhijit Suprem',
       author_email='asuprem@gatech.edu',
