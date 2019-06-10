@@ -14,7 +14,7 @@ setup(name='assed',
       license='MIT',
       packages=['assed'],
       install_requires=[
-          'flask','click', 'cmd2'
+          'flask','click', 'cmd2','requests'
       ],
       python_requires=">=3.5",
       scripts=["bin/assed-cli", "bin/assed-engine", "bin/assed-server", "bin/assed-sh"],
