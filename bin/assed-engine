@@ -5,9 +5,13 @@ import click
 
 
 @click.command()
+@click.option("--config", type=str)
 @click.option("--port", type=int, default=8083)
 @click.option("--host", type=str, default="localhost")
-def main(port, host):
+def main(config, port, host):
+
+    if config is None:
+        raise ValueError("Must provide path to configuration folder.")
     do_verify()
     do_initialize()
     app.run(port=port)

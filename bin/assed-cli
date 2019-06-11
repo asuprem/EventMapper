@@ -8,7 +8,7 @@ class ASSED(cmd2.Cmd):
 
 
     def __init__(self, port, host):
-        cmd2.Cmd.__init__(self)
+        cmd2.Cmd.__init__(self, completekey='tab', multiline_commands='foreach')
         self.port = port
         self.host = host
 
