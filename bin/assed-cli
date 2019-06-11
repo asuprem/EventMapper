@@ -2,6 +2,7 @@
 import cmd2
 import click
 import requests
+import pdb
 
 class ASSED(cmd2.Cmd):
     prompt = "assed> "
@@ -21,6 +22,9 @@ class ASSED(cmd2.Cmd):
         
         """
         self.make_request("verify", _args_)
+
+    def do_foreach(self,_args_):
+        pdb.set_trace()
 
     def make_request(self, keyword, arg):
         resp = requests.get('''http://{host}:{port}/{keyword}'''.format(host=self.host, port=self.port, keyword=keyword), params={"args":arg})
