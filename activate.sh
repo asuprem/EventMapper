@@ -9,14 +9,14 @@ else
     echo "$(date +"%T") -- Generating virtual environment assed_env"
     virtualenv -p python3.6 assed_env
 
-    which pip
+    
     echo "$(date +"%T") -- Activating virtual environment assed_env"
     source ./assed_env/bin/activate
-    which pip
-    # echo "$(date +"%T") -- Beginning package installs."
-    # echo "$(date +"%T") -- Installing basic packages"
-    # # Basics
-    # pip3 install numpy scipy keras tensorflow 
+    
+    echo "$(date +"%T") -- Beginning package installs."
+    echo "$(date +"%T") -- Installing basic packages"
+    # Basics
+    pip3 install numpy scipy keras tensorflow 
     # echo "$(date +"%T") -- Installing database packages"
     # # Database/Interconnects
     # pip3 install redis mysqlclient kafka-python
