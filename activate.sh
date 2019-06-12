@@ -24,7 +24,7 @@ if [ $? -eq 0 ]; then
     
     echo "$(date +"%T") -- Installing database packages"
     # Database/Interconnects
-    pip3 install redis kafka-python
+    pip3 install mysqlclient
     if [ $? -eq 0 ]; then
         :
     else
