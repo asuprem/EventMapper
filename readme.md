@@ -19,6 +19,26 @@ To decide
     - then for each dependency, run the initialization scripts
     - config-- {"dependencies":...}
 
-set _config = (load <config>)
+set _config = (loadconfig <config>)
 set _dependencies = (dot _config dependencies)
-foreach _dependencies
+foreach _dependencies as _subdependency
+set _depres = (checkdependency _subdependency),
+if _depres false
+error(ERROR STRING)
+
+
+
+
+better approach - have assed-engine perform basic management functions
+
+
+
+So what do i need to do?
+    - AssedEngine is a class...
+    - methods in class:
+    
+
+
+
+
+
