@@ -21,9 +21,20 @@ if [ $? -eq 0 ]; then
     echo "$(date +"%T") -- Installing tensorflow 1.5"
     # Tensorflow TODO Add a better check. Tensorflow>1.5 requires AVX instructions, which test rig does not have.
     pip3 install tensorflow==1.5
+    
     echo "$(date +"%T") -- Installing database packages"
     # Database/Interconnects
-    pip3 install redis mysqlclient kafka-python
+    pip3 install redis kafka-python
+    if [ $? -eq 0 ]; then
+        :
+    else
+        echo "Installing mysqlclient failed."
+        exit 1
+    fi
+    
+    echo "$(date +"%T") -- Installing database packages"
+    # Database/Interconnects
+    pip3 install redis kafka-python
     echo "$(date +"%T") -- Installing language tools"
     # Language tools
     pip3 install gensim nltk sner
