@@ -7,7 +7,7 @@ if [ -d "$DIRECTORY" ]; then
 else
     echo "$(date +"%T") -- assed_env does not exist."
     echo "$(date +"%T") -- Generating virtual environment assed_env"
-    virtualenv -p python3.6.8 assed_env
+    virtualenv -p python3.6 assed_env
 
     echo "$(date +"%T") -- Activating virtual environment assed_env"
     source ./assed_env/bin/activate
