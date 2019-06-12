@@ -9,10 +9,10 @@ else
     echo "$(date +"%T") -- Generating virtual environment assed_env"
     virtualenv -p python3.6 assed_env
 
-    which pip | echo
+    which pip
     echo "$(date +"%T") -- Activating virtual environment assed_env"
     source ./assed_env/bin/activate
-    which pip | echo
+    which pip
     # echo "$(date +"%T") -- Beginning package installs."
     # echo "$(date +"%T") -- Installing basic packages"
     # # Basics
