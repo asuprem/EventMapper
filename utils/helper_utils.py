@@ -39,7 +39,11 @@ def readable_time():
     return datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
 def std_flush(*args,**kwargs):
-    print(" ".join(map(str,args)))
+    try:
+        print(" ".join([str(item) for item in args]))
+    except Exception as e:
+        traceback.print_exc()
+        print(" ".join([str(item.encode("utf-8"))[2:-2] for item in args]))
     sys.stdout.flush()
 
 def location_standardize(location):
