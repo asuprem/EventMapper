@@ -1,6 +1,6 @@
 import utils.AssedMessageProcessor
 import time, redis
-import pdb
+import pdb, warnings
 from sner import Ner
 import nltk
 import utils.helper_utils
@@ -114,7 +114,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                     utils.helper_utils.std_flush("[%s] -- Performing geolocation for %s using googlemaps"%(utils.helper_utils.readable_time(), message["location"]))
                     latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
                     if latitude == False:
-                        raise RuntimeError("[%s] -- ERROR -- Maps API Expired for %s"%(utils.helper_utils.readable_time(), time.time()))
+                        warnings.warn("[%s] -- WARNING -- Maps API Expired for %s. Trying after 2 hours."%(utils.helper_utils.readable_time(), time.time()))
 
                     if latitude is not None and longitude is not None:
                         coordinates = str(latitude) + "," + str(longitude)
