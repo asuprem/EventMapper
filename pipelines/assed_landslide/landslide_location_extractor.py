@@ -112,10 +112,12 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 if coordinates is None:
                     # no sublocation exists. We are gonna have to geocode
                     utils.helper_utils.std_flush("[%s] -- Performing geolocation for %s using googlemaps"%(utils.helper_utils.readable_time(), message["location"]))
-                    latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
-                    if latitude == False:
-                        warnings.warn("[%s] -- WARNING -- Maps API Expired for %s. Trying after 2 hours."%(utils.helper_utils.readable_time(), time.time()))
-
+                    latitude = False
+                    while latitude == False:
+                        latitude,longitude = utils.helper_utils.lookup_address_only(message["location"], self.APIKEY, self.r)
+                        if latitude == False:
+                            warnings.warn("[%s] -- WARNING -- Maps API Expired for %s. Trying after 2 hours."%(utils.helper_utils.readable_time(), time.time()))
+                            time.sleep(7200)
                     if latitude is not None and longitude is not None:
                         coordinates = str(latitude) + "," + str(longitude)
                         for extractor_sublocation in extractor_locations.split(":"):
