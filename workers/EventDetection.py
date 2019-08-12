@@ -49,15 +49,15 @@ on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell;""".format(streamer
 
 def generate_trmm_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_TRMM where date >= {timestamp} group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_TRMM where date >= '{timestamp}' group by cell""".format(timestamp=time_start)
 
 def generate_usgs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_USGS where time >= {timestamp} and mag >= 5 group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_USGS where time >= '{timestamp}' and mag >= 5 group by cell""".format(timestamp=time_start)
 
 def generate_news_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_News where timestamp >= {timestamp} group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_News where timestamp >= '{timestamp}' group by cell""".format(timestamp=time_start)
 
 
 
