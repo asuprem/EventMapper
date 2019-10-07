@@ -5,13 +5,19 @@ import utils.helper_utils as helper_utils
 from .AssedScript import AssedScript
 
 class AssedConfiguration:
-    def __init__(self):
-        pass
+    def __init__(self, config):
+        self.log_dir = "./logfiles/" + config["configuration"]["log_dir"]
+        self.script_dir = "./pipelines/" + config["configuration"]["script_dir"]
+        self.assed_script_dir = "./pipelines"
+        self.sh_dir = "./scripts/" + config["configuration"]["sh_dir"]
+        self.script_dir_importname = config["configuration"]["script_dir"]
+        
 
 class AssedPipeline:
 
     """ This is an ASSED Pipeline class..."""
     def __init__(self, home_dir, pipeline_config, mode="DEBUG"):
+        self.config_dirs = AssedConfiguration(pipeline_config)
         self.config = pipeline_config
         self.home_dir = home_dir
         if mode == "DEBUG" or mode == "production":
@@ -19,15 +25,11 @@ class AssedPipeline:
         else:
             raise ValueError("Unrecognized mode. Set mode to one of: 'DEBUG', 'production'.")
         # Create Log directory TODO Sanitize
-        self.log_dir = "./logfiles/" + self.config["configuration"]["log_dir"]
-        self.script_dir = "./pipelines/" + self.config["configuration"]["script_dir"]
-        self.assed_sript_dir = "./pipelines"
-        self.sh_dir = "./scripts/" + self.config["configuration"]["sh_dir"]
-        self.script_dir_importname = self.config["configuration"]["script_dir"]
+        
 
-        self.createIfNotExists(self.log_dir)
-        self.createIfNotExists(self.script_dir)
-        self.createIfNotExists(self.sh_dir)
+        self.createIfNotExists(self.config_dirs.log_dir)
+        self.createIfNotExists(self.config_dirs.script_dir)
+        self.createIfNotExists(self.config_dirs.sh_dir)
         
         # Identify input buffer scripts
         self.inverted_buffer_index = {}
@@ -110,10 +112,10 @@ else
     printf "Deleted file\\n" >> {logdir}/{bufferlogname}.out
     printf "Starting {bufferscriptname}.py\\n" >> {logdir}/{bufferlogname}.out
     nohup ./assed_env/bin/python {assedscript}/{bufferscriptname}.py {logdir} {importkey} {exportkey} {dataprocessor} {dataprocessorscriptdir} {pidname} >> {logdir}/{bufferlogname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, bufferscriptname = bufferscriptname, bufferlogname = bufferlogname, assedscript = self.assed_sript_dir, importkey = importkey, exportkey = exportkey, dataprocessor = dataprocessor, dataprocessorscriptdir = self.script_dir_importname, pidname=bufferlogname)
+fi'''.format(homedir = self.home_dir, logdir = self.config_dirs.log_dir, bufferscriptname = bufferscriptname, bufferlogname = bufferlogname, assedscript = self.config_dirs.assed_script_dir, importkey = importkey, exportkey = exportkey, dataprocessor = dataprocessor, dataprocessorscriptdir = self.config_dirs.script_dir_importname, pidname=bufferlogname)
         
 
-                self.inputBufferScriptFile = os.path.join(self.sh_dir, bufferlogname + ".sh")
+                self.inputBufferScriptFile = os.path.join(self.config_dirs.sh_dir, bufferlogname + ".sh")
                 self.writeScript(self.inputBufferScriptFile, bufferStr)
                 helper_utils.std_flush("Generated script for Input Buffer at %s"%self.inputBufferScriptFile)
 
@@ -135,10 +137,10 @@ else
     printf "Deleted file\\n" >> {logdir}/{processname}.out
     printf "Starting {processname}.py\\n" >> {logdir}/{processname}.out
     nohup ./assed_env/bin/python {assedscript}/assed_process.py {logdir} {importkey} {exportkey} {processscriptname} {processscriptdir} {pidname} >> {logdir}/{processname}.log 2>&1 &
-fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.assed_sript_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.script_dir_importname, pidname=processname)
+fi'''.format(homedir = self.home_dir, logdir = self.config_dirs.log_dir, processscriptname = scriptname, processname = processname, assedscript = self.config_dirs.assed_script_dir, exportkey = exportkey, importkey = importkey, processscriptdir = self.config_dirs.script_dir_importname, pidname=processname)
         
 
-            self.inputBufferScriptFile = os.path.join(self.sh_dir, scriptname + ".sh")
+            self.inputBufferScriptFile = os.path.join(self.config_dirs.sh_dir, scriptname + ".sh")
             self.writeScript(self.inputBufferScriptFile, bufferStr)
             helper_utils.std_flush("Generated script for %s  at %s"%(_processscript, self.inputBufferScriptFile))
 
