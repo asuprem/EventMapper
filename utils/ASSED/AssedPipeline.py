@@ -2,8 +2,13 @@ import time, os, sys, traceback, redis, kafka
 import pdb
 import subprocess
 import utils.helper_utils as helper_utils
+from .AssedScript import AssedScript
 
-class AssedPipeline():
+class AssedConfiguration:
+    def __init__(self):
+        pass
+
+class AssedPipeline:
 
     """ This is an ASSED Pipeline class..."""
     def __init__(self, home_dir, pipeline_config, mode="DEBUG"):
@@ -27,7 +32,7 @@ class AssedPipeline():
         # Identify input buffer scripts
         self.inverted_buffer_index = {}
         for stream_input_source in self.config["configuration"]["input-streams"]:
-            _bufferscript = self.config["configuration"]["input-streams"][stream_input_source]["buffer-script-name"]
+            _bufferscript = self.config["configuration"]["input-streams"][stream_input_source]["buffer-group-name"]
             if _bufferscript not in self.inverted_buffer_index:
                 self.inverted_buffer_index[_bufferscript] = []
             self.inverted_buffer_index[_bufferscript].append(stream_input_source)
@@ -45,8 +50,8 @@ class AssedPipeline():
             if script_type not in self.input_scripts + self.output_scripts + ['configuration']:
                 self.process_scripts.append(script_type)
 
-        # Set up kafka keys:
-        self.initializeKafka()
+        # Set up kafka keys: --------------------
+        # self.initializeKafka()
         # If debug, delete assed keys
         #self.deleteRedisKeys()
 
@@ -82,6 +87,7 @@ class AssedPipeline():
 
     def createInputBufferScript(self):
         # For each input script type (text, or image, wher we get to it...)
+        pdb.set_trace()
         for _bufferscript in self.input_scripts:
             # get the input streams for this...
             for _inputsource in self.inverted_buffer_index[_bufferscript]:
@@ -155,7 +161,12 @@ fi'''.format(homedir = self.home_dir, logdir = self.log_dir, processscriptname =
         
         # Launch Input Buffer -- run the input buffer script
         #subprocess.Popen(['sh', self.inputBufferScriptFile])
-
+        #self.createInputBufferScript()
+        #self.inputBufferScriptFile
+        
         # Launch Output Buffer
+        #self.createOutputBufferScript()
         pdb.set_trace()
         # Launch Each Process
+        #self.createProcessScripts()
+
