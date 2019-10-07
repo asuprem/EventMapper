@@ -11,19 +11,18 @@
                 "name":"input_buffer_twitter",
                 "processor_script":"input_tweet_process",
                 "import-key":"assed:landslide:twitter:import",
-                "buffer-script-name":"input_buffer"
+                "buffer-group-name":"input_buffer"
             },
             "facebook":{
                 "name":"input_buffer_facebook",
                 "processor_script":"input_facebook_process",
                 "import-key":"assed:landslide:facebook:import",
-                "buffer-script-name":"input_buffer"
+                "buffer-group-name":"input_buffer"
             }
         }
     },
 
     "input_buffer":{
-        "name":"input_buffer_twitter",
         "script":"assed_inputbuffer",
         "export-key":"assed:landslide:social:buffer:stream"
     },
