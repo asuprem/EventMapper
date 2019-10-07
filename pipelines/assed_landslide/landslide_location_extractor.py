@@ -5,6 +5,7 @@ from sner import Ner
 import nltk
 import utils.helper_utils
 from utils.file_utils import load_config
+import string
 
 class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self, debug=False):
@@ -21,6 +22,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         config = load_config("./config/assed_config.json")
         self.APIKEY = config["APIKEYS"]["googlemaps"]
         self.stream_tracker = {}
+        self.location_stopwords = ["street", "us", "america"]
 
     def process(self,message):
         if message["streamtype"] not in self.stream_tracker:
@@ -53,7 +55,12 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
             cleaned_message = " ".join(nltk.tokenize.word_tokenize(cleaned_message))
             loc_tags = self.NER.get_entities(cleaned_message)
             desc_locations = self.extractLocations(loc_tags)
-            locations = " ".join(desc_locations) if len(desc_locations) > 0 else None
+            processed_locations = []
+            for location_tentative in desc_locations:
+                if self.valid_location(location_tentative):
+                    processed_locations.append(location_tentative)
+
+            locations = " ".join(processed_locations) if len(processed_locations) > 0 else None
 
             if locations is None:
                 # Attempt match...
@@ -146,6 +153,12 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                 latitude = float(key_coords[0])
                 longitude = float(key_coords[1])
                 self.locations[key_location] = (latitude, longitude)
+
+    def valid_location(self, location):
+        """ Return True is good location; else false """
+        if location.translate(str.maketrans('','', string.punctuation)).lower() in self.location_stopwords:
+            return False
+        return True
 
 
     def extractLocations(self,temp_loc_tags):
