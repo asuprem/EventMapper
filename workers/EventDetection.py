@@ -66,8 +66,8 @@ def generate_news_query():
 def main():
 
     local_timer = 0
-    refresh_timer = 7200
-    sleep_timer = 300
+    refresh_timer = 300
+    sleep_timer = 250
     while True:
         if time.time() - local_timer > refresh_timer:
 
