@@ -14,7 +14,7 @@ class input_tweet_process(utils.AssedMessageProcessor.AssedMessageProcessor):
         write_version["longitude"] = data["coordinates"]["coordinates"][0] if data["coordinates"] is not None else None
         write_version["streamtype"] = "twitter"
         write_version["timestamp"] = data["timestamp_ms"]
-        write_version["link"] = "https://twitter.com/statuses/"+data["id_str"]
+        write_version["link"] = "https://twitter.com/"+data['user']["screen_name"]+"/status/"+data["id_str"]
         return write_version
     def getInputPath(self,_time):
         pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('tweets', 'landslide','en', _time.year), '%02d' % _time.month,

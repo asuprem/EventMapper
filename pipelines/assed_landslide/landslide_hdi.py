@@ -114,5 +114,5 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
             msg["streamtype"] = "twitter"
         if "link" not in msg:
             if msg["streamtype"] == "twitter":
-                msg["link"] = "https://twitter.com/statuses/"+msg["id_str"]
+                msg["link"] = "https://twitter.com/"+msg['user']["screen_name"]+"/status/"+msg["id_str"]
         
