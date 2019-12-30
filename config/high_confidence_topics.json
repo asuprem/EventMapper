@@ -43,7 +43,7 @@
         "db_name": "HCS_VIIRS_WILDFIRE",
         "source_file":"VIIRS_wildfire",
         "type":"scheduled",
-        "schedule":43200,
+        "schedule":43200
     }
 
 }
