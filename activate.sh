@@ -55,7 +55,7 @@ if [ $? -eq 0 ]; then
     pip3 install newsapi-python tweepy 
     echo "$(date +"%T") -- Installing standard utilities"
     # Web utilities
-    pip3 install flask xmltodict
+    pip3 install xmltodict==0.12.0 reverse_geocoder==1.5.1
     echo "$(date +"%T") -- Installing web utilities"
     # Web utilities
     pip3 install flask requests
