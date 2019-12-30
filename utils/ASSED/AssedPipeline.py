@@ -89,7 +89,6 @@ class AssedPipeline:
 
     def createInputBufferScript(self):
         # For each input script type (text, or image, wher we get to it...)
-        pdb.set_trace()
         for _bufferscript in self.input_scripts:
             # get the input streams for this...
             for _inputsource in self.inverted_buffer_index[_bufferscript]:
