@@ -52,8 +52,8 @@ class AssedPipeline:
             if script_type not in self.input_scripts + self.output_scripts + ['configuration']:
                 self.process_scripts.append(script_type)
 
-        # Set up kafka keys: --------------------
-        # self.initializeKafka()
+        #Set up kafka keys: --------------------
+        self.initializeKafka()
         # If debug, delete assed keys
         #self.deleteRedisKeys()
 
@@ -89,7 +89,6 @@ class AssedPipeline:
 
     def createInputBufferScript(self):
         # For each input script type (text, or image, wher we get to it...)
-        pdb.set_trace()
         for _bufferscript in self.input_scripts:
             # get the input streams for this...
             for _inputsource in self.inverted_buffer_index[_bufferscript]:

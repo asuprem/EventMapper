@@ -8,12 +8,15 @@ Currently supports:
 - Event detection
 - Script generation
 
+Has:    wildfire, landslide
+
 
 ## development
 Development branch to test changes before adding to master.
 
     - 9.25.19           Merged from master
-    - 12.30.2019        Merged from merge_utils of Peng Anjian
+    - 12.30.19          Merged from merge_util created by Peng
+    - 12.30.19          Merged from assed-wildfire with wildfire specific files. Merged to master.
 
 
 ## assed-automation-v1 (created 9.25.19)
