@@ -7,6 +7,10 @@ DIRECTORY="./assed_env"
 if [ -d "$DIRECTORY" ]; then
     # Control will enter here if $DIRECTORY exists.
     echo "$(date +"%T") -- assed_env exists."
+    # remove the assed_env and generate it again
+    echo "$(date +"%T") -- remove assed_env."
+    rm -rf assed_env 
+    virtualenv -p python3.6 assed_env
 
 else
     echo "$(date +"%T") -- assed_env does not exist."
@@ -21,7 +25,8 @@ if [ $? -eq 0 ]; then
     echo "$(date +"%T") -- Beginning package installs."
     echo "$(date +"%T") -- Installing basic packages"
     # Basics
-    pip3 install numpy scipy keras
+    pip3 install numpy scipy
+    pip3 install keras==2.2.4
     echo "$(date +"%T") -- Installing tensorflow 1.5"
     # Tensorflow TODO Add a better check. Tensorflow>1.5 requires AVX instructions, which test rig does not have.
     pip3 install tensorflow==1.5
