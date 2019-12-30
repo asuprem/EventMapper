@@ -17,7 +17,7 @@ class input_facebook_process(utils.AssedMessageProcessor.AssedMessageProcessor):
         write_version["link"] = data["link"]
         return write_version
     def getInputPath(self,_time):
-        pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('facebook', 'landslide','en', _time.year), '%02d' % _time.month,
+        pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('facebook', 'wildfire','en', _time.year), '%02d' % _time.month,
                                             '%02d' % _time.day, '%02d' % _time.hour)
         filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath

@@ -17,7 +17,7 @@ class input_tweet_process(utils.AssedMessageProcessor.AssedMessageProcessor):
         write_version["link"] = "https://twitter.com/"+data['user']["screen_name"]+"/status/"+data["id_str"]
         return write_version
     def getInputPath(self,_time):
-        pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('tweets', 'landslide','en', _time.year), '%02d' % _time.month,
+        pathDir = os.path.join(self.DOWNLOAD_PREPEND + '%s_%s_%s_%s' % ('tweets', 'wildfire','en', _time.year), '%02d' % _time.month,
                                             '%02d' % _time.day, '%02d' % _time.hour)
         filePath = os.path.join(pathDir, '%02d.json' % _time.minute)
         return filePath
