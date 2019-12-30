@@ -6,7 +6,7 @@ This is the server for ASSED. Once it begins running, it should begin taking req
 # General Imports
 import os, json, click
 import utils.helper_utils as helper_utils, utils.file_utils as file_utils, utils.db_utils as db_utils
-import utils.AssedPipeline as AssedPipeline
+import utils.ASSED.AssedPipeline as AssedPipeline
 import utils.CONSTANTS as CONSTANTS
 
 @click.command()
