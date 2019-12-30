@@ -1,0 +1,58 @@
+{
+    "configuration":{
+        "script_dir":"assed_wildfire", 
+        "log_dir":"assed_wildfire", 
+        "sh_dir":"assed_wildfire",
+        "vars":{
+            "mldir":"TODO"
+        },
+        "input-streams":{
+            "twitter":{
+                "name":"input_buffer_twitter",
+                "processor_script":"input_tweet_process",
+                "import-key":"assed:wildfire:twitter:import",
+                "buffer-group-name":"input_buffer"
+            },
+            "facebook":{
+                "name":"input_buffer_facebook",
+                "processor_script":"input_facebook_process",
+                "import-key":"assed:wildfire:facebook:import",
+                "buffer-group-name":"input_buffer"
+            }
+        }
+    },
+
+    "input_buffer":{
+        "script":"assed_inputbuffer",
+        "export-key":"assed:wildfire:social:buffer:stream"
+    },
+
+    "output_buffer":{
+        "name":"output_buffer",
+        "script":"wildfire_outputbuffer",
+        "import-key":"assed:wildfire:events" ,
+        "export-key":"assed:wildfire:output:buffer"
+    },
+
+    "location_extractor":{
+        "name":"location_extractor",
+        "script":"wildfire_location_extractor",
+        "import-key":"assed:wildfire:social:buffer:stream",
+        "export-key":"assed:wildfire:location:extractor"
+    },
+
+    "hdi":{
+        "name":"hdi",
+        "script":"wildfire_hdi",
+        "import-key":"assed:wildfire:location:extractor", 
+        "export-key":"assed:wildfire:hdi"
+    },
+
+    "event_detection":{
+        "name":"event_detection", 
+        "script":"wildfire_event_detection",
+        "import-key":"assed:wildfire:hdi",
+        "export-key":"assed:wildfire:events"
+    }
+
+}
