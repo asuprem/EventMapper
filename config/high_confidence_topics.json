@@ -21,5 +21,29 @@
         "type":"scheduled",
         "schedule":43200,
         "config":"config/assed_config.json"
+    },
+
+    "modis_wildfire":{
+        "name": "MODISwildfire",
+        "db_name": "HCS_MODIS_WILDFIRE",
+        "source_file":"MODIS_wildfire",
+        "type":"scheduled",
+        "schedule":86400
+    },
+
+    "usgs_wildfire":{
+        "name": "USGSwildfire",
+        "db_name": "HCS_USGS_WILDFIRE",
+        "source_file":"USGS_wildfire",
+        "type":"scheduled",
+        "schedule":43200
+    },
+    "VIIRS_wildfire":{
+        "name": "VIIRSwildfire",
+        "db_name": "HCS_VIIRS_WILDFIRE",
+        "source_file":"VIIRS_wildfire",
+        "type":"scheduled",
+        "schedule":43200,
     }
+
 }
