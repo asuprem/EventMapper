@@ -12,7 +12,7 @@ import utils.CONSTANTS as CONSTANTS
 @click.command()
 @click.argument("assedtopic")
 def main(assedtopic):
-    assedtopic = "landslide"
+    #assedtopic = "landslide"
     manager = {}
 
     manager[assedtopic] = {}
