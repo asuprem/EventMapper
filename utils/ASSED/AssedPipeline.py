@@ -52,8 +52,8 @@ class AssedPipeline:
             if script_type not in self.input_scripts + self.output_scripts + ['configuration']:
                 self.process_scripts.append(script_type)
 
-        # Set up kafka keys: --------------------
-        # self.initializeKafka()
+        #Set up kafka keys: --------------------
+        self.initializeKafka()
         # If debug, delete assed keys
         #self.deleteRedisKeys()
 
