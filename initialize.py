@@ -25,6 +25,7 @@ if argums['env'] == 'mysql':
     #set up mysql stuff (news and everything)
     db_conn = db_utils.get_db_connection(assed_config)
     for file_ in glob.glob('initialization/mysql/*.SQL'):
+        print("Initializing SQL from %s"%file_)
         db_utils.run_sql_file(file_,db_conn)
     db_conn.close()
         
