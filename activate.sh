@@ -53,6 +53,9 @@ if [ $? -eq 0 ]; then
     echo "$(date +"%T") -- Installing streamer utilities"
     # Streamer utilities
     pip3 install newsapi-python tweepy 
+    echo "$(date +"%T") -- Installing standard utilities"
+    # Web utilities
+    pip3 install flask xmltodict
     echo "$(date +"%T") -- Installing web utilities"
     # Web utilities
     pip3 install flask requests
