@@ -76,8 +76,9 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
         TOP_OF_FILE_START = False
     if TOP_OF_FILE_START:
         # Otherwise, we start from the beginning of the 'first' file...
-        finishedUpToTime -= timedelta(seconds=finishedUpToTime.second)
         granularTime = 0
+        finishedUpToTime = datetime.fromtimestamp(granularTime/1000.0) - timedelta(seconds = 60)
+        
     
     prevGranular = granularTime
 
