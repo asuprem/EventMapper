@@ -15,6 +15,7 @@ from sner import Ner
 from utils.helper_utils import location_standardize, high_confidence_streamer_key, lookup_address_only, location_normalize, generate_cell, sublocation_key, readable_time
 from utils.db_utils import get_db_connection
 from importlib import reload
+import warnings
 
 class News(multiprocessing.Process):
     def __init__(self,assed_config,root_name, errorQueue, messageQueue, **kwargs):
@@ -51,7 +52,7 @@ class News(multiprocessing.Process):
                     except Exception as e:
                         self.messageQueue.put("NewsAPI for %s-%s failed with error: %s" % (event_topic,keyword, repr(e)))
                 
-                article_content, article_location = self.getArticleDetails(articles, stopwords)
+                article_content, article_location = self.getArticleDetails(articles, stopwords, event_topic)
 
                 self.insertNews(article_content, event_topic_key)
                 self.updateRedisLocations(article_location)
@@ -63,7 +64,7 @@ class News(multiprocessing.Process):
             traceback.print_exc()
             self.errorQueue.put((self.root_name, str(e)))            
             
-    def getArticleDetails(self,articles, stopwords):
+    def getArticleDetails(self,articles, stopwords, event_topic):
         article_content = []
         article_location = []
         exist_skip, stop_skip, location_skip, coordinate_skip = 0, 0, 0, 0
@@ -86,10 +87,15 @@ class News(multiprocessing.Process):
             rText = item["text"]
             if "content" in article and article["content"] is not None and len(article["content"]) > 0:
                 rText += article["content"]
-            while not search_flag and search_counter < len(stopwords):
-                if stopwords[search_counter] in rText:
-                    search_flag = True
-                search_counter+=1
+            
+            if stopwords is None:
+                warnings.warn("No stopwords found for %s"%event_topic)
+            else:
+                while not search_flag and search_counter < len(stopwords):
+                    if stopwords[search_counter] in rText:
+                        search_flag = True
+                    search_counter+=1
+
             if search_flag:
                 stop_skip+=1
                 continue
