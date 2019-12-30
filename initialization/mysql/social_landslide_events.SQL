@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS `ASSED_Social_Events` (
   `topic_name` varchar(20) NOT NULL,
   `source` varchar(10) Not NULL default 'hdi',
   `valid` boolean not null default 1,
-  `streamtype` varchar not null default 'twitter',
+  `streamtype` varchar(15) not null default 'twitter',
   PRIMARY KEY (`db_id`)
 );
