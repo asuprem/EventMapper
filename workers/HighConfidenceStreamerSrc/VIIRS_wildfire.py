@@ -85,11 +85,14 @@ class VIIRS_wildfire(multiprocessing.Process):
             frp = float(feature[11])
             daynight = feature[12]
 
-            viirs_id = "%s_%f_%f" % (acq_datetime.replace(' ', '_'), latitude, longitude)
-            if viirs_id in self.cached_list:
+
+            viirs_cached_check = "%f_%f" % (round(latitude,1), round(longitude,1))
+            viirs_id = "%s_%f_%f" % (acq_datetime.replace(' ', '_'), round(latitude,1), round(longitude,1))
+            if viirs_cached_check in self.cached_list:
                 skipCounter += 1
                 continue
-            self.cached_list.add(viirs_id)
+            self.cached_list.add(viirs_cached_check)
+
             item = {}
             item['viirs_id'] = viirs_id
             item['latitude'] = float(feature[0])
@@ -131,7 +134,7 @@ class VIIRS_wildfire(multiprocessing.Process):
             results = cursor.fetchall()
             cursor.close()
             for row in results:
-                cachedlist.add(row[0])
+                cachedlist.add("_".join(row[0].split("_")[-2:]))
             self.messageQueue.put("VIIRS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
             print("VIIRS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
         except Exception as e:
