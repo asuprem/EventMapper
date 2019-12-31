@@ -45,12 +45,10 @@ class VIIRS_wildfire(multiprocessing.Process):
 
             for viirs_url in url_list:
                 self.messageQueue.put("Obtaining VIIRS url: %s" % viirs_url)
-                print("Obtaining VIIRS url: %s" % viirs_url)
                 try:
                     response = requests.get(viirs_url)
                 except Exception as e:
                     self.messageQueue.put("VIIRS URL %s failed with error: %s" % (viirs_url, repr(e)))
-                    print("VIIRS URL %s failed with error: %s" % (viirs_url, repr(e)))
                     continue
                 viirs_items, viirs_locations = self.getVIIRSItems(response.text.split('\n')[1:])
                 self.insertVIIRS(viirs_items)
@@ -58,7 +56,6 @@ class VIIRS_wildfire(multiprocessing.Process):
 
             self.DB_CONN.close()
             self.messageQueue.put("Completed VIIRS successfully at %s." % readable_time())
-            print("Completed VIIRS successfully at %s." % readable_time())
         except Exception as e:
             traceback.print_exc()
             self.errorQueue.put((self.root_name, str(e)))
@@ -114,7 +111,6 @@ class VIIRS_wildfire(multiprocessing.Process):
 
         self.messageQueue.put(
             "Obtained VIIRS with: %i items and skipped existing %i items" % (len(viirs_items), skipCounter))
-        print("Obtained VIIRS with: %i items and skipped existing %i items" % (len(viirs_items), skipCounter))
         return viirs_items, viirs_locations
 
     def convertDateFromTime(self, tm):
@@ -136,7 +132,6 @@ class VIIRS_wildfire(multiprocessing.Process):
             for row in results:
                 cachedlist.add("_".join(row[0].split("_")[-2:]))
             self.messageQueue.put("VIIRS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
-            print("VIIRS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
         except Exception as e:
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
@@ -159,7 +154,6 @@ class VIIRS_wildfire(multiprocessing.Process):
                 self.DB_CONN.commit()
             except Exception as e:
                 self.messageQueue.put('Failed to insert %s with error %s' % (item["viirs_id"], repr(e)))
-                print('Failed to insert %s with error %s' % (item["viirs_id"], repr(e)))
         cursor.close()
 
     def updateRedisLocations(self, viirs_locations, viirs_url):
@@ -181,7 +175,6 @@ class VIIRS_wildfire(multiprocessing.Process):
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
         self.messageQueue.put("Completed VIIRS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, viirs_url))
-        #print("Completed VIIRS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations))
 
 
 if __name__ == '__main__':
