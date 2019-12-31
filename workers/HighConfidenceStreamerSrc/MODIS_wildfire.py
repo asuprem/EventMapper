@@ -85,11 +85,12 @@ class MODIS_wildfire(multiprocessing.Process):
             frp = float(feature[11])
             daynight = feature[12]
 
-            modis_id = "%s_%f_%f" % (acq_datetime.replace(' ', '_'), latitude, longitude)
-            if modis_id in self.cached_list:
+            modis_cached_check = "%f_%f" % (round(latitude,1), round(longitude,1))
+            modis_id = "%s_%f_%f" % (acq_datetime.replace(' ', '_'), round(latitude,1), round(longitude,1))
+            if modis_cached_check in self.cached_list:
                 skipCounter += 1
                 continue
-            self.cached_list.add(modis_id)
+            self.cached_list.add(modis_cached_check)
             item = {}
             item['modis_id'] = modis_id
             item['latitude'] = float(feature[0])
@@ -131,7 +132,7 @@ class MODIS_wildfire(multiprocessing.Process):
             results = cursor.fetchall()
             cursor.close()
             for row in results:
-                cachedlist.add(row[0])
+                cachedlist.add("_".join(row[0].split("_")[-2:]))
             self.messageQueue.put("MODIS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
             print("MODIS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
         except Exception as e:
