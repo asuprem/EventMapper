@@ -31,12 +31,10 @@ class USGS_wildfire(multiprocessing.Process):
 
             for usgs_url in url_list:
                 self.messageQueue.put("Obtaining USGS url: %s" % usgs_url)
-                print("Obtaining USGS url: %s" % usgs_url)
                 try:
                     response = requests.get(usgs_url)
                 except Exception as e:
                     self.messageQueue.put("USGS URL %s failed with error: %s" % (usgs_url, repr(e)))
-                    print("USGS URL %s failed with error: %s" % (usgs_url, repr(e)))
                     continue
                 responseDict = xmltodict.parse(response.text)['rss']['channel']
                 usgs_items, usgs_locations = self.getUSGSItems(responseDict)
@@ -45,7 +43,6 @@ class USGS_wildfire(multiprocessing.Process):
 
             self.DB_CONN.close()
             self.messageQueue.put("Completed USGS successfully at %s." % readable_time())
-            print("Completed USGS successfully at %s." % readable_time())
         except Exception as e:
             traceback.print_exc()
             self.errorQueue.put((self.root_name, str(e)))
@@ -75,7 +72,6 @@ class USGS_wildfire(multiprocessing.Process):
 
         self.messageQueue.put(
             "Obtained USGS with: %i items and skipped existing %i items" % (len(usgs_items), skipCounter))
-        print("Obtained USGS with: %i items and skipped existing %i items" % (len(usgs_items), skipCounter))
         return usgs_items, usgs_locations
 
     def convertDateFromTime(self, tm):
@@ -97,7 +93,6 @@ class USGS_wildfire(multiprocessing.Process):
             for row in results:
                 cachedlist.add(row[0])
             self.messageQueue.put("USGS cachedlist has  %i items in last 5 days" % (len(cachedlist)))
-            print("USGS cachedlist has  %i items in last 5 days" % (len(cachedlist)))
         except Exception as e:
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
@@ -118,7 +113,6 @@ class USGS_wildfire(multiprocessing.Process):
                 self.DB_CONN.commit()
             except Exception as e:
                 self.messageQueue.put('Failed to insert %s with error %s' % (item["usgs_id"], repr(e)))
-                print('Failed to insert %s with error %s' % (item["usgs_id"], repr(e)))
         cursor.close()
 
     def updateRedisLocations(self, usgs_locations):
@@ -140,7 +134,6 @@ class USGS_wildfire(multiprocessing.Process):
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
         self.messageQueue.put("Completed USGS with: %i locations and %i sublocations" % (totalLocations, sublocations))
-        print("Completed USGS with: %i locations and %i sublocations" % (totalLocations, sublocations))
 
 
 if __name__ == '__main__':

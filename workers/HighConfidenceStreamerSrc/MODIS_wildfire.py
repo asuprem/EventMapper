@@ -45,26 +45,23 @@ class MODIS_wildfire(multiprocessing.Process):
 
             for modis_url in url_list:
                 self.messageQueue.put("Obtaining MODIS url: %s" % modis_url)
-                print("Obtaining MODIS url: %s" % modis_url)
                 try:
                     response = requests.get(modis_url)
                 except Exception as e:
                     self.messageQueue.put("MODIS URL %s failed with error: %s" % (modis_url, repr(e)))
-                    print("MODIS URL %s failed with error: %s" % (modis_url, repr(e)))
                     continue
-                modis_items, modis_locations = self.getMODISItems(response.text.split('\n')[1:])
+                modis_items, modis_locations = self.getMODISItems(response.text.split('\n')[1:], modis_url)
                 self.insertMODIS(modis_items)
                 self.updateRedisLocations(modis_locations, modis_url)
 
             self.DB_CONN.close()
             self.messageQueue.put("Completed MODIS successfully at %s." % readable_time())
-            print("Completed MODIS successfully at %s." % readable_time())
         except Exception as e:
             traceback.print_exc()
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
 
-    def getMODISItems(self, csvData):
+    def getMODISItems(self, csvData, modis_url):
         modis_locations = []
         modis_items = []
         skipCounter = 0
@@ -111,8 +108,7 @@ class MODIS_wildfire(multiprocessing.Process):
             modis_locations.append({"name": item['place'], "lat": item["latitude"], "lng": item["longitude"]})
 
         self.messageQueue.put(
-            "Obtained MODIS with: %i items and skipped existing %i items" % (len(modis_items), skipCounter))
-        print("Obtained MODIS with: %i items and skipped existing %i items" % (len(modis_items), skipCounter))
+            "Obtained MODIS with: %i items and skipped existing %i items for %s" % (len(modis_items), skipCounter, modis_url))
         return modis_items, modis_locations
 
     def convertDateFromTime(self, tm):
@@ -134,7 +130,6 @@ class MODIS_wildfire(multiprocessing.Process):
             for row in results:
                 cachedlist.add("_".join(row[0].split("_")[-2:]))
             self.messageQueue.put("MODIS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
-            print("MODIS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
         except Exception as e:
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
@@ -157,7 +152,6 @@ class MODIS_wildfire(multiprocessing.Process):
                 self.DB_CONN.commit()
             except Exception as e:
                 self.messageQueue.put('Failed to insert %s with error %s' % (item["modis_id"], repr(e)))
-                print('Failed to insert %s with error %s' % (item["modis_id"], repr(e)))
         cursor.close()
 
     def updateRedisLocations(self, modis_locations, modis_url):
@@ -179,7 +173,6 @@ class MODIS_wildfire(multiprocessing.Process):
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
         self.messageQueue.put("Completed MODIS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, modis_url))
-        #print("Completed MODIS with: %i locations and %i sublocations" % (totalLocations, sublocations))
 
 
 if __name__ == '__main__':
