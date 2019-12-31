@@ -47,17 +47,17 @@ on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell;""".format(streamer
     
     return query
 
-def generate_trmm_query():
+def generate_modis_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_TRMM where date >= '{timestamp}' group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_MODIS_WILDFIRE where acq_time >= '{timestamp}' group by cell""".format(timestamp=time_start)
 
-def generate_usgs_query():
+def generate_viirs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_USGS where time >= '{timestamp}' and mag >= 5 group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_VIIRS_WILDFIRE where acq_time >= '{timestamp}'  group by cell""".format(timestamp=time_start)
 
-def generate_news_query():
+def generate_news_query(topic):
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_News where timestamp >= '{timestamp}' group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_News where timestamp >= '{timestamp}' and topic_name='{topic}' group by cell""".format(timestamp=time_start, topic=topic)
 
 
 
@@ -95,26 +95,26 @@ def main():
 
 
             # Update for High Confidence Streamers
-            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "TRMM"))
-            _query_ = generate_trmm_query()
+            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "MODIS"))
+            _query_ = generate_modis_query()
             cursor.execute(_query_)
             trmm_results = cursor.fetchall()
-            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "TRMM"))
+            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "MODIS"))
 
-            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "USGS"))
-            _query_ = generate_usgs_query()
+            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "VIIRS"))
+            _query_ = generate_viirs_query()
             cursor.execute(_query_)
             usgs_results = cursor.fetchall()
-            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "USGS"))
+            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "VIIRS"))
             
             helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "News"))
-            _query_ = generate_news_query()
+            _query_ = generate_news_query(topic="wildfire")
             cursor.execute(_query_)
             news_results = cursor.fetchall()
             helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "News"))
             cursor.close()
 
-            helper_utils.std_flush("[%s] -- Generating local cache with scoring:\tSocial-ML - 0.3\tSocial-HDI - 1\tNews - 3\tUSGS - 5\tTRMM - 1"%helper_utils.readable_time())
+            helper_utils.std_flush("[%s] -- Generating local cache with scoring:\tSocial-ML - 0.3\tSocial-HDI - 1\tNews - 3\MODIS - 5\tVIIRS - 1"%helper_utils.readable_time())
             # Scoring -- Twitter-Social: 0.3    Twitter-HDI - 1     News:       3       USGS:   5       TRMM:   1
             for _streamer_ in streamer_results:
                 helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), _streamer_))
