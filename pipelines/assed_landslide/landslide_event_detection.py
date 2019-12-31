@@ -105,7 +105,7 @@ class landslide_event_detection(utils.AssedMessageProcessor.AssedMessageProcesso
             return (False, message)
         
         self.total_counter += 1
-        return (False,message)
+        return (True,message)
 
     def time_convert(self,timestamp):
         return datetime.datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
