@@ -54,7 +54,7 @@ class MODIS_wildfire(multiprocessing.Process):
                     continue
                 modis_items, modis_locations = self.getMODISItems(response.text.split('\n')[1:])
                 self.insertMODIS(modis_items)
-                self.updateRedisLocations(modis_locations)
+                self.updateRedisLocations(modis_locations, modis_url)
 
             self.DB_CONN.close()
             self.messageQueue.put("Completed MODIS successfully at %s." % readable_time())
@@ -160,7 +160,7 @@ class MODIS_wildfire(multiprocessing.Process):
                 print('Failed to insert %s with error %s' % (item["modis_id"], repr(e)))
         cursor.close()
 
-    def updateRedisLocations(self, modis_locations):
+    def updateRedisLocations(self, modis_locations, modis_url):
         # get REDIS connection
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
@@ -178,8 +178,8 @@ class MODIS_wildfire(multiprocessing.Process):
                 sublocationkey = sublocation_key(sublocation)
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
-        self.messageQueue.put("Completed MODIS with: %i locations and %i sublocations" % (totalLocations, sublocations))
-        print("Completed MODIS with: %i locations and %i sublocations" % (totalLocations, sublocations))
+        self.messageQueue.put("Completed MODIS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, modis_url))
+        #print("Completed MODIS with: %i locations and %i sublocations" % (totalLocations, sublocations))
 
 
 if __name__ == '__main__':

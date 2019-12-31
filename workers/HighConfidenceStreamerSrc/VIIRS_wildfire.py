@@ -54,7 +54,7 @@ class VIIRS_wildfire(multiprocessing.Process):
                     continue
                 viirs_items, viirs_locations = self.getVIIRSItems(response.text.split('\n')[1:])
                 self.insertVIIRS(viirs_items)
-                self.updateRedisLocations(viirs_locations)
+                self.updateRedisLocations(viirs_locations, viirs_url)
 
             self.DB_CONN.close()
             self.messageQueue.put("Completed VIIRS successfully at %s." % readable_time())
@@ -162,7 +162,7 @@ class VIIRS_wildfire(multiprocessing.Process):
                 print('Failed to insert %s with error %s' % (item["viirs_id"], repr(e)))
         cursor.close()
 
-    def updateRedisLocations(self, viirs_locations):
+    def updateRedisLocations(self, viirs_locations, viirs_url):
         # get REDIS connection
         pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
         r = redis.Redis(connection_pool=pool)
@@ -180,8 +180,8 @@ class VIIRS_wildfire(multiprocessing.Process):
                 sublocationkey = sublocation_key(sublocation)
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
-        self.messageQueue.put("Completed VIIRS with: %i locations and %i sublocations" % (totalLocations, sublocations))
-        print("Completed VIIRS with: %i locations and %i sublocations" % (totalLocations, sublocations))
+        self.messageQueue.put("Completed VIIRS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, viirs_url))
+        #print("Completed VIIRS with: %i locations and %i sublocations for %s" % (totalLocations, sublocations))
 
 
 if __name__ == '__main__':
