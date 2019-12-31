@@ -163,9 +163,9 @@ def main():
             # Actual keys...
             # list_tracker_key tracks where the data is (either v1 or v2)
             # list_push_key contains the list of cells
-            list_tracker_key = "assed:event:detection:multisource:listkey"
-            list_push_key = "assed:event:detection:multisource:list"
-            list_info_key = "assed:event:detection:multisource:info"
+            list_tracker_key = "assed:wildfire:event:detection:multisource:listkey"
+            list_push_key = "assed:wildfire:event:detection:multisource:list"
+            list_info_key = "assed:wildfire:event:detection:multisource:info"
             key_version = r.get(list_tracker_key)
             if key_version is None:
                 key_version = "v2"
