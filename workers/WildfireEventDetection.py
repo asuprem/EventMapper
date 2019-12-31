@@ -127,19 +127,19 @@ def main():
                     if int(float(tuple_cell_[2])/0.34) > 0:
                         cell_cache[_cell_][_streamer_+"-ml"]=(int(float(tuple_cell_[2])/0.34), float(tuple_cell_[2]))
 
-            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "TRMM"))
+            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "MODIS"))      # note earlier MODIS used to be TRMM, and VIIRS used to be USGS
             for tuple_cell_ in trmm_results:
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["TRMM"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))   # 1 <-- TRMM score
+                cell_cache[_cell_]["MODIS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))   # 1 <-- TRMM score
             
-            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "USGS"))
+            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "VIIRS"))
             for tuple_cell_ in usgs_results:
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["USGS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))
+                cell_cache[_cell_]["VIIRS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))
 
             helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "News"))
             for tuple_cell_ in news_results:
