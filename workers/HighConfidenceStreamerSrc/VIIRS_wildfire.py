@@ -50,7 +50,7 @@ class VIIRS_wildfire(multiprocessing.Process):
                 except Exception as e:
                     self.messageQueue.put("VIIRS URL %s failed with error: %s" % (viirs_url, repr(e)))
                     continue
-                viirs_items, viirs_locations = self.getVIIRSItems(response.text.split('\n')[1:])
+                viirs_items, viirs_locations = self.getVIIRSItems(response.text.split('\n')[1:], viirs_url)
                 self.insertVIIRS(viirs_items)
                 self.updateRedisLocations(viirs_locations, viirs_url)
 
@@ -61,7 +61,7 @@ class VIIRS_wildfire(multiprocessing.Process):
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
 
-    def getVIIRSItems(self, csvData):
+    def getVIIRSItems(self, csvData, viirs_url):
         viirs_locations = []
         viirs_items = []
         skipCounter = 0
@@ -110,7 +110,7 @@ class VIIRS_wildfire(multiprocessing.Process):
             viirs_locations.append({"name": item['place'], "lat": item["latitude"], "lng": item["longitude"]})
 
         self.messageQueue.put(
-            "Obtained VIIRS with: %i items and skipped existing %i items" % (len(viirs_items), skipCounter))
+            "Obtained VIIRS with: %i items and skipped existing %i items for %s" % (len(viirs_items), skipCounter, viirs_url))
         return viirs_items, viirs_locations
 
     def convertDateFromTime(self, tm):
