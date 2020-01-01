@@ -1,3 +1,8 @@
+- Create w2v server
+- Update w2v usage to use the server
+- create flooding stuff
+
+
 - Get ride of nominal (and low) confidence VIIRS and MODIS data
 
 - create ASSED application/server
