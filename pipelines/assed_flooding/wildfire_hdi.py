@@ -8,7 +8,7 @@ from utils.db_utils import get_db_connection
 import traceback
 import MySQLdb as mdb
 
-class wildfire_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
+class flooding_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
 
     def __init__(self,debug=False):
         self.debug = debug
@@ -60,13 +60,13 @@ class wildfire_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         if len(results) > 0:
             #helper_utils.std_flush("True Event found for %s"%str(message["text"].encode("utf-8"))[2:-2])
             self.true_counter+=1
-            # Push into wildfire events...
+            # Push into flooding events...
             insert = 'INSERT INTO ASSED_Social_Events ( \
                         social_id, cell, \
                         latitude, longitude, timestamp, link, text, location, topic_name, source, valid, streamtype) \
                         VALUES (%s,%s,%s,%s,%s,%s, %s, %s,%s, %s, %s, %s)'
             params = (str(message["id_str"]), message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "wildfire", "hdi", "1", message["streamtype"])
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "flooding", "hdi", "1", message["streamtype"])
 
             #helper_utils.std_flush(insert%params)
             
@@ -77,7 +77,7 @@ class wildfire_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
                 else:
                     #helper_utils.std_flush(insert%params)
                     pass
-                helper_utils.std_flush("[%s] -- Possible wildfire event at %s detected at time %s using HDI (current time: %s)"%(helper_utils.readable_time(), message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
+                helper_utils.std_flush("[%s] -- Possible flooding event at %s detected at time %s using HDI (current time: %s)"%(helper_utils.readable_time(), message["location"], self.ms_time_convert(message["timestamp"]), self.time_convert(time.time())))
                 self.stream_tracker[message["streamtype"]]["hdi"] += 1
                 return (False, message)
             except mdb._exceptions.Error as mdb_error:

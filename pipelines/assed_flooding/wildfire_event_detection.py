@@ -18,15 +18,15 @@ from utils.db_utils import get_db_connection
 import traceback
 import MySQLdb as mdb
 
-class wildfire_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor):
+class flooding_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor):
 
     def __init__(self,debug=False):
         self.debug = debug
         self.config = load_config("./config/assed_config.json")
 
-        self._encoder = KeyedVectors.load_word2vec_format('./pipelines/assed_wildfire/ml/encoders/GoogleNews-vectors-negative300.bin', binary=True, unicode_errors='ignore', limit=100000)
+        self._encoder = KeyedVectors.load_word2vec_format('./pipelines/assed_flooding/ml/encoders/GoogleNews-vectors-negative300.bin', binary=True, unicode_errors='ignore', limit=100000)
         self.zero_v = zeros(shape=(300,))
-        self.model = keras.models.load_model("./pipelines/assed_wildfire/ml/models/tf_model.h5")
+        self.model = keras.models.load_model("./pipelines/assed_flooding/ml/models/tf_model.h5")
 
         self.DB_CONN = get_db_connection(self.config)
         self.cursor = self.DB_CONN.cursor()
@@ -79,13 +79,13 @@ class wildfire_event_detection(utils.AssedMessageProcessor.AssedMessageProcessor
             # push to db
             self.true_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "wildfire", "ml", "1", message["streamtype"])
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "flooding", "ml", "1", message["streamtype"])
             self.stream_tracker[message["streamtype"]]["positive"] += 1
         elif prediction == 0:
             # push to db, with false? push to different db?
             self.false_counter+=1
             params = (message["id_str"], message["cell"], str(message['latitude']), \
-                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "wildfire", "ml", "0", message["streamtype"])
+                    str(message['longitude']), self.ms_time_convert(message['timestamp']), message["link"], str(message["text"].encode("utf-8"))[2:-2], message["location"], "flooding", "ml", "0", message["streamtype"])
             self.stream_tracker[message["streamtype"]]["negative"] += 1
         else:
             warnings.warn("[%s] -- WARNING -- Prediction value of %i is not one of valid predictions [0, 1]"%(helper_utils.readable_time(), prediction))
