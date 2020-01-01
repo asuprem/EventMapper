@@ -1,0 +1,58 @@
+{
+    "configuration":{
+        "script_dir":"assed_flooding", 
+        "log_dir":"assed_flooding", 
+        "sh_dir":"assed_flooding",
+        "vars":{
+            "mldir":"TODO"
+        },
+        "input-streams":{
+            "twitter":{
+                "name":"input_buffer_twitter",
+                "processor_script":"input_tweet_process",
+                "import-key":"assed:flooding:twitter:import",
+                "buffer-group-name":"input_buffer"
+            },
+            "facebook":{
+                "name":"input_buffer_facebook",
+                "processor_script":"input_facebook_process",
+                "import-key":"assed:flooding:facebook:import",
+                "buffer-group-name":"input_buffer"
+            }
+        }
+    },
+
+    "input_buffer":{
+        "script":"assed_inputbuffer",
+        "export-key":"assed:flooding:social:buffer:stream"
+    },
+
+    "output_buffer":{
+        "name":"output_buffer",
+        "script":"flooding_outputbuffer",
+        "import-key":"assed:flooding:events" ,
+        "export-key":"assed:flooding:output:buffer"
+    },
+
+    "location_extractor":{
+        "name":"location_extractor",
+        "script":"flooding_location_extractor",
+        "import-key":"assed:flooding:social:buffer:stream",
+        "export-key":"assed:flooding:location:extractor"
+    },
+
+    "hdi":{
+        "name":"hdi",
+        "script":"flooding_hdi",
+        "import-key":"assed:flooding:location:extractor", 
+        "export-key":"assed:flooding:hdi"
+    },
+
+    "event_detection":{
+        "name":"event_detection", 
+        "script":"flooding_event_detection",
+        "import-key":"assed:flooding:hdi",
+        "export-key":"assed:flooding:events"
+    }
+
+}
