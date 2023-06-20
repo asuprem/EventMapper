@@ -10,6 +10,7 @@ import utils.CONSTANTS as CONSTANTS
 
 
 if __name__ == '__main__':
+
     pid_name = os.path.basename(sys.argv[0]).split('.')[0]
     setup_pid(pid_name)
     
@@ -22,6 +23,8 @@ if __name__ == '__main__':
     errorQueue = multiprocessing.Queue()
     messageQueue = multiprocessing.Queue()
 
+
+    # For each High Confidence Source in the list of high confidence sources, we set up the configuration for that HCS
     for hcs_type in configOriginal:
         _cfg = configOriginal[hcs_type]
         kwargs = {}
