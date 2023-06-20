@@ -161,13 +161,13 @@ fi'''.format(homedir = self.home_dir, logdir = self.config_dirs.log_dir, process
         # Assume they all require python and are executed through assed_env
         
         # Launch Input Buffer -- run the input buffer script
-        #subprocess.Popen(['sh', self.inputBufferScriptFile])
-        #self.createInputBufferScript()
-        #self.inputBufferScriptFile
+        subprocess.Popen(['sh', self.inputBufferScriptFile])
+        self.createInputBufferScript()
+        self.inputBufferScriptFile
         
         # Launch Output Buffer
-        #self.createOutputBufferScript()
-        pdb.set_trace()
+        self.createOutputBufferScript()
+        #pdb.set_trace()
         # Launch Each Process
-        #self.createProcessScripts()
+        self.createProcessScripts()
 
