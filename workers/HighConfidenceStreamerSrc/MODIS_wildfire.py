@@ -29,18 +29,18 @@ class MODIS_wildfire(multiprocessing.Process):
     def run(self, ):
         try:
             url_list = [
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Canada_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Alaska_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_USA_contiguous_and_Hawaii_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Central_America_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_South_America_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Europe_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Northern_and_Central_Africa_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Southern_Africa_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Russia_and_Asia_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_South_Asia_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_SouthEast_Asia_24h.csv',
-                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Australia_and_New_Zealand_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Canada_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Alaska_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_USA_contiguous_and_Hawaii_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Central_America_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_South_America_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Europe_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Northern_and_Central_Africa_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Southern_Africa_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Russia_and_Asia_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_South_Asia_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_SouthEast_Asia_24h.csv',
+                'https://firms.modaps.eosdis.nasa.gov/data/active_fire/modis-c6.1/csv/MODIS_C6_1_Australia_and_New_Zealand_24h.csv',
             ]
 
             for modis_url in url_list:
