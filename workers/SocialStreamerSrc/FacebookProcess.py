@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """FacebookProcess  script
 
-This will launch a twitter streamer for all of twitter
+This will launch a Facebook streamer for all of facebook
 """
 
 import multiprocessing
