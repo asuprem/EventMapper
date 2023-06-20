@@ -9,7 +9,7 @@ import time, os, sys, json
 from datetime import datetime
 import redis
 # General tweepy imports
-from apiclient.discovery import build
+from googleapiclient.discovery import build
 from utils.helper_utils import readable_time
 
 class FacebookProcess(multiprocessing.Process):
