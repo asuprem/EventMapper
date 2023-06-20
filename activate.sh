@@ -10,12 +10,12 @@ if [ -d "$DIRECTORY" ]; then
     # remove the assed_env and generate it again
     echo "$(date +"%T") -- remove assed_env."
     rm -rf assed_env 
-    virtualenv -p python3.6 assed_env
+    virtualenv -p python3 assed_env
 
 else
     echo "$(date +"%T") -- assed_env does not exist."
     echo "$(date +"%T") -- Generating virtual environment assed_env"
-    virtualenv -p python3.6 assed_env
+    virtualenv -p python3 assed_env
 fi
     
 echo "$(date +"%T") -- Activating virtual environment assed_env"
@@ -27,9 +27,9 @@ if [ $? -eq 0 ]; then
     # Basics
     pip3 install numpy scipy
     pip3 install keras==2.2.4
-    echo "$(date +"%T") -- Installing tensorflow 1.5"
+    echo "$(date +"%T") -- Installing tensorflow 2.2"
     # Tensorflow TODO Add a better check. Tensorflow>1.5 requires AVX instructions, which test rig does not have.
-    pip3 install tensorflow==1.5
+    pip3 install tensorflow
     
     echo "$(date +"%T") -- Installing database packages"
     # Database/Interconnects
@@ -53,9 +53,12 @@ if [ $? -eq 0 ]; then
     echo "$(date +"%T") -- Installing streamer utilities"
     # Streamer utilities
     pip3 install newsapi-python tweepy 
+    echo "$(date +"%T") -- Installing file utilities"
+    # File utilities
+    pip3 install h5py 
     echo "$(date +"%T") -- Installing standard utilities"
     # Web utilities
-    pip3 install xmltodict==0.12.0 reverse_geocoder==1.5.1
+    pip3 install xmltodict==0.12.0 reverse_geocoder==1.5.1 beautifulsoup4==4.12.2
     echo "$(date +"%T") -- Installing web utilities"
     # Web utilities
     pip3 install flask requests
