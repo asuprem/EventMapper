@@ -76,7 +76,7 @@ class IMERG(multiprocessing.Process):
             self.updateRedisLocations(imerg_locations, base_url)
 
             self.DB_CONN.close()
-            self.messageQueue.put("Completed IMERG successfully at %s." % readable_time())
+            self.messageQueue.put("[imerg] Completed IMERG successfully at %s." % readable_time())
         except Exception as e:
             traceback.print_exc()
             self.errorQueue.put((self.root_name, str(e)))
@@ -231,7 +231,7 @@ class IMERG(multiprocessing.Process):
                         {"name": item['place'], "lat": item["latitude"], "lng": item["longitude"]}
                     )
         self.messageQueue.put(
-            "Obtained IMERG with: %i items and skipped existing %i items for %s" % (len(imerg_items), skip_counter, fname))
+            "[imerg] Obtained IMERG with: %i items and skipped existing %i items for %s" % (len(imerg_items), skip_counter, fname))
         return imerg_items, imerg_locations
 
     def convertDateFromTime(self, tm):
@@ -245,14 +245,14 @@ class IMERG(multiprocessing.Process):
         try:
             cursor = self.DB_CONN.cursor()
             # get things from last 2 days
-            select = "SELECT viirs_id FROM HCS_VIIRS_WILDFIRE where acq_time > %s" % (
+            select = "SELECT imerg_id FROM HCS_IMERG_LATE where date > %s" % (
                     datetime.datetime.now() - datetime.timedelta(days=2)).strftime("%Y-%m-%d")
             cursor.execute(select)
             results = cursor.fetchall()
             cursor.close()
             for row in results:
                 cachedlist.add("_".join(row[0].split("_")[-2:]))
-            self.messageQueue.put("VIIRS cachedlist has  %i items in last 2 days" % (len(cachedlist)))
+            self.messageQueue.put("[imerg] IMERG cachedlist has  %i items in last 2 days" % (len(cachedlist)))
         except Exception as e:
             self.errorQueue.put((self.root_name, str(e)))
             print((self.root_name, str(e)))
@@ -273,7 +273,7 @@ class IMERG(multiprocessing.Process):
                 cursor.execute(insert, params)
                 self.DB_CONN.commit()
             except Exception as e:
-                self.messageQueue.put('Failed to insert %s with error %s' % (item["imerg_id"], repr(e)))
+                self.messageQueue.put('[imerg] Failed to insert %s with error %s' % (item["imerg_id"], repr(e)))
         cursor.close()
 
     def updateRedisLocations(self, imerg_locations, base_url):
@@ -294,7 +294,7 @@ class IMERG(multiprocessing.Process):
                 sublocationkey = sublocation_key(sublocation)
                 r.set(sublocationkey, point_str, ex=259200)
                 sublocations += 1
-        self.messageQueue.put("Completed IMERG redis update with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, base_url))
+        self.messageQueue.put("[imerg] Completed IMERG redis update with: %i locations and %i sublocations for %s" % (totalLocations, sublocations, base_url))
 
 
 if __name__ == '__main__':
