@@ -44,6 +44,13 @@
         "source_file":"VIIRS_wildfire",
         "type":"scheduled",
         "schedule":43200
+    },
+    "IMERG":{
+        "name": "IMERG",
+        "db_name": "IMERG",
+        "source_file":"IMERG",
+        "type":"scheduled",
+        "schedule":1800,
+        "config":"config/assed_config.json"
     }
-
 }
