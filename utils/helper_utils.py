@@ -99,7 +99,7 @@ def lookup_address_only(address, geocoder, redis_key = None):
     # So first we need to check if the location is in our database...
     resp = geocoder.geocode(address)
     if resp is None:
-        return False, False
+        return None, None
     else:
         return resp[1][0], resp[1][1] # lat,lng
     
