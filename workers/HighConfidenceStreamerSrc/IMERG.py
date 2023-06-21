@@ -61,7 +61,7 @@ class IMERG(multiprocessing.Process):
             [os.remove(item) for item in delete_list]
 
             load_list = [item for item in keep_dict if keep_dict[item] is True]
-            summed_array = np.zeros(3600, 1800)
+            summed_array = np.zeros((3600, 1800))
             for imerg_load in load_list:
                 n_array = np.load(imerg_load)
                 summed_array += n_array
@@ -213,15 +213,15 @@ class IMERG(multiprocessing.Process):
                     if latlng in self.cached_list:
                         skip_counter += 1
                         continue
-                    self.cached_list[latlng] = True
+                    self.cached_list.add(latlng)
 
                     lat_lng = latlng.split("_")
                     item = {}
                     item['imerg_id'] = fname
                     item['date'] = acq_time
-                    item["latitude"] = lat_lng[0]
-                    item["longitude"] = lat_lng[1]
-                    item["cell"] = generate_cell(lat_lng[0], lat_lng[1])
+                    item["latitude"] = float(lat_lng[0])
+                    item["longitude"] = float(lat_lng[1])
+                    item["cell"] = generate_cell(item["latitude"], item["longitude"])
                     item["precipitation"] = rainfall_dict[latlng]
                     reverse_geocode = rg.search((item['latitude'], item['longitude']))[0]
                     item['place'] = reverse_geocode['name'] + ', ' + reverse_geocode['admin1'] + ', ' + reverse_geocode['cc']
