@@ -67,13 +67,13 @@ def sublocation_key(key_val):
 def extractor_sublocation_key(key_val):
     return "assed:extractor:sublocation:" + key_val
 
-def lookup_address_only(address, API_KEY, redis_key = None):
+def lookup_address_only(address, geocoder, redis_key = None):
     if redis_key is None:
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         redis_key=redis.Redis(connection_pool = pool) 
     
-    redis_get = redis_key.get("apiaccess:googlemaps:"+API_KEY)
-    redis_time = redis_key.get("apiaccess:timestamp:googlemaps:"+API_KEY)
+    redis_get = redis_key.get("apiaccess:googlemaps:"+geocoder.api_key)
+    redis_time = redis_key.get("apiaccess:timestamp:googlemaps:"+geocoder.api_key)
 
     if redis_get is None:
         redis_get = 0
@@ -93,36 +93,16 @@ def lookup_address_only(address, API_KEY, redis_key = None):
         return False, False
     else:
         redis_get+=1
-        redis_key.set("apiaccess:googlemaps:"+API_KEY, redis_get)
-        redis_key.set("apiaccess:timestamp:googlemaps:"+API_KEY, time.time())
+        redis_key.set("apiaccess:googlemaps:"+geocoder.api_key, redis_get)
+        redis_key.set("apiaccess:timestamp:googlemaps:"+geocoder.api_key, time.time())
 
     # So first we need to check if the location is in our database...
-    host = 'maps.googleapis.com'
-    params = {'address': address, 'key': API_KEY}
-    url = '/maps/api/geocode/json?'+urllib.urlencode(params)
-    req = httplib.HTTPSConnection(host)
-    req.putrequest('GET', url)
-    req.putheader('Host', host)
-    req.endheaders()
-    resp = req.getresponse()
-    if resp.status==200:
-        result = json.load(resp, encoding='UTF-8')
-        if 'results' in result:
-            results = result['results']
-            if len(results) > 0:
-                item = results[0]
-                if 'geometry' in item:
-                    geometry = item['geometry']
-                    if 'location' in geometry:
-                        location = geometry['location']
-                        lat = location['lat']
-                        lng = location['lng']
-            else:
-                return None, None
+    resp = geocoder.geocode(address)
+    if resp is None:
+        return False, False
     else:
-        return None, None
-    return lat, lng
-
+        return resp[1][0], resp[1][1] # lat,lng
+    
 
 def generate_cell(N, E, coef=0.04166666666667):
     if coef<0.04166666666667: coef = 0.04166666666667

@@ -61,7 +61,7 @@ if [ $? -eq 0 ]; then
     pip3 install xmltodict==0.12.0 reverse_geocoder==1.5.1 beautifulsoup4==4.12.2
     echo "$(date +"%T") -- Installing web utilities"
     # Web utilities
-    pip3 install flask requests
+    pip3 install flask requests geopy
     echo "$(date +"%T") -- Downloading nltk language tools"
     # Need to download nltk language tool
     python -c "import nltk; nltk.download('punkt')"

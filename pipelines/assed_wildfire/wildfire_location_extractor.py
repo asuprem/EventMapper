@@ -6,6 +6,7 @@ import nltk
 import utils.helper_utils
 from utils.file_utils import load_config
 import string
+from geopy.geocoders import GoogleV3
 
 class wildfire_location_extractor(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self, debug=False):
@@ -20,7 +21,7 @@ class wildfire_location_extractor(utils.AssedMessageProcessor.AssedMessageProces
         self.counter = 0
         self.memory={}
         config = load_config("./config/assed_config.json")
-        self.APIKEY = config["APIKEYS"]["googlemaps"]
+        self.APIKEY = GoogleV3(self.config["APIKEYS"]["googlemaps"])
         self.stream_tracker = {}
         self.location_stopwords = ["street", "us", "america"]
 

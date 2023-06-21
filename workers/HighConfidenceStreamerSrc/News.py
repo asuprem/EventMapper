@@ -16,6 +16,7 @@ from utils.helper_utils import location_standardize, high_confidence_streamer_ke
 from utils.db_utils import get_db_connection
 from importlib import reload
 import warnings
+from geopy.geocoders import GoogleV3
 
 class News(multiprocessing.Process):
     def __init__(self,assed_config,root_name, errorQueue, messageQueue, **kwargs):
@@ -31,6 +32,7 @@ class News(multiprocessing.Process):
         self.NER = Ner(host='localhost', port=9199)
         pool = redis.ConnectionPool(host='localhost',port=6379, db=0)
         self.r=redis.Redis(connection_pool = pool) 
+        self.geocode = GoogleV3(self.config["APIKEYS"]["googlemaps"])
         pass
 
     def run(self,):
@@ -47,7 +49,7 @@ class News(multiprocessing.Process):
                 articles = []
                 for keyword in keyword_set:
                     try:
-                        response = self.client.get_everything(q=keyword,page_size=100)
+                        response = self.client.get_everything(q=keyword,page_size=50)
                         articles += response["articles"]
                     except Exception as e:
                         self.messageQueue.put("NewsAPI for %s-%s failed with error: %s" % (event_topic,keyword, repr(e)))
@@ -121,7 +123,7 @@ class News(multiprocessing.Process):
                 continue
             item["locations"] = final_locations
             
-            lat,lng = lookup_address_only(desc_locations, self.config["APIKEYS"]["googlemaps"], self.r)
+            lat,lng = lookup_address_only(desc_locations, self.geocode, self.r)
             if lat == False:
                 raise ValueError("Ran out of GoogleMaps daily keys")
             if lat is None or lng is None:
