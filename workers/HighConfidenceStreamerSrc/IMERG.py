@@ -161,75 +161,79 @@ class IMERG(multiprocessing.Process):
         currentyearmonth = datetime.datetime.now().strftime("%Y%m")
         files = self.get_imerg_files(base_url, username, password, currentyearmonth)
         if files:
-            download_success = self.download_file(files[-1], username, password)
-            if download_success:
-                fname = files[-1].rsplit('/', 1)[-1]
-                fobj = h5py.File(fname, "r")
-                precipArray = np.array(fobj["Grid"]["precipitationCal"])[0,:,:] # shape: 3600x1800
-                # 5
-                np.save("./downloads/{name_pattern}_{date_pattern}.{extension}".format(
-                    name_pattern=name_pattern,
-                    date_pattern = self.unix_time_to_string(int(time.time())),
-                    extension = name_ending
-                ), precipArray)
-                summed_array += precipArray
+            if not os.path.exists(files[-1].rsplit('/', 1)[-1]):
 
-                # 4
-                fobj.close()
-                os.remove(fname)
+                download_success = self.download_file(files[-1], username, password)
+                if download_success:
+                    fname = files[-1].rsplit('/', 1)[-1]
+                    fobj = h5py.File(fname, "r")
+                    precipArray = np.array(fobj["Grid"]["precipitationCal"])[0,:,:] # shape: 3600x1800
+                    # 5
+                    np.save("./downloads/{name_pattern}_{date_pattern}.{extension}".format(
+                        name_pattern=name_pattern,
+                        date_pattern = self.unix_time_to_string(int(time.time())),
+                        extension = name_ending
+                    ), precipArray)
+                    summed_array += precipArray
 
-                # 3
-                # TODO
-                # So, identify the values > 7.5 in summed
-                # Then, back calculate the longitude and latitude of these
-                # Then, calculate the cell value
-                # Then push into the IMERG database...
-                matchings = np.where(summed_array>40) # magic number, 7.5*6 = 45 --> 40
-                matching_longitudes = matchings[0].tolist()
-                matching_latitudes = matchings[1].tolist()
-                longitude_array = np.linspace(-179.95, 179.95, 3600)
-                latitude_array = np.linspace(-89.95, 89.95, 1800)
+                    # 4
+                    fobj.close()
+                    os.remove(fname)
 
-                # round it down. Then we will take the max values in each lng-lat cell
-                final_longitude = longitude_array[matching_longitudes].astype(int)
-                final_latitude = latitude_array[matching_latitudes].astype(int)
+                    # 3
+                    # TODO
+                    # So, identify the values > 7.5 in summed
+                    # Then, back calculate the longitude and latitude of these
+                    # Then, calculate the cell value
+                    # Then push into the IMERG database...
+                    matchings = np.where(summed_array>40) # magic number, 7.5*6 = 45 --> 40
+                    matching_longitudes = matchings[0].tolist()
+                    matching_latitudes = matchings[1].tolist()
+                    longitude_array = np.linspace(-179.95, 179.95, 3600)
+                    latitude_array = np.linspace(-89.95, 89.95, 1800)
 
-                rainfall_dict = {}
-                for idx, item in enumerate(zip(final_latitude, final_longitude)):
-                    # generate string of lat_lng
-                    latlng = "%i_%i"%(item[0], item[1])
-                    # since we cast to int, multiple lat-lngas have the same value, with different rainfall amounts.
-                    # we collect the max value for the int-cast cell
-                    if latlng in rainfall_dict:
-                        if summed_array[matching_longitudes[idx], matching_latitudes[idx]] > rainfall_dict[latlng]:
+                    # round it down. Then we will take the max values in each lng-lat cell
+                    final_longitude = longitude_array[matching_longitudes].astype(int)
+                    final_latitude = latitude_array[matching_latitudes].astype(int)
+
+                    rainfall_dict = {}
+                    for idx, item in enumerate(zip(final_latitude, final_longitude)):
+                        # generate string of lat_lng
+                        latlng = "%i_%i"%(item[0], item[1])
+                        # since we cast to int, multiple lat-lngas have the same value, with different rainfall amounts.
+                        # we collect the max value for the int-cast cell
+                        if latlng in rainfall_dict:
+                            if summed_array[matching_longitudes[idx], matching_latitudes[idx]] > rainfall_dict[latlng]:
+                                rainfall_dict[latlng] = summed_array[matching_longitudes[idx], matching_latitudes[idx]]
+                        else:
                             rainfall_dict[latlng] = summed_array[matching_longitudes[idx], matching_latitudes[idx]]
-                    else:
-                        rainfall_dict[latlng] = summed_array[matching_longitudes[idx], matching_latitudes[idx]]
 
-                acq_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                for latlng in rainfall_dict:
-                    # cache ckeck -- if we already have an entry in the last 6 hours, we skip
-                    # Note that it is still in the summed array, so we do not have to worry about it
-                    if latlng in self.cached_list:
-                        skip_counter += 1
-                        continue
-                    self.cached_list.add(latlng)
+                    acq_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    for latlng in rainfall_dict:
+                        # cache ckeck -- if we already have an entry in the last 6 hours, we skip
+                        # Note that it is still in the summed array, so we do not have to worry about it
+                        if latlng in self.cached_list:
+                            skip_counter += 1
+                            continue
+                        self.cached_list.add(latlng)
 
-                    lat_lng = latlng.split("_")
-                    item = {}
-                    item['imerg_id'] = fname
-                    item['date'] = acq_time
-                    item["latitude"] = float(lat_lng[0])
-                    item["longitude"] = float(lat_lng[1])
-                    item["cell"] = generate_cell(item["latitude"], item["longitude"])
-                    item["precipitation"] = rainfall_dict[latlng]
-                    reverse_geocode = rg.search((item['latitude'], item['longitude']))[0]
-                    item['place'] = reverse_geocode['name'] + ', ' + reverse_geocode['admin1'] + ', ' + reverse_geocode['cc']
-                    item['country'] = reverse_geocode["cc"]
-                    imerg_items.append(item)
-                    imerg_locations.append(
-                        {"name": item['place'], "lat": item["latitude"], "lng": item["longitude"]}
-                    )
+                        lat_lng = latlng.split("_")
+                        item = {}
+                        item['imerg_id'] = fname
+                        item['date'] = acq_time
+                        item["latitude"] = float(lat_lng[0])
+                        item["longitude"] = float(lat_lng[1])
+                        item["cell"] = generate_cell(item["latitude"], item["longitude"])
+                        item["precipitation"] = rainfall_dict[latlng]
+                        reverse_geocode = rg.search((item['latitude'], item['longitude']))[0]
+                        item['place'] = reverse_geocode['name'] + ', ' + reverse_geocode['admin1'] + ', ' + reverse_geocode['cc']
+                        item['country'] = reverse_geocode["cc"]
+                        imerg_items.append(item)
+                        imerg_locations.append(
+                            {"name": item['place'], "lat": item["latitude"], "lng": item["longitude"]}
+                        )
+            else:
+                self.messageQueue.put("[imerg] Not downloading. %s already exists"%files[-1].rsplit('/', 1)[-1])
         self.messageQueue.put(
             "[imerg] Obtained IMERG with: %i items and skipped existing %i items for %s" % (len(imerg_items), skip_counter, fname))
         return imerg_items, imerg_locations
