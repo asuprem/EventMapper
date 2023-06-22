@@ -122,7 +122,7 @@ class News(multiprocessing.Process):
                 location_skip+=1
                 continue
             item["locations"] = final_locations
-            
+            self.messageQueue.put("Getting address for %s: %s"%(item["text"], ",".join(desc_locations)))
             lat,lng = lookup_address_only(desc_locations, self.geocode, self.r)
             if lat == False:
                 raise ValueError("Ran out of GoogleMaps daily keys")
