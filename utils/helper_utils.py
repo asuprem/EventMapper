@@ -97,6 +97,9 @@ def lookup_address_only(address, geocoder, redis_key = None):
         redis_key.set("apiaccess:timestamp:googlemaps:"+geocoder.api_key, time.time())
 
     # So first we need to check if the location is in our database...
+    true_address = ",".join(address)
+    if len(true_address) == 0:
+        return None, None
     resp = geocoder.geocode(",".join(address))
     if resp is None:
         return None, None
