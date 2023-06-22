@@ -128,7 +128,7 @@ class News(multiprocessing.Process):
                 raise ValueError("Ran out of GoogleMaps daily keys")
             if lat is None or lng is None:
                 coordinate_skip+=1
-                self.messageQueue.put("[News] Skipped location for <%s> due to missing coordinates from geocoder"%str(desc_locations))
+                self.messageQueue.put("[News] Skipped location for %s -- <%s> due to missing coordinates from geocoder"%(item["text"], str(desc_locations)))
                 continue
             item["latitude"] = lat
             item["longitude"] = lng
