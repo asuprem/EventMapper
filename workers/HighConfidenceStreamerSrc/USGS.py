@@ -69,7 +69,7 @@ class USGS(multiprocessing.Process):
                 place_detailed = ' '.join(map(lambda w: w, re.findall(r'(?u)\w+', parts[1])))
             else:
                 place_detailed = place_raw
-            place_detailed = place_detailed.encode(encoding="utf-8", errors="ignore").decode('utf-8', 'ignore')
+            place_detailed = place_detailed.encode(encoding="unicode_escape", errors="ignore").decode('unicode_escape', 'ignore')
             item['place_detailed'] = place_detailed
 
             place_general = None
