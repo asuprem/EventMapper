@@ -53,7 +53,7 @@ def generate_trmm_query():
 
 def generate_imerg_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' and precipitation>100 group by cell""".format(timestamp=time_start)
 
 def generate_usgs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
