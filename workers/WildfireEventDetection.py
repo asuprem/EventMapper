@@ -49,11 +49,11 @@ on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell;""".format(streamer
 
 def generate_modis_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_MODIS_WILDFIRE where acq_time >= '{timestamp}' group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_MODIS_WILDFIRE where acq_time >= '{timestamp}' and confidence > 90 and brightness > 400 group by cell""".format(timestamp=time_start)
 
 def generate_viirs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
-    return """select cell, count(*) from HCS_VIIRS_WILDFIRE where acq_time >= '{timestamp}'  group by cell""".format(timestamp=time_start)
+    return """select cell, count(*) from HCS_VIIRS_WILDFIRE where acq_time >= '{timestamp}'   and bright_ti4 > 345 and bright_ti5 > 350 group by cell""".format(timestamp=time_start)
 
 def generate_news_query(topic):
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
@@ -132,21 +132,21 @@ def main():
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["MODIS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))   # 1 <-- TRMM score
+                cell_cache[_cell_]["MODIS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))   # 1 <-- MODIS score
             
             helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "VIIRS"))
             for tuple_cell_ in usgs_results:
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["VIIRS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))
+                cell_cache[_cell_]["VIIRS"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*3))
 
             helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "News"))
             for tuple_cell_ in news_results:
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["News"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*3))
+                cell_cache[_cell_]["News"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*2))
 
             helper_utils.std_flush("[%s] -- Local cache score total generation"%helper_utils.readable_time())
             for _cell_ in cell_cache:

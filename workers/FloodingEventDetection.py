@@ -48,12 +48,19 @@ on twitter_hdi.hdi_twitter_cell = twitter_ml.ml_twitter_cell;""".format(streamer
     return query
 
 def generate_trmm_query():
-    time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+    time_start = (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_TRMM where date >= '{timestamp}' and very_likely=1 group by cell""".format(timestamp=time_start)
 
+def generate_imerg_query():
+    time_start = (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d")
+    return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' and precipitation>=75 and precipitation<=100 group by cell""".format(timestamp=time_start)
+
+def generate_heavy_imerg_query():
+    time_start = (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d")
+    return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' and precipitation>100 group by cell""".format(timestamp=time_start)
 
 def generate_lowtrmm_query():
-    time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+    time_start = (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_TRMM where date >= '{timestamp}' and very_likely=0 group by cell""".format(timestamp=time_start)
 
 
@@ -93,18 +100,32 @@ def main():
                 helper_utils.std_flush("[%s] -- Obtained results for : %s"%(helper_utils.readable_time(), _streamer_))
 
 
-            # Update for High Confidence Streamers
-            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "High TRMM"))
-            _query_ = generate_trmm_query()
-            cursor.execute(_query_)
-            trmm_results = cursor.fetchall()
-            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "High TRMM"))
+            # # Update for High Confidence Streamers
+            # helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "High TRMM"))
+            # _query_ = generate_trmm_query()
+            # cursor.execute(_query_)
+            # trmm_results = cursor.fetchall()
+            # helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "High TRMM"))
 
-            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "Low TRMM"))
-            _query_ = generate_lowtrmm_query()
+            # helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "Low TRMM"))
+            # _query_ = generate_lowtrmm_query()
+            # cursor.execute(_query_)
+            # usgs_results = cursor.fetchall()
+            # helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "Low TRMM"))
+
+
+            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "Low IMERG"))
+            _query_ = generate_imerg_query()
             cursor.execute(_query_)
-            usgs_results = cursor.fetchall()
-            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "Low TRMM"))
+            imerg_low_results = cursor.fetchall()
+            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "Low IMERG"))
+
+
+            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "High IMERG"))
+            _query_ = generate_heavy_imerg_query()
+            cursor.execute(_query_)
+            imerg_results = cursor.fetchall()
+            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "High IMERG"))
             
             
             helper_utils.std_flush("[%s] -- Generating local cache with scoring:\tSocial-ML - 0.3\tSocial-HDI - 1\tNews - 3\MODIS - 5\tVIIRS - 1"%helper_utils.readable_time())
@@ -120,19 +141,34 @@ def main():
                     if int(float(tuple_cell_[2])/0.34) > 0:
                         cell_cache[_cell_][_streamer_+"-ml"]=(int(float(tuple_cell_[2])/0.34), float(tuple_cell_[2]))
 
-            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "MODIS"))      # note earlier TRMM-High used to be TRMM, and TRMM-Low used to be USGS
-            for tuple_cell_ in trmm_results:
+            # helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "MODIS"))      # note earlier TRMM-High used to be TRMM, and TRMM-Low used to be USGS
+            # for tuple_cell_ in trmm_results:
+            #     _cell_ = tuple_cell_[0]
+            #     if _cell_ not in cell_cache:
+            #         cell_cache[_cell_] = {}
+            #     cell_cache[_cell_]["trmmh"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))   # 1 <-- TRMM-High score
+
+
+            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "IMERG-High"))      # High IMERG
+            for tuple_cell_ in imerg_results:
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["trmmh"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))   # 1 <-- TRMM-High score
+                cell_cache[_cell_]["trmmh"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*5))   # 1 <-- TRMM-Low score
+
+            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "IMERG-Low"))      # Low IMERG
+            for tuple_cell_ in imerg_low_results:
+                _cell_ = tuple_cell_[0]
+                if _cell_ not in cell_cache:
+                    cell_cache[_cell_] = {}
+                cell_cache[_cell_]["trmmh"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*2))   # 1 <-- TRMM-High score
             
-            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "VIIRS"))
-            for tuple_cell_ in usgs_results:
-                _cell_ = tuple_cell_[0]
-                if _cell_ not in cell_cache:
-                    cell_cache[_cell_] = {}
-                cell_cache[_cell_]["trmml"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))
+            # helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "VIIRS"))
+            # for tuple_cell_ in usgs_results:
+            #     _cell_ = tuple_cell_[0]
+            #     if _cell_ not in cell_cache:
+            #         cell_cache[_cell_] = {}
+            #     cell_cache[_cell_]["trmml"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))
 
 
             helper_utils.std_flush("[%s] -- Local cache score total generation"%helper_utils.readable_time())

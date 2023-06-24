@@ -51,6 +51,10 @@ def generate_trmm_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_TRMM where date >= '{timestamp}' group by cell""".format(timestamp=time_start)
 
+def generate_imerg_query():
+    time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+    return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' group by cell""".format(timestamp=time_start)
+
 def generate_usgs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_USGS where time >= '{timestamp}' and mag >= 5 group by cell""".format(timestamp=time_start)
@@ -99,6 +103,13 @@ def main():
             trmm_results = cursor.fetchall()
             helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "TRMM"))
 
+
+            helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "IMERG"))
+            _query_ = generate_imerg_query()
+            cursor.execute(_query_)
+            imerg_results = cursor.fetchall()
+            helper_utils.std_flush("[%s] -- Obtained resuts for: %s"%(helper_utils.readable_time(), "IMERG"))
+
             helper_utils.std_flush("[%s] -- Generating query for: %s"%(helper_utils.readable_time(), "USGS"))
             _query_ = generate_usgs_query()
             cursor.execute(_query_)
@@ -131,6 +142,13 @@ def main():
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
                 cell_cache[_cell_]["TRMM"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*1))   # 1 <-- TRMM score
+
+            helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "IMERG"))
+            for tuple_cell_ in imerg_results:
+                _cell_ = tuple_cell_[0]
+                if _cell_ not in cell_cache:
+                    cell_cache[_cell_] = {}
+                cell_cache[_cell_]["IMERG"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*3))   # 1 <-- TRMM score
             
             helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "USGS"))
             for tuple_cell_ in usgs_results:
