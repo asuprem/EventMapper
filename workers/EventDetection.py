@@ -55,6 +55,11 @@ def generate_imerg_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' and precipitation>100 group by cell""".format(timestamp=time_start)
 
+# def generate_imerg_usgs_query():
+#     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+#     return """(select cell, count(*) from HCS_IMERG_LATE where date >= '{timestamp}' and precipitation>100 group by cell) as imerg_cell left_join""".format(timestamp=time_start)
+
+
 def generate_usgs_query():
     time_start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
     return """select cell, count(*) from HCS_USGS where time >= '{timestamp}' and mag >= 5 group by cell""".format(timestamp=time_start)
