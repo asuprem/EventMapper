@@ -153,7 +153,7 @@ def main():
                 _cell_ = tuple_cell_[0]
                 if _cell_ not in cell_cache:
                     cell_cache[_cell_] = {}
-                cell_cache[_cell_]["IMERG"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*3))   # 1 <-- TRMM score
+                cell_cache[_cell_]["IMERG"] = (float(tuple_cell_[1]), float(tuple_cell_[1]*0.5))   # 1 <-- IMERG score
             
             helper_utils.std_flush("[%s] -- Local caching for %s"%(helper_utils.readable_time(), "USGS"))
             for tuple_cell_ in usgs_results:
