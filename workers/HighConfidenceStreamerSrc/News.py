@@ -41,7 +41,7 @@ class News(multiprocessing.Process):
             for event_topic in self.config["topic_names"]:
                 if not self.config["topic_names"][event_topic]["high_confidence"]["valid"]:
                     continue
-                self.messageQueue.put("News downloader - working on %s"%event_topic)
+                self.messageQueue.put("%s -- News downloader - working on %s"%(datetime.now().strftime("%m-%d-%Y %H:%M:%S"), event_topic))
                 event_topic_key = str(self.config["topic_names"][event_topic]["index"])
                 self.cached_list = self.getCachedList(event_topic_key)
                 stopwords = self.config["topic_names"][event_topic]["stopwords"]
@@ -57,7 +57,7 @@ class News(multiprocessing.Process):
                 article_content, article_location = self.getArticleDetails(articles, stopwords, event_topic)
 
                 self.insertNews(article_content, event_topic_key)
-                self.updateRedisLocations(article_location)
+                self.updateRedisLocations(article_location, event_topic)
             
             self.DB_CONN.close()
             self.messageQueue.put("Completed News download successfully at %s."%readable_time())
@@ -128,7 +128,7 @@ class News(multiprocessing.Process):
                 raise ValueError("Ran out of GoogleMaps daily keys")
             if lat is None or lng is None:
                 coordinate_skip+=1
-                self.messageQueue.put("[News] Skipped location for %s -- <%s> due to missing coordinates from geocoder"%(item["text"], str(desc_locations)))
+                #self.messageQueue.put("[News] Skipped location for %s -- <%s> due to missing coordinates from geocoder"%(item["text"], str(desc_locations)))
                 continue
             item["latitude"] = lat
             item["longitude"] = lng
@@ -137,7 +137,7 @@ class News(multiprocessing.Process):
             article_content.append(item)
             article_location.append({"name":final_locations, "lat":lat, "lng":lng})
 
-        self.messageQueue.put("Obtained News with: %i items and skipped \n\texisting %i items\n\tstopword %i items, \n\tmissing location %i items \n\tmissing coordinates %i items"%(len(article_content), exist_skip, stop_skip, location_skip, coordinate_skip))
+        #self.messageQueue.put("Obtained News with: %i items and skipped \n\texisting %i items\n\tstopword %i items, \n\tmissing location %i items \n\tmissing coordinates %i items"%(len(article_content), exist_skip, stop_skip, location_skip, coordinate_skip))
         return article_content, article_location
         
     def extractLocations(self,temp_loc_tags):
@@ -194,7 +194,7 @@ class News(multiprocessing.Process):
         cursor.close()
             
 
-    def updateRedisLocations(self,article_location):
+    def updateRedisLocations(self,article_location, event_topic):
         # get REDIS connection
         
         totalLocations = len(article_location)
@@ -210,5 +210,5 @@ class News(multiprocessing.Process):
                 sublocationkey = sublocation_key(sublocation)
                 self.r.set(sublocationkey, point_str, ex=259200)
                 sublocations+=1
-        self.messageQueue.put("Completed News with: %i locations and %i sublocations"%(totalLocations, sublocations))
+        self.messageQueue.put("Completed News [%s] with: %i locations and %i sublocations"%(event_topic, totalLocations, sublocations))
 
