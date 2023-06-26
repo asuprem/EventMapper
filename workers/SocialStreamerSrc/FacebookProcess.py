@@ -84,7 +84,8 @@ class FacebookProcess(multiprocessing.Process):
         """
         while True:
             # Perform work ONLY if it hasn't been performed today...
-            time_reset = False
+            self.messageQueue.put("[Facebook %s] Beginning FacebookProcess"%self.event)
+            time_reset = True
             previousTimestamp = self.r.get("social:streamer:facebook:%s:%s:timestamp"%(self.event, self.lang))
             previousApiAccesses = self.r.get("social:streamer:facebook:%s:%s:count"%(self.event, self.lang))
             if previousApiAccesses is None:
@@ -97,9 +98,10 @@ class FacebookProcess(multiprocessing.Process):
             else:
                 previousTimestamp = int(float(previousTimestamp))
             if time_reset or datetime.fromtimestamp(previousTimestamp).day != datetime.fromtimestamp(time.time()).day:
-                self.messageQueue.put("Initiating facebook download of %s-%s at %s"%(self.event, self.lang, readable_time()))
+                self.messageQueue.put("[Facebook %s] Initiating facebook download of %s-%s at %s"%(self.event, self.event, self.lang, readable_time()))
                 max_results = 10
                 for page_get in range(5):
+                    self.messageQueue.put("[Facebook %s] Retrieving page %i"%(self.event, page_get))
                     start_param = page_get*10 + 1
                     if start_param > max_results:
                         continue
@@ -129,6 +131,7 @@ class FacebookProcess(multiprocessing.Process):
                             _data_["streamtype"] = "facebook"
                             _data_["timestamp_ms"] = int(time.time()*1000)
                             _data_["link"] = _item_["link"]
+                            self.messageQueue.put("[Facebook %s] writing page %i to %s"%(self.event, page_get, self.path))
                             self.output.write(json.dumps(_data_)+"\n")
 
                     except Exception as e:
