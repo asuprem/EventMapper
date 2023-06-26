@@ -2,7 +2,7 @@ import utils.AssedMessageProcessor
 import pdb, time, datetime
 
 import utils.helper_utils as helper_utils
-from utils.file_utils import load_config
+from utils.file_utils import load_config, topic_indexer
 from utils.db_utils import get_db_connection
 
 import traceback
@@ -13,6 +13,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
     def __init__(self,debug=False):
         self.debug = debug
         self.config = load_config("./config/assed_config.json")
+        self.topic_index = topic_indexer(self.config, "landslide")
         self.DB_CONN = get_db_connection(self.config)
         self.cursor = self.DB_CONN.cursor()
         pass
@@ -53,8 +54,9 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         _time_ = int(int(message["timestamp"])/1000)
         _time_minus = self.time_convert(_time_ -  6*self.MS_IN_DAYS)
         _time_plus = self.time_convert(_time_ +  3*self.MS_IN_DAYS)
-        select_s = 'SELECT location from HCS_News where cell = %s and timestamp > %s and timestamp < %s'
-        params = (message["cell"], _time_minus, _time_plus)
+        select_s = 'SELECT location from HCS_News where cell = %s and timestamp > %s and timestamp < %s and topic_name=%s'
+        params = (message["cell"], _time_minus, _time_plus, str(self.topic_index))
+        utils.helper_utils.std_flush("Performing query: %s"%(select_s%params))
         self.cursor.execute(select_s, params)
         results = self.cursor.fetchall()
         if len(results) > 0:
