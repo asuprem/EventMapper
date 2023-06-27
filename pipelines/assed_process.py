@@ -92,13 +92,14 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
         message_counter += 1
         
         if not debug:
-            r.set(exportkey+":partition", message.partition)
-            r.set(exportkey+":offset", message.offset)
-            r.set(exportkey+":timestamp", message.timestamp)
+            # We set importkey partition, to keep track of where we are at in importing pub/sub items
+            r.set(importkey+":partition", message.partition)
+            r.set(importkey+":offset", message.offset)
+            r.set(importkey+":timestamp", message.timestamp)
         else:
-            helper_utils.std_flush("[%s] -- Setting partition %s to %s"%(helper_utils.readable_time(), kafka_export ,message.partition))
-            helper_utils.std_flush("[%s] -- Setting offset %s to %s"%(helper_utils.readable_time(), kafka_export ,message.offset))
-            helper_utils.std_flush("[%s] -- Setting timestamp %s to %s"%(helper_utils.readable_time(), kafka_export ,message.timestamp))
+            helper_utils.std_flush("[%s] -- Setting partition %s to %s"%(helper_utils.readable_time(), kafka_import ,message.partition))
+            helper_utils.std_flush("[%s] -- Setting offset %s to %s"%(helper_utils.readable_time(), kafka_import ,message.offset))
+            helper_utils.std_flush("[%s] -- Setting timestamp %s to %s"%(helper_utils.readable_time(), kafka_import ,message.timestamp))
             
         
         if message_counter%1000 == 0:

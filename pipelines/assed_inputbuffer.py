@@ -140,6 +140,8 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
 
                             granularTime = int(jsonVersion["timestamp_ms"])
                             r.set(importkey, granularTime)
+
+
                             process_count += 1
                             if granularTime - prevGranular > 86400000:
                                 helper_utils.std_flush("[%s] -- Finished with %s"%(helper_utils.readable_time(), str(datetime.fromtimestamp(granularTime/1000.0))))
