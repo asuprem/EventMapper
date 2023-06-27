@@ -18,7 +18,7 @@ DOWNLOAD_PREPEND = './downloads/'
 @click.argument("dataprocessor")
 @click.argument("dataprocessorscriptdir")
 @click.argument("pidname")
-def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pidname ):
+def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pidname):
     TOP_OF_FILE_START = True
     pid_name = pidname
     helper_utils.setup_pid(pid_name, logdir=logdir)
@@ -53,7 +53,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
 
     if finishedUpToTime == 0:
         # TODO CHANGE TO 7 days after setup is complete...
-        helper_utils.std_flush("[%s] -- No value for previous stop. Starting from 7 days prior", helper_utils.readable_time())
+        helper_utils.std_flush("[%s] -- No value for previous stop. Starting from 7 days prior"%helper_utils.readable_time())
         currentTime = datetime.now() - timedelta(days=7)
         foundFlag = 0
         while foundFlag == 0:
@@ -76,6 +76,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
         TOP_OF_FILE_START = False
     if TOP_OF_FILE_START:
         # Otherwise, we start from the beginning of the 'first' file...
+        helper_utils.std_flush("[%s] -- Starting at first file"%(helper_utils.readable_time()))
         granularTime = 0
         finishedUpToTime = datetime.fromtimestamp(granularTime/1000.0) - timedelta(seconds = 60)
         
@@ -91,11 +92,13 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
             
             
         if (datetime.now() - finishedUpToTime).total_seconds() < 60:
+            helper_utils.std_flush("[%s] -- Sleeping"%(helper_utils.readable_time()))
             waitTime = 120 -  (datetime.now() - finishedUpToTime).seconds
             time.sleep(waitTime)
             time_slept+=waitTime
         else:
             filePath = DataProcessor.getInputPath(finishedUpToTime)
+            helper_utils.std_flush("[%s] -- Trying to read %s"%(helper_utils.readable_time(), filePath))
             if not os.path.exists(filePath):
                 waitTime = (datetime.now()-finishedUpToTime).total_seconds()
                 #Difference is less than Two minutes
@@ -106,7 +109,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
                 else:
                     # Difference is more than two minutes - we can increment the the by one minute for the next ones
                     finishedUpToTime += TIME_DELTA_MINIMAL
-            # Not we have file
+            # Now we have file
             else:
                 with open(filePath, 'r') as fileRead:
                     for line in fileRead:
