@@ -35,6 +35,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
     r=redis.Redis(connection_pool = pool)
     kafka_key = exportkey.replace(":","_")
     kafka_producer = kafka.KafkaProducer()
+    helper_utils.std_flush("[%s] -- Using export key %s"%(helper_utils.readable_time(), kafka_key))
 
     message_refresh = 7200
     skip_count = 0
@@ -98,7 +99,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
             time_slept+=waitTime
         else:
             filePath = DataProcessor.getInputPath(finishedUpToTime)
-            helper_utils.std_flush("[%s] -- Trying to read %s"%(helper_utils.readable_time(), filePath))
+            #helper_utils.std_flush("[%s] -- Trying to read %s"%(helper_utils.readable_time(), filePath))
             if not os.path.exists(filePath):
                 waitTime = (datetime.now()-finishedUpToTime).total_seconds()
                 #Difference is less than Two minutes
@@ -111,6 +112,7 @@ def main(logdir, importkey, exportkey, dataprocessor, dataprocessorscriptdir, pi
                     finishedUpToTime += TIME_DELTA_MINIMAL
             # Now we have file
             else:
+                helper_utils.std_flush("[%s] -- Reading %s"%(helper_utils.readable_time(), filePath))
                 with open(filePath, 'r') as fileRead:
                     for line in fileRead:
                         try:
