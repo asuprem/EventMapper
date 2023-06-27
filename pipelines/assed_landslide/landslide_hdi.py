@@ -21,7 +21,7 @@ class landslide_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         self.cursor_timer = time.time()
 
         self.cursor_refresh = 300
-        self.MS_IN_DAYS = 86400000
+        self.MS_IN_DAYS = 86400
         self.true_counter = 0
         self.unk = 0
         self.stream_tracker = {}
