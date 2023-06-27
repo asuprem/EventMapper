@@ -20,7 +20,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
         self.NER =  Ner(host="localhost", port=9199)
         self.counter = 0
         self.memory={}
-        config = load_config("./config/assed_config.json")
+        self.config = load_config("./config/assed_config.json")
         self.APIKEY = GoogleV3(self.config["APIKEYS"]["googlemaps"])
         self.stream_tracker = {}
         self.location_stopwords = ["street", "us", "america"]
