@@ -85,6 +85,9 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
                 byted = bytes(json.dumps(processedMessage[1]), encoding="utf-8")
                 kafka_producer.send(kafka_export, byted)
                 kafka_producer.flush()
+            else:
+                helper_utils.std_flush("[%s] -- Publish to %s message %s"%(helper_utils.readable_time(), kafka_export ,json.dumps(processedMessage[1])))
+
             message_correct_counter+=1
         message_counter += 1
         
@@ -92,6 +95,11 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
             r.set(exportkey+":partition", message.partition)
             r.set(exportkey+":offset", message.offset)
             r.set(exportkey+":timestamp", message.timestamp)
+        else:
+            helper_utils.std_flush("[%s] -- Setting partition %s to %s"%(helper_utils.readable_time(), kafka_export ,message.partition))
+            helper_utils.std_flush("[%s] -- Setting offset %s to %s"%(helper_utils.readable_time(), kafka_export ,message.offset))
+            helper_utils.std_flush("[%s] -- Setting timestamp %s to %s"%(helper_utils.readable_time(), kafka_export ,message.timestamp))
+            
         
         if message_counter%1000 == 0:
             helper_utils.std_flush("[%s] -- Processed %i messages with %i failures and %i successes"%(helper_utils.readable_time(), message_counter, message_fail_counter, message_correct_counter))
