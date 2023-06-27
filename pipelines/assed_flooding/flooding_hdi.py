@@ -21,7 +21,7 @@ class flooding_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         self.cursor_timer = time.time()
 
         self.cursor_refresh = 300
-        self.MS_IN_DAYS = 86400000
+        self.MS_IN_DAYS = 864000
         self.true_counter = 0
         self.unk = 0
         self.stream_tracker = {}
@@ -57,7 +57,6 @@ class flooding_hdi(utils.AssedMessageProcessor.AssedMessageProcessor):
         select_s = 'SELECT location from HCS_News where cell = %s and timestamp > %s and timestamp < %s and topic_name=%s'
         params = (message["cell"], _time_minus, _time_plus, str(self.topic_index))
         utils.helper_utils.std_flush("Performing query: %s"%(select_s%params))
-        params = (message["cell"], _time_minus, _time_plus)
         self.cursor.execute(select_s, params)
         results = self.cursor.fetchall()
         if len(results) > 0:

@@ -20,7 +20,7 @@ class wildfire_location_extractor(utils.AssedMessageProcessor.AssedMessageProces
         self.NER =  Ner(host="localhost", port=9199)
         self.counter = 0
         self.memory={}
-        config = load_config("./config/assed_config.json")
+        self.config = load_config("./config/assed_config.json")
         self.APIKEY = GoogleV3(self.config["APIKEYS"]["googlemaps"])
         self.stream_tracker = {}
         self.location_stopwords = ["street", "us", "america"]
@@ -41,7 +41,8 @@ class wildfire_location_extractor(utils.AssedMessageProcessor.AssedMessageProces
                 self.stream_tracker[_streamtype]["good_location"] = 0
                 self.stream_tracker[_streamtype]["bad_location"] = 0
         if self.debug:
-            utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
+            for _streamtype in self.stream_tracker:
+                utils.helper_utils.std_flush("Processed %i elements from %s with %i good locations and %i bad locations"%(self.stream_tracker[_streamtype]["totalcounter"],_streamtype, self.stream_tracker[_streamtype]["good_location"], self.stream_tracker[_streamtype]["bad_location"]))
 
         self.stream_tracker[message["streamtype"]]["totalcounter"] += 1
         # Check if location exists
@@ -132,6 +133,7 @@ class wildfire_location_extractor(utils.AssedMessageProcessor.AssedMessageProces
                             r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
                             # TODO ADD TO MEMORY AS WELL
                             self.r.set(r_key, coordinates, ex=259200)
+                            utils.helper_utils.std_flush("[%s] -- Found geolocation for %s (str %s) using googlemaps"%(utils.helper_utils.readable_time(), message["location"], coordinates))
                     
             if latitude is not None and longitude is not None:
                 message["latitude"] = str(latitude)
