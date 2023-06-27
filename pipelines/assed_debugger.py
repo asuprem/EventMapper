@@ -40,7 +40,7 @@ def main(importkey, exportkey, seekval):
 
     count = 0
     for message in kafka_consumer:
-        #pdb.set_trace()
+        pdb.set_trace()
         count+=1
         jsval = json.loads(message.value.decode())
         helper_utils.std_flush(jsval["streamtype"], str(count))

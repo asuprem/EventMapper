@@ -118,7 +118,8 @@ if __name__ == '__main__':
         if time.time() - configCheckTimer > CONSTANTS.SOCIAL_STREAMER_CONFIG_TIME_CHECK:
 
             configCheckTimer = time.time()
-            std_flush( " ".join(["Checking configuration at", readable_time()]))
+            if datetime.now().minute < 5:
+                std_flush( " ".join(["Checking configuration at", readable_time()]))
             configReload = load_config(CONSTANTS.TOPIC_CONFIG_PATH)
             
             configChangeFlag = False
@@ -276,7 +277,8 @@ if __name__ == '__main__':
                         StreamerManager[_allowed_streamer_]["instance"].start()
                         std_flush("Deployed unstructured streamer : %s\tat %s\twith key %s"%(StreamerManager[_allowed_streamer_]["name"], readable_time(), StreamerManager[_allowed_streamer_]["apikey"][0]))
             else:
-                std_flush( "No changes have been made to Multiprocessing config file")
+                #std_flush( "No changes have been made to Multiprocessing config file")
+                pass
 
         #Crash checks        
         if time.time() - crashCheckInfoDumpTimer > CONSTANTS.SOCIAL_STREAMER_CRASH_TIME_CHECK:
