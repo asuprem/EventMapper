@@ -19,8 +19,8 @@ def main(importkey, exportkey, seekval):
     r=redis.Redis(connection_pool = pool)
     helper_utils.std_flush("Connected to redis")
 
-    seek_partition = r.get(exportkey+":partition")
-    seek_offset = r.get(exportkey+":offset")
+    seek_partition = r.get(importkey+":partition")
+    seek_offset = r.get(importkey+":offset")
     seek_partition = 0 if seek_partition is None else int(seek_partition)
     seek_offset = 0 if seek_offset is None else int(seek_offset)+1
     helper_utils.std_flush("Obtained seek partition for kafka at Partition %i -- Offset %i"%(seek_partition, seek_offset))

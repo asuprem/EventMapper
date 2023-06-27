@@ -46,8 +46,8 @@ def main(logdir, importkey, exportkey, processscript, processscriptdir, pidname,
     r=redis.Redis(connection_pool = pool)
     helper_utils.std_flush("[%s] -- Connected to redis with ConnectionPool on port 6379"%helper_utils.readable_time())
     
-    seek_partition = r.get(exportkey+":partition")
-    seek_offset = r.get(exportkey+":offset")
+    seek_partition = r.get(importkey+":partition")
+    seek_offset = r.get(importkey+":offset")
     seek_partition = 0 if seek_partition is None else int(seek_partition)
     seek_offset = 0 if seek_offset is None else int(seek_offset)+1
     helper_utils.std_flush("[%s] -- Obtained seek partition for kafka at Partition %i -- Offset %i"%(helper_utils.readable_time(), seek_partition, seek_offset))
