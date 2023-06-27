@@ -132,6 +132,7 @@ class landslide_location_extractor(utils.AssedMessageProcessor.AssedMessageProce
                             r_key = utils.helper_utils.extractor_sublocation_key(extractor_sublocation)
                             # TODO ADD TO MEMORY AS WELL
                             self.r.set(r_key, coordinates, ex=259200)
+                            utils.helper_utils.std_flush("[%s] -- Found geolocation for %s using googlemaps"%(utils.helper_utils.readable_time(), message["location"]))
                     
             if latitude is not None and longitude is not None:
                 message["latitude"] = str(latitude)
